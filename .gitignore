@@ -1,0 +1,14 @@
+node_modules/
+npm-debug.log
+/.idea/
+/tls.cert
+*.log
+*.env
+logs/
+package-lock.json
+yarn.lock
+*.bak
+lb_settings.json
+.nyc_output
+coverage
+db/
