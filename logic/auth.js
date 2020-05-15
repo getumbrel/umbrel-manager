@@ -59,15 +59,20 @@ async function changePassword(currentPassword, newPassword, jwt) {
             changePasswordStatus.percent = 60 + attempt; // eslint-disable-line no-magic-numbers
             // await lnapiService.changePassword(currentPassword, newPassword, jwt);
 
-            // make new password file
+            // update user file
+            const user = await diskLogic.readUserFile();
             const credentials = hashCredentials(SYSTEM_USER, newPassword);
 
+            // re-encrypt seed with new password
+            const decryptedSeed = await iocane.createSession().decrypt(user.seed, currentPassword);
+            const encryptedSeed = await iocane.createSession().encrypt(decryptedSeed, newPassword);
+
             // replace user file
-            await diskLogic.deleteUserFile();
-            await diskLogic.writeUserFile({ password: credentials.password });
+            // await diskLogic.deleteUserFile();
+            await diskLogic.writeUserFile({ name: user.name, password: credentials.password, seed: encryptedSeed });
 
             // update ssh password
-            await hashAccountPassword(newPassword);
+            // await hashAccountPassword(newPassword);
 
             complete = true;
 
@@ -184,6 +189,7 @@ async function register(user, seed) {
     try {
         jwt = await JWTHelper.generateJWT(user.username);
     } catch (error) {
+        await diskLogic.deleteUserFile();
         throw new NodeError('Unable to generate JWT');
     }
 

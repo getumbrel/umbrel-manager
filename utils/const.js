@@ -6,8 +6,11 @@ module.exports = {
   JWT_PRIVATE_KEY_FILE: process.env.JWT_PRIVATE_KEY_FILE || '/home/umbrel/db/jwt/jwt.key',
   REQUEST_CORRELATION_ID_KEY: 'reqId',
   STATUS_CODES: {
+    ACCEPTED: 202,
     BAD_GATEWAY: 502,
+    CONFLICT: 409,
     FORBIDDEN: 403,
     OK: 200,
+    UNAUTHORIZED: 401
   },
 };
