@@ -5,7 +5,6 @@ const router = express.Router();
 const authLogic = require('logic/auth.js');
 
 const auth = require('middlewares/auth.js');
-const changePasswordAuthHandler = require('middlewares/changePasswordAuthHandler.js');
 
 const constants = require('utils/const.js');
 const safeHandler = require('utils/safeHandler');
@@ -15,7 +14,7 @@ const COMPLETE = 100;
 
 // Endpoint to change your lnd password. Wallet must exist and be unlocked. This endpoint is authorized with basic auth
 // or the property password from the body.
-router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic, changePasswordAuthHandler,
+router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic,
     safeHandler(async (req, res, next) => {
 
         // Use password from the body by default. Basic auth has issues handling special characters.
@@ -29,6 +28,9 @@ router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic, chan
             validator.isMinPasswordLength(currentPassword);
             validator.isString(newPassword);
             validator.isMinPasswordLength(newPassword);
+            if (newPassword === currentPassword) {
+                throw new Error('The new password must not be the same as existing password');
+            }
         } catch (error) {
             return next(error);
         }

@@ -92,7 +92,6 @@ function basic(req, res, next) {
     }
 
     if (error || user === false) {
-      console.log('wut');
       return next(new NodeError('Invalid state', 401)); // eslint-disable-line no-magic-numbers
     }
 
