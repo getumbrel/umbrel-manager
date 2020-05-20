@@ -1,5 +1,5 @@
 # specify the node base image with your desired version node:<version>
-FROM node:8-slim
+FROM node:12.16.3-slim
 
 # install tools
 RUN apt-get update --no-install-recommends \
@@ -24,5 +24,5 @@ COPY . .
 
 RUN mkdir -p /root/.lnd
 
-EXPOSE 3005
+EXPOSE 3006
 CMD [ "npm", "start" ]
