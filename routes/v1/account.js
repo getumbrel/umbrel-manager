@@ -5,6 +5,7 @@ const router = express.Router();
 const authLogic = require('logic/auth.js');
 
 const auth = require('middlewares/auth.js');
+const incorrectPasswordAuthHandler = require('middlewares/incorrectPasswordAuthHandler.js');
 
 const constants = require('utils/const.js');
 const safeHandler = require('utils/safeHandler');
@@ -14,7 +15,7 @@ const COMPLETE = 100;
 
 // Endpoint to change your lnd password. Wallet must exist and be unlocked. This endpoint is authorized with basic auth
 // or the property password from the body.
-router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic,
+router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic, incorrectPasswordAuthHandler,
     safeHandler(async (req, res, next) => {
 
         // Use password from the body by default. Basic auth has issues handling special characters.
@@ -49,13 +50,13 @@ router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic,
     }));
 
 // Returns the current status of the change password process.
-router.get('/changePassword/status', auth.jwt, safeHandler(async (req, res) => {
+router.get('/change-password/status', auth.jwt, safeHandler(async (req, res) => {
     const status = await authLogic.getChangePasswordStatus();
 
     return res.status(constants.STATUS_CODES.OK).json(status);
 }));
 
-// Registered does not need auth.This is because the user may not be registered at the time and thus won't always have
+// Registered does not need auth. This is because the user may not be registered at the time and thus won't always have
 // an auth token.
 router.get('/registered', safeHandler((req, res) =>
     authLogic.isRegistered()
@@ -65,9 +66,6 @@ router.get('/registered', safeHandler((req, res) =>
 // Endpoint to register a password with the device. Wallet must not exist. This endpoint is authorized with basic auth
 // or the property password from the body.
 router.post('/register', auth.convertReqBodyToBasicAuth, auth.register, safeHandler(async (req, res, next) => {
-
-
-    // return res.json({ seed: req.body.seed });
 
     const seed = req.body.seed;
 
@@ -83,11 +81,10 @@ router.post('/register', auth.convertReqBodyToBasicAuth, auth.register, safeHand
         return next(error);
     }
 
-    const user = {
-        name: req.body.name,
-        password: req.user.password,
-        plainTextPassword: req.user.plainTextPassword
-    };
+    const user = req.user;
+
+    //add name to user obj
+    user.name = req.body.name;
 
     const jwt = await authLogic.register(user, seed);
 
@@ -102,7 +99,13 @@ router.post('/login', auth.convertReqBodyToBasicAuth, auth.basic, safeHandler(as
 
 ));
 
-router.post('/seed', auth.convertReqBodyToBasicAuth, auth.basic, safeHandler(async (req, res) => {
+router.get('/info', auth.jwt, safeHandler(async (req, res) => {
+    const info = await authLogic.getInfo();
+
+    return res.status(constants.STATUS_CODES.OK).json(info);
+}));
+
+router.post('/seed', auth.convertReqBodyToBasicAuth, auth.basic, incorrectPasswordAuthHandler, safeHandler(async (req, res) => {
     const seed = await authLogic.seed(req.user);
 
     return res.json(seed);
@@ -110,9 +113,9 @@ router.post('/seed', auth.convertReqBodyToBasicAuth, auth.basic, safeHandler(asy
 
 ));
 
-// router.post('/refresh', auth.jwt, safeHandler((req, res) =>
-//   applicationLogic.refresh(req.user)
-//     .then(jwt => res.json(jwt))
-// ));
+router.post('/refresh', auth.jwt, safeHandler((req, res) =>
+    authLogic.refresh(req.user)
+        .then(jwt => res.json(jwt))
+));
 
 module.exports = router;

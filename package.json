@@ -1,16 +1,17 @@
 {
   "name": "umbrel-manager",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Manager for Umbrel Node",
   "author": "Umbrel",
   "scripts": {
     "lint": "eslint",
-    "start": "nodemon --exec node ./bin/www",
+    "start": "node ./bin/www",
     "test": "mocha --file test.setup 'test/**/*.js'",
     "coverage": "nyc --all mocha --file test.setup 'test/**/*.js'",
     "postcoverage": "codecov"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "bcrypt": "^4.0.1",
     "big.js": "^5.2.2",
     "body-parser": "^1.18.2",
