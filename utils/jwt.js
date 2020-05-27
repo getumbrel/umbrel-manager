@@ -3,7 +3,7 @@ const diskLogic = require('logic/disk.js');
 
 // Environmental variables are Strings, the expiry will be interpreted as milliseconds if not converted to int.
 // eslint-disable-next-line no-magic-numbers
-const expiresIn = process.env.JWT_EXPIRATION ? parseInt(process.env.JWT_EXPIRATION, 3600) : 3600;
+const expiresIn = process.env.JWT_EXPIRATION ? parseInt(process.env.JWT_EXPIRATION) : 3600;
 
 async function generateJWT(account) {
 

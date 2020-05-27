@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const iocane = require("iocane");
 const diskLogic = require('logic/disk.js');
 // const dockerComposeLogic = require('logic/docker-compose.js');
-// const lnapiService = require('services/lnapi.js');
+const lndApiService = require('services/lndApi.js');
 const bashService = require('services/bash.js');
 const NodeError = require('models/errors.js').NodeError;
 const JWTHelper = require('utils/jwt.js');
@@ -57,17 +57,21 @@ async function changePassword(currentPassword, newPassword, jwt) {
 
             // call lnapi to change password
             changePasswordStatus.percent = 60 + attempt; // eslint-disable-line no-magic-numbers
-            // await lnapiService.changePassword(currentPassword, newPassword, jwt);
+            await lndApiService.changePassword(currentPassword, newPassword, jwt);
 
-            // make new password file
+            // update user file
+            const user = await diskLogic.readUserFile();
             const credentials = hashCredentials(SYSTEM_USER, newPassword);
 
-            // replace user file
-            await diskLogic.deleteUserFile();
-            await diskLogic.writeUserFile({ password: credentials.password });
+            // re-encrypt seed with new password
+            const decryptedSeed = await iocane.createSession().decrypt(user.seed, currentPassword);
+            const encryptedSeed = await iocane.createSession().encrypt(decryptedSeed, newPassword);
+
+            // update user file
+            await diskLogic.writeUserFile({ name: user.name, password: credentials.password, seed: encryptedSeed });
 
             // update ssh password
-            await hashAccountPassword(newPassword);
+            // await hashAccountPassword(newPassword);
 
             complete = true;
 
@@ -135,13 +139,29 @@ async function login(user) {
         // cachePassword(user.plainTextPassword);
         cachePassword(user.password);
 
+        //unlock lnd wallet
+        // await lndApiService.unlock(user.plainTextPassword, jwt);
+
         return { jwt: jwt };
 
     } catch (error) {
-        console.log(error);
         throw new NodeError('Unable to generate JWT');
     }
 }
+
+async function getInfo() {
+    try {
+        const user = await diskLogic.readUserFile();
+
+        //remove sensitive info
+        delete user.password;
+        delete user.seed;
+
+        return user;
+    } catch (error) {
+        throw new NodeError('Unable to get account info');
+    }
+};
 
 async function seed(user) {
 
@@ -184,12 +204,13 @@ async function register(user, seed) {
     try {
         jwt = await JWTHelper.generateJWT(user.username);
     } catch (error) {
+        await diskLogic.deleteUserFile();
         throw new NodeError('Unable to generate JWT');
     }
 
     //initialize lnd wallet
     try {
-        // await lnapiService.initializeWallet(user.plainTextPassword, seed, jwt);
+        await lndApiService.initializeWallet(user.plainTextPassword, seed, jwt);
     } catch (error) {
         await diskLogic.deleteUserFile();
         throw new NodeError(error.response.data);
@@ -217,6 +238,7 @@ module.exports = {
     getChangePasswordStatus,
     hashCredentials,
     isRegistered,
+    getInfo,
     seed,
     login,
     register,

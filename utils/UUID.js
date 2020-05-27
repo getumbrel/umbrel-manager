@@ -1,5 +1,5 @@
 const bashService = require('services/bash.js');
-const uuidv4 = require('uuid/v4');
+const { "v4": uuidv4 } = require('uuid');
 
 function fetchBootUUID() {
   bashService.exec('cat', ['/proc/sys/kernel/random/boot_id'], {})
