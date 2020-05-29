@@ -2,7 +2,7 @@ const constants = require('utils/const.js');
 const diskService = require('services/disk.js');
 
 async function deleteUserFile() {
-  return await diskService.deleteFile(constants.USER_PASSWORD_FILE);
+  return await diskService.deleteFile(constants.USER_FILE);
 }
 
 async function deleteItemsInDir(directory) {
@@ -49,7 +49,7 @@ async function writeAppVersionFile(application, json) {
 }
 
 function readUserFile() {
-  return diskService.readJsonFile(constants.USER_PASSWORD_FILE);
+  return diskService.readJsonFile(constants.USER_FILE);
 }
 
 function readSettingsFile() {
@@ -61,7 +61,7 @@ function writeSettingsFile(json) {
 }
 
 async function writeUserFile(json) {
-  return diskService.writeJsonFile(constants.USER_PASSWORD_FILE, json);
+  return diskService.writeJsonFile(constants.USER_FILE, json);
 }
 
 function settingsFileExists() {
