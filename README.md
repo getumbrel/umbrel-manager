@@ -23,8 +23,6 @@ If you are looking to run Umbrel on your hardware, you do not need to run this s
 
 ## 🛠 Running manager
 
-Make sure [`umbrel-middleware`](https://github.com/getumbrel/umbrel-middleware) is running.
-
 ### Step 1. Install dependencies
 ```sh
 yarn
