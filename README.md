@@ -1,4 +1,4 @@
-[![Umbrel Manager](https://i.imgur.com/oN4ppF9.png)](https://github.com/getumbrel/umbrel-manager)
+[![Umbrel Manager](https://static.getumbrel.com/github/github-banner-umbrel-manager.svg)](https://github.com/getumbrel/umbrel-manager)
 
 [![Version](https://img.shields.io/github/v/release/getumbrel/umbrel-manager?color=%235351FB&label=version)](https://github.com/getumbrel/umbrel-manager/releases)
 [![Docker Build](https://img.shields.io/github/workflow/status/getumbrel/umbrel-manager/Automatically%20Build%20image%20on%20tag?color=%235351FB)](https://github.com/getumbrel/umbrel-manager/actions?query=workflow%3A"Automatically+Build+image+on+tag")
