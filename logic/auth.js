@@ -1,7 +1,8 @@
+const path = require('path');
 const bcrypt = require('bcrypt');
 const iocane = require("iocane");
+const compose = require("docker-compose");
 const diskLogic = require('logic/disk.js');
-// const dockerComposeLogic = require('logic/docker-compose.js');
 const lndApiService = require('services/lndApi.js');
 const bashService = require('services/bash.js');
 const NodeError = require('models/errors.js').NodeError;
@@ -43,9 +44,9 @@ async function changePassword(currentPassword, newPassword, jwt) {
     // restart lnd
     resetChangePasswordStatus();
     changePasswordStatus.percent = 1; // eslint-disable-line no-magic-numbers
-    // await dockerComposeLogic.dockerComposeStop({ service: constants.SERVICES.LND });
+    await compose.stopOne('lnd', { cwd: constants.DOCKER_COMPOSE_DIRECTORY });
     changePasswordStatus.percent = 40; // eslint-disable-line no-magic-numbers
-    // await dockerComposeLogic.dockerComposeUpSingleService({ service: constants.SERVICES.LND });
+    await compose.upOne('lnd', { cwd: constants.DOCKER_COMPOSE_DIRECTORY });
 
     let complete = false;
     let attempt = 0;
