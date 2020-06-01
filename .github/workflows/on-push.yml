@@ -1,0 +1,35 @@
+name: Docker build on push
+env:
+        DOCKER_CLI_EXPERIMENTAL: enabled
+
+on: push
+
+jobs:
+        build:
+                runs-on: ubuntu-18.04
+                name: Build and push manager image
+                steps:
+                        - name: Set env variables
+                          run: echo ::set-env name=BRANCH::${GITHUB_REF#refs/heads/}
+                        - name: Show set env variables
+                          run: |
+                                  printf "    BRANCH: %s\n"  "$BRANCH"                                
+                        - name: Login to Docker Hub
+                          run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+                        - name: Checkout project
+                          uses: actions/checkout@v2
+                        - name: Setup Docker buildx action
+                          uses: crazy-max/ghaction-docker-buildx@v1
+                          id: buildx
+                          with:
+                                  buildx-version: latest
+                                  qemu-version: latest
+                        - name: Show available buildx platforms
+                          run: echo ${{ steps.buildx.outputs.platforms }}
+                        - name: Run Docker buildx
+                          run: |
+                                  docker buildx build \
+                                  --platform linux/amd64,linux/arm/v7 \
+                                  -t ${{ secrets.DOCKER_HUB_USER }}/manager:$BRANCH \
+                                  --output "type=registry" \
+                                  .
