@@ -10,7 +10,7 @@ jobs:
                 name: Build and push manager image
                 steps:
                         - name: Set env variables
-                          run: echo "::set-env name=BRANCH::${GITHUB_REF#refs/heads/} | sed 's/\//-/g')"
+                          run: echo "::set-env name=BRANCH::$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//_/g')"
                         - name: Show set env variables
                           run: |
                                   printf "    BRANCH: %s\n"  "$BRANCH"                                
