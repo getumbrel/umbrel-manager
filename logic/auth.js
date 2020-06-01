@@ -44,9 +44,8 @@ async function changePassword(currentPassword, newPassword, jwt) {
     // restart lnd
     resetChangePasswordStatus();
     changePasswordStatus.percent = 1; // eslint-disable-line no-magic-numbers
-    await compose.stopOne('lnd', { cwd: constants.DOCKER_COMPOSE_DIRECTORY });
+    await compose.restartOne('lnd', { cwd: constants.DOCKER_COMPOSE_DIRECTORY });
     changePasswordStatus.percent = 40; // eslint-disable-line no-magic-numbers
-    await compose.upOne('lnd', { cwd: constants.DOCKER_COMPOSE_DIRECTORY });
 
     let complete = false;
     let attempt = 0;
