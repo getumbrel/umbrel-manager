@@ -19,6 +19,7 @@
     "continuation-local-storage": "^3.2.1",
     "cors": "^2.8.5",
     "debug": "^4.1.1",
+    "docker-compose": "^0.23.4",
     "dotenv": "^8.2.0",
     "express": "^4.16.3",
     "fs-extra": "^9.0.0",

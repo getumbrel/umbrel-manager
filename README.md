@@ -1,7 +1,7 @@
 [![Umbrel Manager](https://static.getumbrel.com/github/github-banner-umbrel-manager.svg)](https://github.com/getumbrel/umbrel-manager)
 
 [![Version](https://img.shields.io/github/v/release/getumbrel/umbrel-manager?color=%235351FB&label=version)](https://github.com/getumbrel/umbrel-manager/releases)
-[![Docker Build](https://img.shields.io/github/workflow/status/getumbrel/umbrel-manager/Automatically%20Build%20image%20on%20tag?color=%235351FB)](https://github.com/getumbrel/umbrel-manager/actions?query=workflow%3A"Automatically+Build+image+on+tag")
+[![Docker Build](https://img.shields.io/github/workflow/status/getumbrel/umbrel-manager/Docker%20build%20on%20push?color=%235351FB)](https://github.com/getumbrel/umbrel-manager/actions?query=workflow%3A"Docker+build+on+push")
 [![Docker Pulls](https://img.shields.io/docker/pulls/getumbrel/manager?color=%235351FB)](https://hub.docker.com/repository/registry-1.docker.io/getumbrel/manager/tags?page=1)
 [![Chat](https://img.shields.io/badge/chat%20on-telegram-%235351FB)](https://t.me/getumbrel)
 
@@ -41,6 +41,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `JWT_PUBLIC_KEY_FILE` | Path to the JWT public key (automatically created) | `/db/jwt-public-key/jwt.pem` |
 | `JWT_PRIVATE_KEY_FILE` | Path to the JWT private key (automatically created) | `/db/jwt-public-key/jwt.key` |
 | `JWT_EXPIRATION` | JWT expiration in miliseconds | `3600` |
+| `DOCKER_COMPOSE_DIRECTORY` | Path to directory containing `docker-compose.yml` | `/docker-compose` |
 
 ### Step 3. Run manager
 ```sh

@@ -13,41 +13,41 @@ const validator = require('utils/validator.js');
 
 const COMPLETE = 100;
 
-// Endpoint to change your lnd password. Wallet must exist and be unlocked. This endpoint is authorized with basic auth
-// or the property password from the body.
-router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic, incorrectPasswordAuthHandler,
-    safeHandler(async (req, res, next) => {
+// Endpoint to change your lnd password. Wallet must exist and be unlocked.
+router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic, incorrectPasswordAuthHandler, safeHandler(async (req, res, next) => {
+    // Use password from the body by default. Basic auth has issues handling special characters.
+    const currentPassword = req.body.password;
+    const newPassword = req.body.newPassword;
 
-        // Use password from the body by default. Basic auth has issues handling special characters.
-        const currentPassword = req.body.password;
-        const newPassword = req.body.newPassword;
+    const jwt = await authLogic.refresh(req.user);
 
-        const jwt = await authLogic.refresh(req.user);
-
-        try {
-            validator.isString(currentPassword);
-            validator.isMinPasswordLength(currentPassword);
-            validator.isString(newPassword);
-            validator.isMinPasswordLength(newPassword);
-            if (newPassword === currentPassword) {
-                throw new Error('The new password must not be the same as existing password');
-            }
-        } catch (error) {
-            return next(error);
+    try {
+        validator.isString(currentPassword);
+        validator.isMinPasswordLength(currentPassword);
+        validator.isString(newPassword);
+        validator.isMinPasswordLength(newPassword);
+        if (newPassword === currentPassword) {
+            throw new Error('The new password must not be the same as existing password');
         }
+    } catch (error) {
+        return next(error);
+    }
 
-        const status = await authLogic.getChangePasswordStatus();
+    const status = await authLogic.getChangePasswordStatus();
 
-        // return a conflict if a change password process is already running
-        if (status.percent > 0 && status.percent !== COMPLETE) {
-            return res.status(constants.STATUS_CODES.CONFLICT).json();
-        }
+    // return a conflict if a change password process is already running
+    if (status.percent > 0 && status.percent !== COMPLETE) {
+        return res.status(constants.STATUS_CODES.CONFLICT).json();
+    }
 
+    try {
         // start change password process in the background and immediately return
-        authLogic.changePassword(currentPassword, newPassword, jwt.jwt);
-
-        return res.status(constants.STATUS_CODES.ACCEPTED).json();
-    }));
+        await authLogic.changePassword(currentPassword, newPassword, jwt.jwt);
+        return res.status(constants.STATUS_CODES.OK).json();
+    } catch (error) {
+        return next(error);
+    }
+}));
 
 // Returns the current status of the change password process.
 router.get('/change-password/status', auth.jwt, safeHandler(async (req, res) => {

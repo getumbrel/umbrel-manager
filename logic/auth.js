@@ -1,7 +1,8 @@
+const path = require('path');
 const bcrypt = require('bcrypt');
 const iocane = require("iocane");
+const compose = require("docker-compose");
 const diskLogic = require('logic/disk.js');
-// const dockerComposeLogic = require('logic/docker-compose.js');
 const lndApiService = require('services/lndApi.js');
 const bashService = require('services/bash.js');
 const NodeError = require('models/errors.js').NodeError;
@@ -40,12 +41,18 @@ function getCachedPassword() {
 // Change the device and lnd password.
 async function changePassword(currentPassword, newPassword, jwt) {
 
-    // restart lnd
+
     resetChangePasswordStatus();
     changePasswordStatus.percent = 1; // eslint-disable-line no-magic-numbers
-    // await dockerComposeLogic.dockerComposeStop({ service: constants.SERVICES.LND });
+
+    // restart lnd
+    try {
+        await compose.restartOne('lnd', { cwd: constants.DOCKER_COMPOSE_DIRECTORY });
+    } catch (error) {
+        throw new Error('Unable to change password as lnd wouldn\'t restart');
+    }
+
     changePasswordStatus.percent = 40; // eslint-disable-line no-magic-numbers
-    // await dockerComposeLogic.dockerComposeUpSingleService({ service: constants.SERVICES.LND });
 
     let complete = false;
     let attempt = 0;
@@ -103,7 +110,7 @@ async function changePassword(currentPassword, newPassword, jwt) {
         changePasswordStatus.error = true;
         changePasswordStatus.percent = 100;
 
-        throw new Error('Unable to change password. Lnd would not restart properly.');
+        throw new Error('Unable to change password');
     }
 
 }
