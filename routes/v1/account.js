@@ -40,10 +40,13 @@ router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic, inco
         return res.status(constants.STATUS_CODES.CONFLICT).json();
     }
 
-    // start change password process in the background and immediately return
-    authLogic.changePassword(currentPassword, newPassword, jwt.jwt);
-
-    return res.status(constants.STATUS_CODES.ACCEPTED).json();
+    try {
+        // start change password process in the background and immediately return
+        await authLogic.changePassword(currentPassword, newPassword, jwt.jwt);
+        return res.status(constants.STATUS_CODES.OK).json();
+    } catch (error) {
+        return next(error);
+    }
 }));
 
 // Returns the current status of the change password process.
