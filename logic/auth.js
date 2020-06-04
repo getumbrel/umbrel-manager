@@ -41,15 +41,17 @@ function getCachedPassword() {
 // Change the device and lnd password.
 async function changePassword(currentPassword, newPassword, jwt) {
 
-    // restart lnd
+
     resetChangePasswordStatus();
     changePasswordStatus.percent = 1; // eslint-disable-line no-magic-numbers
+
+    // restart lnd
     try {
         await compose.restartOne('lnd', { cwd: constants.DOCKER_COMPOSE_DIRECTORY });
     } catch (error) {
-        console.log("Error restarting lnd service", error);
-        throw error;
+        throw new Error('Unable to change password as lnd wouldn\'t restart');
     }
+
     changePasswordStatus.percent = 40; // eslint-disable-line no-magic-numbers
 
     let complete = false;
@@ -108,7 +110,7 @@ async function changePassword(currentPassword, newPassword, jwt) {
         changePasswordStatus.error = true;
         changePasswordStatus.percent = 100;
 
-        throw new Error('Unable to change password. Lnd would not restart properly.');
+        throw new Error('Unable to change password');
     }
 
 }

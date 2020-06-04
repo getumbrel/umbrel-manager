@@ -41,6 +41,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `JWT_PUBLIC_KEY_FILE` | Path to the JWT public key (automatically created) | `/db/jwt-public-key/jwt.pem` |
 | `JWT_PRIVATE_KEY_FILE` | Path to the JWT private key (automatically created) | `/db/jwt-public-key/jwt.key` |
 | `JWT_EXPIRATION` | JWT expiration in miliseconds | `3600` |
+| `DOCKER_COMPOSE_DIRECTORY` | Path to directory containing `docker-compose.yml` | `/docker-compose` |
 
 ### Step 3. Run manager
 ```sh
