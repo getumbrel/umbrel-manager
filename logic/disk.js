@@ -81,7 +81,7 @@ async function readAppVersionFile(application) {
 }
 
 function readHiddenService() {
-  return diskService.readFile(constants.CASA_NODE_HIDDEN_SERVICE_FILE);
+  return diskService.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE);
 }
 
 function readJWTPrivateKeyFile() {
@@ -100,7 +100,7 @@ function writeJWTPublicKeyFile(data) {
   return diskService.writeKeyFile(constants.JWT_PUBLIC_KEY_FILE, data);
 }
 
-// Send a signal to shutdown the Casa Node.
+// Send a signal to shutdown
 async function shutdown() {
   await diskService.writeFile(constants.SHUTDOWN_SIGNAL_FILE, 'true');
 }

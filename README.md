@@ -37,11 +37,12 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `DEVICE_HOST` | IP or domain from where [`umbrel-dashboard`](https://github.com/getumbrel/umbrel-dashboard) will request | `http://umbrel.local` |
 | `USER_FILE` | Path to the user's data file (automatically created on user registration) | `/db/user.json` |
 | `MIDDLEWARE_API_URL` | IP or domain where [`umbrel-middleware`](https://github.com/getumbrel/umbrel-middleware) is listening | `http://localhost` |
-| `MIDDLEWARE_API_PORT` | Port where [`umbrel-middleware`](https://github.com/getumbrel/umbrel-middleware) is listening | "3005" |
+| `MIDDLEWARE_API_PORT` | Port where [`umbrel-middleware`](https://github.com/getumbrel/umbrel-middleware) is listening | `3005` |
 | `JWT_PUBLIC_KEY_FILE` | Path to the JWT public key (automatically created) | `/db/jwt-public-key/jwt.pem` |
 | `JWT_PRIVATE_KEY_FILE` | Path to the JWT private key (automatically created) | `/db/jwt-public-key/jwt.key` |
 | `JWT_EXPIRATION` | JWT expiration in miliseconds | `3600` |
 | `DOCKER_COMPOSE_DIRECTORY` | Path to directory containing `docker-compose.yml` | `/docker-compose` |
+| `UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE` | Path to Tor hostname of [`umbrel-dashboard`](https://github.com/getumbrel/umbrel-dashboard) | `/var/lib/tor/dashboard/hostname` |
 
 ### Step 3. Run manager
 ```sh
