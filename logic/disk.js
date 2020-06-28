@@ -84,6 +84,14 @@ function readHiddenService() {
   return diskService.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE);
 }
 
+function readUpdateVersionFile() {
+  return diskService.readJsonFile(constants.UPDATE_VERSION_FILE);
+}
+
+function readUpdateStatusFile() {
+  return diskService.readJsonFile(constants.UPDATE_STATUS_FILE);
+}
+
 function readJWTPrivateKeyFile() {
   return diskService.readFile(constants.JWT_PRIVATE_KEY_FILE);
 }
@@ -159,6 +167,8 @@ module.exports = {
   hiddenServiceFileExists,
   readAppVersionFile,
   readHiddenService,
+  readUpdateVersionFile,
+  readUpdateStatusFile,
   readJWTPrivateKeyFile,
   readJWTPublicKeyFile,
   writeJWTPrivateKeyFile,

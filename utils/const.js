@@ -7,6 +7,9 @@ module.exports = {
   JWT_PRIVATE_KEY_FILE: process.env.JWT_PRIVATE_KEY_FILE || '/db/jwt-private-key/jwt.key',
   DOCKER_COMPOSE_DIRECTORY: process.env.DOCKER_COMPOSE_DIRECTORY || '/docker-compose',
   UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE: process.env.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE || '/var/lib/tor/dashboard/hostname',
+  UPDATE_URL: process.env.UPDATE_URL || 'https://raw.githubusercontent.com/getumbrel/umbrel-compose/master/update/version.json',
+  UPDATE_VERSION_FILE: process.env.UPDATE_VERSION_FILE || '/update/version.json',
+  UPDATE_STATUS_FILE: process.env.UPDATE_STATUS_FILE || '/update/status.json',
   STATUS_CODES: {
     ACCEPTED: 202,
     BAD_GATEWAY: 502,

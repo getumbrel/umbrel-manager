@@ -32,6 +32,7 @@
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",
     "request-promise": "^4.2.2",
+    "semver": "^7.3.2",
     "uuid": "^8.0.0",
     "validator": "^13.0.0",
     "winston": "^3.0.0-rc5",
