@@ -10,6 +10,7 @@ module.exports = {
   UPDATE_URL: process.env.UPDATE_URL || 'https://raw.githubusercontent.com/getumbrel/umbrel-compose/master/update/version.json',
   UPDATE_VERSION_FILE: process.env.UPDATE_VERSION_FILE || '/update/version.json',
   UPDATE_STATUS_FILE: process.env.UPDATE_STATUS_FILE || '/update/status.json',
+  UPDATE_SIGNAL_FILE: process.env.UPDATE_SIGNAL_FILE || '/update/START',
   STATUS_CODES: {
     ACCEPTED: 202,
     BAD_GATEWAY: 502,

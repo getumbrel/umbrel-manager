@@ -92,6 +92,10 @@ function readUpdateStatusFile() {
   return diskService.readJsonFile(constants.UPDATE_STATUS_FILE);
 }
 
+function writeUpdateSignalFile(version) {
+  return diskService.writeFile(constants.UPDATE_SIGNAL_FILE, version);
+}
+
 function readJWTPrivateKeyFile() {
   return diskService.readFile(constants.JWT_PRIVATE_KEY_FILE);
 }
@@ -169,6 +173,7 @@ module.exports = {
   readHiddenService,
   readUpdateVersionFile,
   readUpdateStatusFile,
+  writeUpdateSignalFile,
   readJWTPrivateKeyFile,
   readJWTPublicKeyFile,
   writeJWTPrivateKeyFile,

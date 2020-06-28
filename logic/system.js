@@ -45,9 +45,32 @@ async function getUpdateStatus() {
     }
 }
 
+async function startUpdate() {
+
+    let availableUpdate;
+
+    try {
+        availableUpdate = await getAvailableUpdate();
+        if (!availableUpdate.version) {
+            return availableUpdate;
+        }
+    } catch (error) {
+        throw new NodeError('Unable to fetch latest release');
+    }
+
+    try {
+        await diskLogic.writeUpdateSignalFile(availableUpdate.version)
+        return { message: "Updating to Umbrel v" + availableUpdate.version };
+    } catch (error) {
+        console.log(error);
+        throw new NodeError('Unable to write update signal file');
+    }
+}
+
 
 module.exports = {
     getHiddenServiceUrl,
     getAvailableUpdate,
-    getUpdateStatus
+    getUpdateStatus,
+    startUpdate
 };
