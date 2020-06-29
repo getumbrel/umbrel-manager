@@ -58,6 +58,11 @@ async function startUpdate() {
         throw new NodeError('Unable to fetch latest release');
     }
 
+    const updateInProgress = await diskLogic.updateSignalFileExists();
+    if (updateInProgress) {
+        throw new NodeError('An update is already in progress');
+    }
+
     try {
         await diskLogic.writeUpdateSignalFile(availableUpdate.version)
         return { message: "Updating to Umbrel v" + availableUpdate.version };

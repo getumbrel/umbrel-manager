@@ -92,6 +92,12 @@ function readUpdateStatusFile() {
   return diskService.readJsonFile(constants.UPDATE_STATUS_FILE);
 }
 
+function updateSignalFileExists(version) {
+  return diskService.readUtf8File(constants.UPDATE_SIGNAL_FILE)
+    .then(() => Promise.resolve(true))
+    .catch(() => Promise.resolve(false));
+}
+
 function writeUpdateSignalFile(version) {
   return diskService.writeFile(constants.UPDATE_SIGNAL_FILE, version);
 }
@@ -174,6 +180,7 @@ module.exports = {
   readUpdateVersionFile,
   readUpdateStatusFile,
   writeUpdateSignalFile,
+  updateSignalFileExists,
   readJWTPrivateKeyFile,
   readJWTPublicKeyFile,
   writeJWTPrivateKeyFile,
