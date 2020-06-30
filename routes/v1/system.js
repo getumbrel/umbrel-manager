@@ -8,6 +8,11 @@ const auth = require('middlewares/auth.js');
 const constants = require('utils/const.js');
 const safeHandler = require('utils/safeHandler');
 
+router.get('/info', auth.jwt, safeHandler(async (req, res) => {
+    const info = await systemLogic.getInfo();
+
+    return res.status(constants.STATUS_CODES.OK).json(info);
+}));
 
 router.get('/dashboard-hidden-service', auth.jwt, safeHandler(async (req, res) => {
     const url = await systemLogic.getHiddenServiceUrl();

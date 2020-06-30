@@ -5,6 +5,14 @@ const diskLogic = require('logic/disk.js');
 const constants = require('utils/const.js');
 const NodeError = require('models/errors.js').NodeError;
 
+async function getInfo() {
+    try {
+        const info = await diskLogic.readUpdateVersionFile();
+        return info;
+    } catch (error) {
+        throw new NodeError('Unable to get system information');
+    }
+};
 
 async function getHiddenServiceUrl() {
     try {
@@ -74,6 +82,7 @@ async function startUpdate() {
 
 
 module.exports = {
+    getInfo,
     getHiddenServiceUrl,
     getAvailableUpdate,
     getUpdateStatus,
