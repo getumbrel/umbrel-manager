@@ -21,7 +21,7 @@ router.get('/get-update', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(update);
 }));
 
-router.get('/update-status', auth.jwt, safeHandler(async (req, res) => {
+router.get('/update-status', safeHandler(async (req, res) => {
     const update = await systemLogic.getUpdateStatus();
 
     return res.status(constants.STATUS_CODES.OK).json(update);
