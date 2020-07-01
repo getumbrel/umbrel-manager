@@ -98,6 +98,12 @@ function updateSignalFileExists(version) {
     .catch(() => Promise.resolve(false));
 }
 
+function updateLockFileExists(version) {
+  return diskService.readUtf8File(constants.UPDATE_LOCK_FILE)
+    .then(() => Promise.resolve(true))
+    .catch(() => Promise.resolve(false));
+}
+
 function writeUpdateSignalFile(version) {
   return diskService.writeFile(constants.UPDATE_SIGNAL_FILE, version);
 }
@@ -181,6 +187,7 @@ module.exports = {
   readUpdateStatusFile,
   writeUpdateSignalFile,
   updateSignalFileExists,
+  updateLockFileExists,
   readJWTPrivateKeyFile,
   readJWTPublicKeyFile,
   writeJWTPrivateKeyFile,

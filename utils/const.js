@@ -11,6 +11,7 @@ module.exports = {
   UPDATE_VERSION_FILE: process.env.UPDATE_VERSION_FILE || '/update/version.json',
   UPDATE_STATUS_FILE: process.env.UPDATE_STATUS_FILE || '/update/status.json',
   UPDATE_SIGNAL_FILE: process.env.UPDATE_SIGNAL_FILE || '/update/START',
+  UPDATE_LOCK_FILE: process.env.UPDATE_LOCK_FILE || '/update/LOCK',
   STATUS_CODES: {
     ACCEPTED: 202,
     BAD_GATEWAY: 502,
