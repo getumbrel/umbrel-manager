@@ -65,6 +65,10 @@ If you're a developer looking to help but not sure where to begin, check out [th
 
 If you're looking for a bigger challenge, before opening a pull request please [create an issue](https://github.com/getumbrel/umbrel-manager/issues/new/choose) or [join our community chat](https://t.me/getumbrel) to get feedback, discuss the best way to tackle the challenge, and to ensure that there's no duplication of work.
 
+## 🙏 Acknowledgements
+
+Umbrel Manager is inspired by and built upon the work done by [Casa](https://github.com/casa) on its open-source [Node Manager API](https://github.com/Casa/V2-Casa-Node-Manager).
+
 ---
 
 [![License](https://img.shields.io/github/license/getumbrel/umbrel-manager?color=%235351FB)](https://github.com/getumbrel/umbrel-manager/blob/master/LICENSE)
