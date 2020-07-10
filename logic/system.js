@@ -28,7 +28,9 @@ async function getAvailableUpdate() {
         const current = await diskLogic.readUpdateVersionFile();
         const currentVersion = current.version;
 
-        const { data } = await axios.get(constants.UPDATE_URL);
+        const infoUrl = `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/ota-updates/info.json`;
+
+        const { data } = await axios.get(infoUrl);
         const latestVersion = data.version;
 
         const isUpdateAvailable = semverGt(latestVersion, currentVersion);
