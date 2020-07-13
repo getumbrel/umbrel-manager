@@ -11,7 +11,17 @@ async function getHiddenServiceUrl() {
     }
 };
 
+async function requestShutdown() {
+    try {
+        await diskLogic.shutdown();
+        return "Shutdown requested";
+    } catch (error) {
+        throw new NodeError('Unable to request shutdown');
+    }
+};
+
 
 module.exports = {
-    getHiddenServiceUrl
+    getHiddenServiceUrl,
+    requestShutdown
 };
