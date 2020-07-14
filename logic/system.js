@@ -20,8 +20,18 @@ async function requestShutdown() {
     }
 };
 
+async function requestReboot() {
+    try {
+        await diskLogic.reboot();
+        return "Reboot requested";
+    } catch (error) {
+        throw new NodeError('Unable to request reboot');
+    }
+};
+
 
 module.exports = {
     getHiddenServiceUrl,
-    requestShutdown
+    requestShutdown,
+    requestReboot
 };

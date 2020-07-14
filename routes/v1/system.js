@@ -21,4 +21,10 @@ router.get('/shutdown', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(result);
 }));
 
+router.get('/reboot', auth.jwt, safeHandler(async (req, res) => {
+    const result = await systemLogic.requestReboot();
+
+    return res.status(constants.STATUS_CODES.OK).json(result);
+}));
+
 module.exports = router;

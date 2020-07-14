@@ -105,9 +105,9 @@ async function shutdown() {
   await diskService.writeFile(constants.SHUTDOWN_SIGNAL_FILE, 'true');
 }
 
-// Send a signal to relaunch the manager.
-async function relaunch() {
-  await diskService.writeFile(constants.RELAUNCH_SIGNAL_FILE, 'true');
+// Send a signal to reboot
+async function reboot() {
+  await diskService.writeFile(constants.REBOOT_SIGNAL_FILE, 'true');
 }
 
 // Read the contends of a file.
@@ -164,7 +164,7 @@ module.exports = {
   writeJWTPrivateKeyFile,
   writeJWTPublicKeyFile,
   shutdown,
-  relaunch,
+  reboot,
   readUtf8File,
   readJsonFile,
   writeMigrationStatusFile,
