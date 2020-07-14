@@ -100,12 +100,10 @@ function writeJWTPublicKeyFile(data) {
   return diskService.writeKeyFile(constants.JWT_PUBLIC_KEY_FILE, data);
 }
 
-// Send a signal to shutdown
 async function shutdown() {
   await diskService.writeFile(constants.SHUTDOWN_SIGNAL_FILE, 'true');
 }
 
-// Send a signal to reboot
 async function reboot() {
   await diskService.writeFile(constants.REBOOT_SIGNAL_FILE, 'true');
 }
