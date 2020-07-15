@@ -15,4 +15,16 @@ router.get('/dashboard-hidden-service', auth.jwt, safeHandler(async (req, res) =
     return res.status(constants.STATUS_CODES.OK).json(url);
 }));
 
+router.post('/shutdown', auth.jwt, safeHandler(async (req, res) => {
+    const result = await systemLogic.requestShutdown();
+
+    return res.status(constants.STATUS_CODES.OK).json(result);
+}));
+
+router.post('/reboot', auth.jwt, safeHandler(async (req, res) => {
+    const result = await systemLogic.requestReboot();
+
+    return res.status(constants.STATUS_CODES.OK).json(result);
+}));
+
 module.exports = router;

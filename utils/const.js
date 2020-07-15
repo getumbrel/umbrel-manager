@@ -3,6 +3,8 @@ module.exports = {
   REQUEST_CORRELATION_NAMESPACE_KEY: 'umbrel-manager-request',
   REQUEST_CORRELATION_ID_KEY: 'reqId',
   USER_FILE: process.env.USER_FILE || '/db/user.json',
+  SHUTDOWN_SIGNAL_FILE: process.env.SHUTDOWN_SIGNAL_FILE || '/signals/shutdown',
+  REBOOT_SIGNAL_FILE: process.env.REBOOT_SIGNAL_FILE || '/signals/reboot',
   JWT_PUBLIC_KEY_FILE: process.env.JWT_PUBLIC_KEY_FILE || '/db/jwt-public-key/jwt.pem',
   JWT_PRIVATE_KEY_FILE: process.env.JWT_PRIVATE_KEY_FILE || '/db/jwt-private-key/jwt.key',
   DOCKER_COMPOSE_DIRECTORY: process.env.DOCKER_COMPOSE_DIRECTORY || '/docker-compose',
