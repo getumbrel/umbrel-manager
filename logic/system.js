@@ -117,11 +117,32 @@ async function startUpdate() {
     }
 }
 
+async function requestShutdown() {
+    try {
+        await diskLogic.shutdown();
+        return "Shutdown requested";
+    } catch (error) {
+        throw new NodeError('Unable to request shutdown');
+    }
+};
+
+async function requestReboot() {
+    try {
+        await diskLogic.reboot();
+        return "Reboot requested";
+    } catch (error) {
+        throw new NodeError('Unable to request reboot');
+    }
+};
+
+
 
 module.exports = {
     getInfo,
     getHiddenServiceUrl,
     getAvailableUpdate,
     getUpdateStatus,
-    startUpdate
+    startUpdate,
+    requestShutdown,
+    requestReboot
 };
