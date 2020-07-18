@@ -92,6 +92,10 @@ function readUpdateStatusFile() {
   return diskService.readJsonFile(constants.UPDATE_STATUS_FILE);
 }
 
+function writeUpdateStatusFile(json) {
+  return diskService.writeJsonFile(constants.UPDATE_STATUS_FILE, json);
+}
+
 function updateSignalFileExists(version) {
   return diskService.readUtf8File(constants.UPDATE_SIGNAL_FILE)
     .then(() => Promise.resolve(true))
@@ -104,8 +108,8 @@ function updateLockFileExists(version) {
     .catch(() => Promise.resolve(false));
 }
 
-function writeUpdateSignalFile(version) {
-  return diskService.writeFile(constants.UPDATE_SIGNAL_FILE, version);
+function writeUpdateSignalFile() {
+  return diskService.writeFile(constants.UPDATE_SIGNAL_FILE, 'true');
 }
 
 function readJWTPrivateKeyFile() {
@@ -185,6 +189,7 @@ module.exports = {
   readHiddenService,
   readUpdateVersionFile,
   readUpdateStatusFile,
+  writeUpdateStatusFile,
   writeUpdateSignalFile,
   updateSignalFileExists,
   updateLockFileExists,

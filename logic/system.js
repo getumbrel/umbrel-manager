@@ -1,5 +1,7 @@
 const axios = require('axios');
-const semverGt = require('semver/functions/gt')
+const semverGt = require('semver/functions/gt');
+const semverSatisfies = require('semver/functions/satisfies');
+const semverMinVersion = require('semver/ranges/min-version');
 
 const diskLogic = require('logic/disk.js');
 const constants = require('utils/const.js');
@@ -28,18 +30,40 @@ async function getAvailableUpdate() {
         const current = await diskLogic.readUpdateVersionFile();
         const currentVersion = current.version;
 
-        const infoUrl = `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/ota-updates/info.json`;
+        // 'tag' should be master to begin with
+        let tag = 'ota-updates';
+        let data;
+        let isNewVersionAvailable = false;
+        let isCompatibleWithCurrentVersion = false;
 
-        const { data } = await axios.get(infoUrl);
-        const latestVersion = data.version;
+        // Try finding for a new update until there's a new version available
+        // which is compatible with the currently installed version
+        do {
+            const infoUrl = `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json`;
 
-        const isUpdateAvailable = semverGt(latestVersion, currentVersion);
+            const latestVersionInfo = await axios.get(infoUrl);
+            data = latestVersionInfo.data;
 
-        if (isUpdateAvailable) {
+            let latestVersion = data.version;
+            let requiresVersionRange = data.requires;
+
+            // A new version is available if the latest version > local version
+            isNewVersionAvailable = semverGt(latestVersion, currentVersion, { includePrerelease: true });
+
+            // It's compatible with the current version if current version
+            // satisfies the 'requires' condition of the new version
+            isCompatibleWithCurrentVersion = semverSatisfies(currentVersion, requiresVersionRange, { includePrerelease: true });
+
+            // Update tag to the minimum satisfying version for the next loop run
+            tag = `v${semverMinVersion(requiresVersionRange, { includePrerelease: true })}`;
+        } while (isNewVersionAvailable && !isCompatibleWithCurrentVersion);
+
+
+        if (isNewVersionAvailable && isCompatibleWithCurrentVersion) {
             return data;
-        } else {
-            return "Your Umbrel is up-to-date";
         }
+
+        return "Your Umbrel is up-to-date";
     }
     catch (error) {
         throw new NodeError('Unable to check for update');
@@ -59,6 +83,7 @@ async function startUpdate() {
 
     let availableUpdate;
 
+    // Fetch available update
     try {
         availableUpdate = await getAvailableUpdate();
         if (!availableUpdate.version) {
@@ -68,16 +93,26 @@ async function startUpdate() {
         throw new NodeError('Unable to fetch latest release');
     }
 
+    // Make sure an update is not already in progress
     const updateInProgress = await diskLogic.updateLockFileExists();
     if (updateInProgress) {
         throw new NodeError('An update is already in progress');
     }
 
+    // Update status file with update version
     try {
-        await diskLogic.writeUpdateSignalFile(availableUpdate.version)
+        const updateStatus = await diskLogic.readUpdateStatusFile();
+        updateStatus.updateTo = `v${availableUpdate.version}`;
+        await diskLogic.writeUpdateStatusFile(updateStatus);
+    } catch (error) {
+        throw new NodeError('Could not update the update-status file');
+    }
+
+    // Write update signal file
+    try {
+        await diskLogic.writeUpdateSignalFile()
         return { message: "Updating to Umbrel v" + availableUpdate.version };
     } catch (error) {
-        console.log(error);
         throw new NodeError('Unable to write update signal file');
     }
 }
