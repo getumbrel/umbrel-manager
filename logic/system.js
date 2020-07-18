@@ -102,7 +102,7 @@ async function startUpdate() {
     // Update status file with update version
     try {
         const updateStatus = await diskLogic.readUpdateStatusFile();
-        updateStatus.updateTo = `v${availableUpdate.version}`;
+        updateStatus.updateTo = `${availableUpdate.version}`;
         await diskLogic.writeUpdateStatusFile(updateStatus);
     } catch (error) {
         throw new NodeError('Could not update the update-status file');
