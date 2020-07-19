@@ -6,7 +6,7 @@ RUN apt-get update --no-install-recommends \
     && apt-get install -y --no-install-recommends build-essential g++ \
     && apt-get install -y --no-install-recommends make \
     && apt-get install -y --no-install-recommends libssl-dev libffi-dev \
-    && apt-get install -y --no-install-recommends python3-wheel python3-setuptools python3 python3-pip \
+    && apt-get install -y --no-install-recommends python3-dev python3-setuptools python3 python3-pip \
     && pip3 install -IU docker-compose \
     && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose \
     && chmod +x /usr/local/bin/docker-compose \
