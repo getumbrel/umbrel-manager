@@ -1,36 +1,42 @@
 # specify the node base image with your desired version node:<version>
-FROM node:12.16.3-slim
+FROM node:12.16.3-buster-slim AS umbrel-manager-builder
 
-# Install Tools
+# Install tools
 RUN apt-get update --no-install-recommends \
     && apt-get install -y --no-install-recommends build-essential g++ \
-    && apt-get install -y --no-install-recommends git \
-    && apt-get install -y --no-install-recommends libltdl7 \
-    && apt-get install -y --no-install-recommends python \
     && apt-get install -y --no-install-recommends rsync \
-    && apt-get install -y --no-install-recommends vim \
-    && apt-get install -y --no-install-recommends python3 \
-    && apt-get install -y --no-install-recommends libssl-dev libffi-dev python3-dev python3-setuptools python3-wheel python3-pip \
-    && pip3 install -IU docker-compose \
-    && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose \
-    && chmod +x /usr/local/bin/docker-compose \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends make \
+    && apt-get install -y --no-install-recommends python3 
 
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
+# copy 'package.json'
 COPY package.json ./
+
+# copy 'yarn.lock'
 COPY yarn.lock ./
 
+# install dependencies
 RUN yarn
-# If you are building your code for production
-# RUN npm install --only=production
 
-# Bundle app source
+# copy project files and folders to the current working directory (i.e. '/app' folder)
 COPY . .
+
+FROM node:12.16.3-buster-slim AS umbrel-manager
+
+RUN apt-get update --no-install-recommends \
+    && apt-get install -y --no-install-recommends curl \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
+    && chmod +x /usr/local/bin/docker-compose \
+    && docker-compose --version
+
+COPY --from=umbrel-manager-builder /app .
 
 EXPOSE 3006
 CMD [ "yarn", "start" ]
+
+
+
+
