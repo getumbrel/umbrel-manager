@@ -1,5 +1,5 @@
 # specify the node base image with your desired version node:<version>
-FROM node:12.16.3-buster-slim
+FROM node:12.16.3-buster-slim AS umbrel-manager-builder
 
 # Install tools
 RUN apt-get update --no-install-recommends \
@@ -15,11 +15,6 @@ RUN apt-get update --no-install-recommends \
     && pip3 install -IU docker-compose \
     && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose \
     && chmod +x /usr/local/bin/docker-compose \
-    && apt-get remove -y python3-pip \
-    && apt-get remove -y python3-setuptools \
-    && apt-get remove -y python3-dev \
-    && apt-get remove -y libffi-dev \
-    && apt-get remove -y libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Create app directory
@@ -36,6 +31,12 @@ RUN yarn install --production
 
 # copy project files and folders to the current working directory (i.e. '/app' folder)
 COPY . .
+
+FROM node:12.16.3-buster-slim AS umbrel-manager
+
+COPY --from=umbrel-manager-builder /app .
+
+COPY --from=umbrel-manager-builder /usr/local/bin/docker-compose /usr/local/bin/docker-compose
 
 EXPOSE 3006
 CMD [ "yarn", "start" ]
