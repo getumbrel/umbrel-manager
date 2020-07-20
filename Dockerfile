@@ -11,6 +11,8 @@ RUN apt-get update --no-install-recommends \
     && chmod +x /usr/local/bin/docker-compose \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get remove -y python3-dev
+
 # Create app directory
 WORKDIR /app
 
