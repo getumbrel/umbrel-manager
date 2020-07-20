@@ -15,11 +15,11 @@ RUN apt-get update --no-install-recommends \
     && pip3 install -IU docker-compose \
     && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose \
     && chmod +x /usr/local/bin/docker-compose \
-    && apt-get remove python3-pip \
-    && apt-get remove python3-setuptools \
-    && apt-get remove python3-dev \
-    && apt-get remove libffi-dev \
-    && apt-get remove libssl-dev \
+    && apt-get remove -y python3-pip \
+    && apt-get remove -y python3-setuptools \
+    && apt-get remove -y python3-dev \
+    && apt-get remove -y libffi-dev \
+    && apt-get remove -y libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Create app directory
