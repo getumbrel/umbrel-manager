@@ -46,7 +46,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `DOCKER_COMPOSE_DIRECTORY` | Path to directory containing `docker-compose.yml` | `/docker-compose` |
 | `UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE` | Path to Tor hostname of [`umbrel-dashboard`](https://github.com/getumbrel/umbrel-dashboard) | `/var/lib/tor/dashboard/hostname` |
 | `GITHUB_REPO` | GitHub repository of Umbrel | `getumbrel/umbrel` |
-| `UMBREL_VERSION_FILE` | Path to the local version file | `/info.json` |
+| `UMBREL_VERSION_FILE` | Path to the Umbrel's version file | `/info.json` |
 | `UPDATE_STATUS_FILE` | Path to update status file | `/statuses/update-status.json` |
 | `UPDATE_SIGNAL_FILE` | Path to write the update signal file | `/signals/update` |
 | `UPDATE_LOCK_FILE` | Path to the update lock file | `/statuses/update-in-progress` |
