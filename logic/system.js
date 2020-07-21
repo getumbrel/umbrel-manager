@@ -33,12 +33,12 @@ async function getAvailableUpdate() {
         // 'tag' should be master to begin with
         let tag = 'ota-updates';
         let data;
-        let isNewVersionAvailable = false;
+        let isNewVersionAvailable = true;
         let isCompatibleWithCurrentVersion = false;
 
         // Try finding for a new update until there's a new version available
         // which is compatible with the currently installed version
-        do {
+        while (isNewVersionAvailable && !isCompatibleWithCurrentVersion) {
             const infoUrl = `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json`;
 
             const latestVersionInfo = await axios.get(infoUrl);
@@ -56,7 +56,7 @@ async function getAvailableUpdate() {
 
             // Update tag to the minimum satisfying version for the next loop run
             tag = `v${semverMinVersion(requiresVersionRange, { includePrerelease: true })}`;
-        } while (isNewVersionAvailable && !isCompatibleWithCurrentVersion);
+        }
 
 
         if (isNewVersionAvailable && isCompatibleWithCurrentVersion) {
