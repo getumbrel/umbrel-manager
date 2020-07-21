@@ -1,36 +1,45 @@
-# specify the node base image with your desired version node:<version>
-FROM node:12.16.3-slim
+# Build Stage
+FROM node:12.16.3-buster-slim AS umbrel-manager-builder
 
-# Install Tools
-RUN apt-get update --no-install-recommends \
-    && apt-get install -y --no-install-recommends build-essential g++ \
-    && apt-get install -y --no-install-recommends git \
-    && apt-get install -y --no-install-recommends libltdl7 \
-    && apt-get install -y --no-install-recommends python \
-    && apt-get install -y --no-install-recommends rsync \
-    && apt-get install -y --no-install-recommends vim \
-    && apt-get install -y --no-install-recommends python3 \
-    && apt-get install -y --no-install-recommends libssl-dev libffi-dev python3-dev python3-setuptools python3-wheel python3-pip \
+# Install tools
+RUN apt-get update \
+    && apt-get install -y build-essential \
+    && apt-get install -y python3 \
+    && apt-get install -y python3-pip \
     && pip3 install -IU docker-compose \
-    && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose \
-    && chmod +x /usr/local/bin/docker-compose \
-    && rm -rf /var/lib/apt/lists/*
+    && chmod +x /usr/local/bin/docker-compose
 
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package.json ./
-COPY yarn.lock ./
+# Copy 'yarn.lock' and 'package.json'
+COPY yarn.lock package.json ./
 
-RUN yarn
-# If you are building your code for production
-# RUN npm install --only=production
+# Install dependencies
+RUN yarn install --production
 
-# Bundle app source
+# Copy project files and folders to the current working directory (i.e. '/app')
 COPY . .
+
+# Final image
+FROM node:12.16.3-buster-slim AS umbrel-manager
+
+# Install python3 and python3-pip (required for docker-compose)
+RUN apt-get update --no-install-recommends \
+    && apt-get install -y --no-install-recommends python3 \
+    && apt-get install -y --no-install-recommends python3-pip
+
+# Copy built code from build stage to '/app' directory
+COPY --from=umbrel-manager-builder /app /app
+
+# Copy pip3 modules from build stage (we only need docker-compose module though)
+COPY --from=umbrel-manager-builder /usr/local/lib/python3.7/dist-packages /usr/local/lib/python3.7/dist-packages
+
+# Copy docker-compose binary from build stage
+COPY --from=umbrel-manager-builder /usr/local/bin/docker-compose /usr/local/bin/docker-compose
+
+# Change directory to '/app' 
+WORKDIR /app
 
 EXPOSE 3006
 CMD [ "yarn", "start" ]
