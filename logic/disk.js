@@ -84,8 +84,8 @@ function readHiddenService() {
   return diskService.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE);
 }
 
-function readUpdateVersionFile() {
-  return diskService.readJsonFile(constants.UPDATE_VERSION_FILE);
+function readUmbrelVersionFile() {
+  return diskService.readJsonFile(constants.UMBREL_VERSION_FILE);
 }
 
 function readUpdateStatusFile() {
@@ -185,7 +185,7 @@ module.exports = {
   hiddenServiceFileExists,
   readAppVersionFile,
   readHiddenService,
-  readUpdateVersionFile,
+  readUmbrelVersionFile,
   readUpdateStatusFile,
   writeUpdateStatusFile,
   writeUpdateSignalFile,

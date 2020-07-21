@@ -9,7 +9,7 @@ const NodeError = require('models/errors.js').NodeError;
 
 async function getInfo() {
     try {
-        const info = await diskLogic.readUpdateVersionFile();
+        const info = await diskLogic.readUmbrelVersionFile();
         return info;
     } catch (error) {
         throw new NodeError('Unable to get system information');
@@ -27,7 +27,7 @@ async function getHiddenServiceUrl() {
 
 async function getAvailableUpdate() {
     try {
-        const current = await diskLogic.readUpdateVersionFile();
+        const current = await diskLogic.readUmbrelVersionFile();
         const currentVersion = current.version;
 
         // 'tag' should be master to begin with

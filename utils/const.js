@@ -10,7 +10,7 @@ module.exports = {
   DOCKER_COMPOSE_DIRECTORY: process.env.DOCKER_COMPOSE_DIRECTORY || '/docker-compose',
   UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE: process.env.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE || '/var/lib/tor/web/hostname',
   GITHUB_REPO: process.env.GITHUB_REPO || 'getumbrel/umbrel',
-  UPDATE_VERSION_FILE: process.env.UPDATE_VERSION_FILE || '/info.json',
+  UMBREL_VERSION_FILE: process.env.UMBREL_VERSION_FILE || '/info.json',
   UPDATE_STATUS_FILE: process.env.UPDATE_STATUS_FILE || '/statuses/update-status.json',
   UPDATE_SIGNAL_FILE: process.env.UPDATE_SIGNAL_FILE || '/signals/update',
   UPDATE_LOCK_FILE: process.env.UPDATE_LOCK_FILE || '/statuses/update-in-progress',
