@@ -2,19 +2,11 @@
 FROM node:12.16.3-buster-slim AS umbrel-manager-builder
 
 # Install tools
-RUN apt-get update --no-install-recommends \
-    && apt-get install -y --no-install-recommends build-essential \
-    && apt-get install -y --no-install-recommends g++ \
-    && apt-get install -y --no-install-recommends make \
-    && apt-get install -y --no-install-recommends libssl-dev \
-    && apt-get install -y --no-install-recommends libffi-dev \
-    && apt-get install -y --no-install-recommends python3-dev \
-    && apt-get install -y --no-install-recommends python3-setuptools \
-    && apt-get install -y --no-install-recommends python3-wheel \
-    && apt-get install -y --no-install-recommends python3 \
-    && apt-get install -y --no-install-recommends python3-pip \
+RUN apt-get update \
+    && apt-get install -y build-essential \
+    && apt-get install -y python3 \
+    && apt-get install -y python3-pip \
     && pip3 install -IU docker-compose \
-    && ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose \
     && chmod +x /usr/local/bin/docker-compose
 
 # Create app directory
@@ -51,7 +43,3 @@ WORKDIR /app
 
 EXPOSE 3006
 CMD [ "yarn", "start" ]
-
-
-
-
