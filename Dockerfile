@@ -4,6 +4,7 @@ FROM node:12.16.3-buster-slim AS umbrel-manager-builder
 # Install tools
 RUN apt-get update \
     && apt-get install -y build-essential \
+    && apt-get install -y g++ \
     && apt-get install -y python3 \
     && apt-get install -y python3-pip \
     && pip3 install -IU docker-compose \
