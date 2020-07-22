@@ -8,7 +8,12 @@ module.exports = {
   JWT_PUBLIC_KEY_FILE: process.env.JWT_PUBLIC_KEY_FILE || '/db/jwt-public-key/jwt.pem',
   JWT_PRIVATE_KEY_FILE: process.env.JWT_PRIVATE_KEY_FILE || '/db/jwt-private-key/jwt.key',
   DOCKER_COMPOSE_DIRECTORY: process.env.DOCKER_COMPOSE_DIRECTORY || '/docker-compose',
-  UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE: process.env.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE || '/var/lib/tor/dashboard/hostname',
+  UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE: process.env.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE || '/var/lib/tor/web/hostname',
+  GITHUB_REPO: process.env.GITHUB_REPO || 'getumbrel/umbrel',
+  UMBREL_VERSION_FILE: process.env.UMBREL_VERSION_FILE || '/info.json',
+  UPDATE_STATUS_FILE: process.env.UPDATE_STATUS_FILE || '/statuses/update-status.json',
+  UPDATE_SIGNAL_FILE: process.env.UPDATE_SIGNAL_FILE || '/signals/update',
+  UPDATE_LOCK_FILE: process.env.UPDATE_LOCK_FILE || '/statuses/update-in-progress',
   STATUS_CODES: {
     ACCEPTED: 202,
     BAD_GATEWAY: 502,
@@ -19,7 +24,7 @@ module.exports = {
   },
   TIME: {
     FIVE_MINUTES_IN_MILLIS: 5 * 60 * 1000,
-    ONE_DAY_IN_MILLIS: 24 * 60 * 60 * 10001000,
+    ONE_DAY_IN_MILLIS: 24 * 60 * 60 * 1000,
     ONE_SECOND_IN_MILLIS: 1000,
     ONE_HOUR_IN_MILLIS: 60 * 60 * 1000,
     NINETY_MINUTES_IN_MILLIS: 90 * 60 * 1000,

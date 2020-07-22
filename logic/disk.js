@@ -84,6 +84,34 @@ function readHiddenService() {
   return diskService.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE);
 }
 
+function readUmbrelVersionFile() {
+  return diskService.readJsonFile(constants.UMBREL_VERSION_FILE);
+}
+
+function readUpdateStatusFile() {
+  return diskService.readJsonFile(constants.UPDATE_STATUS_FILE);
+}
+
+function writeUpdateStatusFile(json) {
+  return diskService.writeJsonFile(constants.UPDATE_STATUS_FILE, json);
+}
+
+function updateSignalFileExists(version) {
+  return diskService.readUtf8File(constants.UPDATE_SIGNAL_FILE)
+    .then(() => Promise.resolve(true))
+    .catch(() => Promise.resolve(false));
+}
+
+function updateLockFileExists(version) {
+  return diskService.readUtf8File(constants.UPDATE_LOCK_FILE)
+    .then(() => Promise.resolve(true))
+    .catch(() => Promise.resolve(false));
+}
+
+function writeUpdateSignalFile() {
+  return diskService.writeFile(constants.UPDATE_SIGNAL_FILE, 'true');
+}
+
 function readJWTPrivateKeyFile() {
   return diskService.readFile(constants.JWT_PRIVATE_KEY_FILE);
 }
@@ -157,6 +185,12 @@ module.exports = {
   hiddenServiceFileExists,
   readAppVersionFile,
   readHiddenService,
+  readUmbrelVersionFile,
+  readUpdateStatusFile,
+  writeUpdateStatusFile,
+  writeUpdateSignalFile,
+  updateSignalFileExists,
+  updateLockFileExists,
   readJWTPrivateKeyFile,
   readJWTPublicKeyFile,
   writeJWTPrivateKeyFile,
