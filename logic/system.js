@@ -31,7 +31,7 @@ async function getAvailableUpdate() {
         const currentVersion = current.version;
 
         // 'tag' should be master to begin with
-        let tag = 'ota-updates';
+        let tag = 'master';
         let data;
         let isNewVersionAvailable = true;
         let isCompatibleWithCurrentVersion = false;
