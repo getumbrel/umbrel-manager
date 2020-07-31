@@ -91,6 +91,7 @@ async function changePassword(currentPassword, newPassword, jwt) {
             // wait for lnd to boot up
             if (error.response.status === constants.STATUS_CODES.BAD_GATEWAY) {
                 await sleepSeconds(1);
+                attempt--;
 
                 // user supplied incorrect credentials
             } else if (error.response.status === constants.STATUS_CODES.FORBIDDEN) {
