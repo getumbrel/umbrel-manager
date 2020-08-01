@@ -56,7 +56,7 @@ async function changePassword(currentPassword, newPassword, jwt) {
 
     let complete = false;
     let attempt = 0;
-    const MAX_ATTEMPTS = 20;
+    const MAX_ATTEMPTS = 120;
 
     do {
         try {
@@ -91,7 +91,6 @@ async function changePassword(currentPassword, newPassword, jwt) {
             // wait for lnd to boot up
             if (error.response.status === constants.STATUS_CODES.BAD_GATEWAY) {
                 await sleepSeconds(1);
-                attempt--;
 
                 // user supplied incorrect credentials
             } else if (error.response.status === constants.STATUS_CODES.FORBIDDEN) {
