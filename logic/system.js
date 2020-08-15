@@ -58,7 +58,7 @@ async function getAvailableUpdate() {
             let minimumVersionRequired = `v${semverMinVersion(requiresVersionRange)}`;
 
             // If the minimum required version is what we just checked for, exit
-            // This usually happens when an OTA updating breaking release x.y.z is made
+            // This usually happens when an OTA update breaking release x.y.z is made
             // that also has x.y.z as the minimum required version
             if (tag === minimumVersionRequired) {
                 break;
