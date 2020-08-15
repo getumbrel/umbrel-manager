@@ -54,8 +54,18 @@ async function getAvailableUpdate() {
             // satisfies the 'requires' condition of the new version
             isCompatibleWithCurrentVersion = semverSatisfies(currentVersion, requiresVersionRange);
 
-            // Update tag to the minimum satisfying version for the next loop run
-            tag = `v${semverMinVersion(requiresVersionRange)}`;
+            // Calculate the minimum required version 
+            let minimumVersionRequired = `v${semverMinVersion(requiresVersionRange)}`;
+
+            // If the minimum required version is what we just checked for, exit
+            // This usually happens when an OTA updating breaking release x.y.z is made
+            // that also has x.y.z as the minimum required version
+            if (tag === minimumVersionRequired) {
+                break;
+            }
+
+            // Update tag to the minimum required version for the next loop run
+            tag = minimumVersionRequired;
         }
 
 
