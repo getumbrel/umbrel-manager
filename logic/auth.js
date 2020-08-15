@@ -94,7 +94,7 @@ async function changePassword(currentPassword, newPassword, jwt) {
 
                 // user supplied incorrect credentials
             } else if (error.response.status === constants.STATUS_CODES.FORBIDDEN) {
-                changePasswordStatus.forbidden = true;
+                changePasswordStatus.unauthorized = true;
 
                 // unknown error occurred
             } else {
