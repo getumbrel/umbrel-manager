@@ -48,14 +48,14 @@ async function getAvailableUpdate() {
             let requiresVersionRange = data.requires;
 
             // A new version is available if the latest version > local version
-            isNewVersionAvailable = semverGt(latestVersion, currentVersion, { includePrerelease: true });
+            isNewVersionAvailable = semverGt(latestVersion, currentVersion);
 
             // It's compatible with the current version if current version
             // satisfies the 'requires' condition of the new version
-            isCompatibleWithCurrentVersion = semverSatisfies(currentVersion, requiresVersionRange, { includePrerelease: true });
+            isCompatibleWithCurrentVersion = semverSatisfies(currentVersion, requiresVersionRange);
 
             // Update tag to the minimum satisfying version for the next loop run
-            tag = `v${semverMinVersion(requiresVersionRange, { includePrerelease: true })}`;
+            tag = `v${semverMinVersion(requiresVersionRange)}`;
         }
 
 
