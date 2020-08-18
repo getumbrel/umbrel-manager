@@ -9,6 +9,8 @@ module.exports = {
   JWT_PRIVATE_KEY_FILE: process.env.JWT_PRIVATE_KEY_FILE || '/db/jwt-private-key/jwt.key',
   DOCKER_COMPOSE_DIRECTORY: process.env.DOCKER_COMPOSE_DIRECTORY || '/docker-compose',
   UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE: process.env.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE || '/var/lib/tor/web/hostname',
+  BITCOIN_P2P_HIDDEN_SERVICE_FILE: process.env.BITCOIN_P2P_HIDDEN_SERVICE_FILE || '/var/lib/tor/bitcoin-p2p/hostname',
+  BITCOIN_P2P_PORT: process.env.BITCOIN_P2P_PORT || 8333,
   GITHUB_REPO: process.env.GITHUB_REPO || 'getumbrel/umbrel',
   UMBREL_VERSION_FILE: process.env.UMBREL_VERSION_FILE || '/info.json',
   UPDATE_STATUS_FILE: process.env.UPDATE_STATUS_FILE || '/statuses/update-status.json',

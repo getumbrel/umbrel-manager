@@ -84,6 +84,10 @@ function readHiddenService() {
   return diskService.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE);
 }
 
+function readBitcoinP2PHiddenService() {
+  return diskService.readUtf8File(constants.BITCOIN_P2P_HIDDEN_SERVICE_FILE);
+}
+
 function readUmbrelVersionFile() {
   return diskService.readJsonFile(constants.UMBREL_VERSION_FILE);
 }
@@ -185,6 +189,7 @@ module.exports = {
   hiddenServiceFileExists,
   readAppVersionFile,
   readHiddenService,
+  readBitcoinP2PHiddenService,
   readUmbrelVersionFile,
   readUpdateStatusFile,
   writeUpdateStatusFile,

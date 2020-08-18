@@ -20,6 +20,12 @@ router.get('/dashboard-hidden-service', auth.jwt, safeHandler(async (req, res) =
     return res.status(constants.STATUS_CODES.OK).json(url);
 }));
 
+router.get('/bitcoin-p2p-hidden-service', auth.jwt, safeHandler(async (req, res) => {
+    const url = await systemLogic.getBitcoinP2PHiddenServiceUrl();
+
+    return res.status(constants.STATUS_CODES.OK).json(url);
+}));
+
 router.get('/get-update', auth.jwt, safeHandler(async (req, res) => {
     const update = await systemLogic.getAvailableUpdate();
 
