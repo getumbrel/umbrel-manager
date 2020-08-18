@@ -45,6 +45,8 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `JWT_EXPIRATION` | JWT expiration in miliseconds | `3600` |
 | `DOCKER_COMPOSE_DIRECTORY` | Path to directory containing `docker-compose.yml` | `/docker-compose` |
 | `UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE` | Path to Tor hostname of [`umbrel-dashboard`](https://github.com/getumbrel/umbrel-dashboard) | `/var/lib/tor/dashboard/hostname` |
+| `BITCOIN_P2P_HIDDEN_SERVICE_FILE` | Path to P2P hidden service hostname of `bitcoin` | `/var/lib/tor/bitcoin-p2p/hostname` |
+| `BITCOIN_P2P_PORT` | P2P port of `bitcoin` | `8333` |
 | `GITHUB_REPO` | GitHub repository of Umbrel | `getumbrel/umbrel` |
 | `UMBREL_VERSION_FILE` | Path to the Umbrel's version file | `/info.json` |
 | `UPDATE_STATUS_FILE` | Path to update status file | `/statuses/update-status.json` |

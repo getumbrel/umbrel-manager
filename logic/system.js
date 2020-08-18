@@ -25,6 +25,15 @@ async function getHiddenServiceUrl() {
     }
 };
 
+async function getBitcoinP2PHiddenServiceUrl() {
+    try {
+        const url = await diskLogic.readBitcoinP2PHiddenService();
+        return `${url}:${constants.BITCOIN_P2P_PORT}`;
+    } catch (error) {
+        throw new NodeError('Unable to get Bitcoin P2P hidden service url');
+    }
+};
+
 async function getAvailableUpdate() {
     try {
         const current = await diskLogic.readUmbrelVersionFile();
@@ -150,6 +159,7 @@ async function requestReboot() {
 module.exports = {
     getInfo,
     getHiddenServiceUrl,
+    getBitcoinP2PHiddenServiceUrl,
     getAvailableUpdate,
     getUpdateStatus,
     startUpdate,
