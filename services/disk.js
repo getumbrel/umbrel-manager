@@ -129,6 +129,12 @@ function writeFile(filePath, data, encoding) {
   }));
 }
 
+// Like writeFile but will create the file if it doesn't already exist
+async function ensureWriteFile(filePath, data, encoding) {
+  await fse.ensureFile(filePath);
+  return await writeFile(filePath, data, encoding);
+}
+
 function writeJsonFile(filePath, obj) {
   const tempFileName = `${filePath}.${crypto.randomBytes(uint32Bytes).readUInt32LE(0)}`;
 
@@ -183,4 +189,5 @@ module.exports = {
   writeJsonFile,
   writeKeyFile,
   writeFile,
+  ensureWriteFile,
 };

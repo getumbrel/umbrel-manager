@@ -1,5 +1,7 @@
 const path = require('path');
 const bcrypt = require('bcrypt');
+const {promisify} = require('util');
+const scrypt = promisify(require('crypto').scrypt);
 const iocane = require("iocane");
 const compose = require("docker-compose");
 const diskLogic = require('logic/disk.js');
@@ -137,6 +139,16 @@ async function isRegistered() {
     }
 }
 
+// Derives the root umbrel seed and persists it to disk to be used for
+// determinstically deriving further entropy for any other Umbrel service.
+async function deriveUmbrelSeed(user) {
+  const mnemonic = (await seed(user)).seed.join(' ');
+  const salt = 'umbrel-seed';
+  const umbrelSeed = await scrypt(mnemonic, salt, 32, {N: 16384, r: 8, p: 1});
+  const umbrelSeedHex = umbrelSeed.toString('hex');
+  return diskLogic.writeUmbrelSeedFile(umbrelSeedHex);
+}
+
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
 async function login(user) {
     try {
@@ -148,6 +160,8 @@ async function login(user) {
 
         //unlock lnd wallet
         // await lndApiService.unlock(user.plainTextPassword, jwt);
+
+        deriveUmbrelSeed(user)
 
         return { jwt: jwt };
 

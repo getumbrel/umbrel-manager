@@ -44,6 +44,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `JWT_PRIVATE_KEY_FILE` | Path to the JWT private key (automatically created) | `/db/jwt-public-key/jwt.key` |
 | `JWT_EXPIRATION` | JWT expiration in miliseconds | `3600` |
 | `DOCKER_COMPOSE_DIRECTORY` | Path to directory containing `docker-compose.yml` | `/docker-compose` |
+| `UMBREL_SEED_FILE` | Path to the seed used to deterministically generate entropy | `'/db/umbrel-seed/seed'` |
 | `UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE` | Path to Tor hostname of [`umbrel-dashboard`](https://github.com/getumbrel/umbrel-dashboard) | `/var/lib/tor/dashboard/hostname` |
 | `BITCOIN_P2P_HIDDEN_SERVICE_FILE` | Path to P2P hidden service hostname of `bitcoin` | `/var/lib/tor/bitcoin-p2p/hostname` |
 | `BITCOIN_P2P_PORT` | P2P port of `bitcoin` | `8333` |
