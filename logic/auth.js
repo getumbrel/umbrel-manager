@@ -220,6 +220,13 @@ async function register(user, seed) {
         throw new NodeError('Unable to register user');
     }
 
+    //derive Umbrel seed
+    try {
+        await deriveUmbrelSeed(user);
+    } catch (error) {
+        throw new NodeError('Unable to create Umbrel seed');
+    }
+
     //generate JWt
     let jwt;
     try {
