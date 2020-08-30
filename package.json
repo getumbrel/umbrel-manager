@@ -11,6 +11,7 @@
     "postcoverage": "codecov"
   },
   "dependencies": {
+    "aezeed": "^0.0.4",
     "axios": "^0.19.2",
     "bcrypt": "^5.0.0",
     "big.js": "^5.2.2",

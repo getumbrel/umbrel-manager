@@ -64,6 +64,16 @@ async function writeUserFile(json) {
   return diskService.writeJsonFile(constants.USER_FILE, json);
 }
 
+async function writeUmbrelSeedFile(umbrelSeed) {
+  return diskService.ensureWriteFile(constants.UMBREL_SEED_FILE, umbrelSeed);
+}
+
+async function umbrelSeedFileExists(umbrelSeed) {
+  return diskService.readFile(constants.UMBREL_SEED_FILE)
+    .then(() => Promise.resolve(true))
+    .catch(() => Promise.resolve(false));
+}
+
 function settingsFileExists() {
   return diskService.readJsonFile(constants.SETTINGS_FILE)
     .then(() => Promise.resolve(true))
@@ -185,6 +195,8 @@ module.exports = {
   writeAppVersionFile,
   writeSettingsFile,
   writeUserFile,
+  writeUmbrelSeedFile,
+  umbrelSeedFileExists,
   settingsFileExists,
   hiddenServiceFileExists,
   readAppVersionFile,

@@ -1,5 +1,7 @@
 const path = require('path');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const { CipherSeed } = require('aezeed');
 const iocane = require("iocane");
 const compose = require("docker-compose");
 const diskLogic = require('logic/disk.js');
@@ -137,6 +139,21 @@ async function isRegistered() {
     }
 }
 
+// Derives the root umbrel seed and persists it to disk to be used for
+// determinstically deriving further entropy for any other Umbrel service.
+async function deriveUmbrelSeed(user) {
+  if (await diskLogic.umbrelSeedFileExists()) {
+    return;
+  }
+  const mnemonic = (await seed(user)).seed.join(' ');
+  const {entropy} = CipherSeed.fromMnemonic(mnemonic);
+  const umbrelSeed = crypto
+    .createHmac('sha256', entropy)
+    .update('umbrel-seed')
+    .digest('hex');
+  return diskLogic.writeUmbrelSeedFile(umbrelSeed);
+}
+
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
 async function login(user) {
     try {
@@ -148,6 +165,8 @@ async function login(user) {
 
         //unlock lnd wallet
         // await lndApiService.unlock(user.plainTextPassword, jwt);
+
+        deriveUmbrelSeed(user)
 
         return { jwt: jwt };
 
@@ -204,6 +223,13 @@ async function register(user, seed) {
         await diskLogic.writeUserFile({ name: user.name, password: user.password, seed: encryptedSeed });
     } catch (error) {
         throw new NodeError('Unable to register user');
+    }
+
+    //derive Umbrel seed
+    try {
+        await deriveUmbrelSeed(user);
+    } catch (error) {
+        throw new NodeError('Unable to create Umbrel seed');
     }
 
     //generate JWt
