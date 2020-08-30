@@ -142,6 +142,9 @@ async function isRegistered() {
 // Derives the root umbrel seed and persists it to disk to be used for
 // determinstically deriving further entropy for any other Umbrel service.
 async function deriveUmbrelSeed(user) {
+  if (await diskLogic.umbrelSeedFileExists()) {
+    return;
+  }
   const mnemonic = (await seed(user)).seed.join(' ');
   const {entropy} = CipherSeed.fromMnemonic(mnemonic);
   const umbrelSeed = crypto
