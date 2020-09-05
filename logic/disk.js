@@ -126,6 +126,10 @@ function writeUpdateSignalFile() {
   return diskService.writeFile(constants.UPDATE_SIGNAL_FILE, 'true');
 }
 
+function readBackupStatusFile() {
+  return diskService.readJsonFile(constants.BACKUP_STATUS_FILE);
+}
+
 function readJWTPrivateKeyFile() {
   return diskService.readFile(constants.JWT_PRIVATE_KEY_FILE);
 }
@@ -208,6 +212,7 @@ module.exports = {
   writeUpdateSignalFile,
   updateSignalFileExists,
   updateLockFileExists,
+  readBackupStatusFile,
   readJWTPrivateKeyFile,
   readJWTPublicKeyFile,
   writeJWTPrivateKeyFile,

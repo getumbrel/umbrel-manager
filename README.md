@@ -53,6 +53,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `UPDATE_STATUS_FILE` | Path to update status file | `/statuses/update-status.json` |
 | `UPDATE_SIGNAL_FILE` | Path to write the update signal file | `/signals/update` |
 | `UPDATE_LOCK_FILE` | Path to the update lock file | `/statuses/update-in-progress` |
+| `BACKUP_STATUS_FILE` | Path to backup status file | `/statuses/backup-status.json` |
 
 ### Step 3. Run manager
 ```sh
