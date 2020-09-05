@@ -34,7 +34,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 | Variable | Description | Default |
 | ------------- | ------------- | ------------- |
 | `PORT` | Port where manager should listen for requests | `3006` |
-| `DEVICE_HOST` | IP or domain from where [`umbrel-dashboard`](https://github.com/getumbrel/umbrel-dashboard) will request | `http://umbrel.local` |
+| `DEVICE_HOSTS` | Array of IPs or domain names to whitelist for CORS | `["http://umbrel.local"]` |
 | `USER_FILE` | Path to the user's data file (automatically created on user registration) | `/db/user.json` |
 | `SHUTDOWN_SIGNAL_FILE` | Path to write a file to signal a system shutdown | `/signals/shutdown` |
 | `REBOOT_SIGNAL_FILE` | Path to write a file to signal a system reboot | `/signals/reboot` |
