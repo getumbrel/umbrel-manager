@@ -136,6 +136,15 @@ async function startUpdate() {
     }
 }
 
+async function getBackupStatus() {
+    try {
+        const status = await diskLogic.readBackupStatusFile()
+        return status;
+    } catch (error) {
+        throw new NodeError('Unable to get backup status');
+    }
+}
+
 async function requestShutdown() {
     try {
         await diskLogic.shutdown();
@@ -163,6 +172,7 @@ module.exports = {
     getAvailableUpdate,
     getUpdateStatus,
     startUpdate,
+    getBackupStatus,
     requestShutdown,
     requestReboot
 };
