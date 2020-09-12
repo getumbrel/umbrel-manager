@@ -1,5 +1,5 @@
 # Build Stage
-FROM node:12.16.3-buster-slim AS umbrel-manager-builder
+FROM node:12.18.3-buster-slim AS umbrel-manager-builder
 
 # Install tools
 RUN apt-get update \
@@ -24,7 +24,7 @@ RUN yarn install --production
 COPY . .
 
 # Final image
-FROM node:12.16.3-buster-slim AS umbrel-manager
+FROM node:12.18.3-buster-slim AS umbrel-manager
 
 # Install python3 and python3-pip (required for docker-compose)
 RUN apt-get update --no-install-recommends \
