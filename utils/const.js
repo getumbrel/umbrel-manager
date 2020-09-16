@@ -12,7 +12,7 @@ module.exports = {
   UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE: process.env.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE || '/var/lib/tor/web/hostname',
   BITCOIN_P2P_HIDDEN_SERVICE_FILE: process.env.BITCOIN_P2P_HIDDEN_SERVICE_FILE || '/var/lib/tor/bitcoin-p2p/hostname',
   BITCOIN_P2P_PORT: process.env.BITCOIN_P2P_PORT || 8333,
-  LND_REST_HIDDEN_SERVICE_FILE: process.env.LND_REST_HIDDEN_SERVICE_FILE || '/var/lib/tor/bitcoin-rest/hostname',
+  LND_REST_HIDDEN_SERVICE_FILE: process.env.LND_REST_HIDDEN_SERVICE_FILE || '/var/lib/tor/lnd-rest/hostname',
   LND_RPC_HIDDEN_SERVICE_FILE: process.env.LND_RPC_HIDDEN_SERVICE_FILE || '/var/lib/tor/lnd-rpc/hostname',
   LND_CERT_FILE: process.env.LND_CERT_FILE || '/lnd/tls.cert',
   LND_ADMIN_MACAROON_FILE: process.env.LND_ADMIN_MACAROON_FILE || '/lnd/admin.macaroon',
