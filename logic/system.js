@@ -2,6 +2,7 @@ const axios = require('axios');
 const semverGt = require('semver/functions/gt');
 const semverSatisfies = require('semver/functions/satisfies');
 const semverMinVersion = require('semver/ranges/min-version');
+const encode = require('lndconnect').encode;
 
 const diskLogic = require('logic/disk.js');
 const constants = require('utils/const.js');
@@ -145,6 +146,52 @@ async function getBackupStatus() {
     }
 }
 
+async function getLndConnectUrl(type) {
+    if (!type) {
+        throw new NodeError('Error: Please specify "rest" or "rpc" for lndconnect url type');
+    }
+
+    let host;
+
+    if (type === 'rest') {
+        try {
+            host = await diskLogic.readLndRestHiddenService();
+        } catch (error) {
+            throw new NodeError('Unable to read hostname file');
+        }
+    } else if (type === 'rpc') {
+        try {
+            host = await diskLogic.readLndRpcHiddenService();
+        } catch (error) {
+            throw new NodeError('Unable to read hostname file');
+        }
+    } else {
+        throw new NodeError('Error: Please specify "rest" or "rpc" for lndconnect url type');
+    }
+
+    let cert;
+    try {
+        cert = await diskLogic.readLndCert();
+    } catch (error) {
+        throw new NodeError('Unable to read lnd cert file');
+    }
+
+    let macaroon;
+    try {
+        macaroon = await diskLogic.readLndAdminMacaroon();
+    } catch (error) {
+        throw new NodeError('Unable to read lnd macaroon file');
+    }
+
+    const lndConnectionString = encode({
+        host,
+        cert,
+        macaroon,
+    });
+
+    return lndConnectionString;
+}
+
 async function requestShutdown() {
     try {
         await diskLogic.shutdown();
@@ -173,6 +220,7 @@ module.exports = {
     getUpdateStatus,
     startUpdate,
     getBackupStatus,
+    getLndConnectUrl,
     requestShutdown,
     requestReboot
 };

@@ -25,6 +25,7 @@
     "express": "^4.16.3",
     "fs-extra": "^9.0.0",
     "iocane": "^4.0.0",
+    "lndconnect": "^0.2.10",
     "module-alias": "^2.1.0",
     "morgan": "^1.9.0",
     "node-rsa": "^1.0.8",
