@@ -146,29 +146,41 @@ async function getBackupStatus() {
     }
 }
 
-async function getLndConnectUrl(type) {
+async function getLndConnectUrl(type, network) {
     if (!type) {
         throw new NodeError('Error: Please specify "rest" or "grpc" for lndconnect url type');
     }
 
+    if (!network) {
+        throw new NodeError('Error: Please specify "tor" or "local" network');
+    }
+
     let host;
 
-    if (type === 'rest') {
+    if (network === 'tor' && type === 'rest') {
         try {
             host = await diskLogic.readLndRestHiddenService();
             host += ':8080';
         } catch (error) {
             throw new NodeError('Unable to read hostname file');
         }
-    } else if (type === 'grpc') {
+    }
+
+    if (network === 'tor' && type === 'grpc') {
         try {
             host = await diskLogic.readLndGrpcHiddenService();
             host += ':10009';
         } catch (error) {
             throw new NodeError('Unable to read hostname file');
         }
-    } else {
-        throw new NodeError('Error: Please specify "rest" or "grpc" for lndconnect url type');
+    }
+
+    if (network === 'local' && type === 'rest') {
+        host = `${constants.DEVICE_IP}:8080`
+    }
+
+    if (network === 'local' && type === 'grpc') {
+        host = `${constants.DEVICE_IP}:10009`
     }
 
     let cert;
