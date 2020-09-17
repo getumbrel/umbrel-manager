@@ -15,7 +15,7 @@ module.exports = {
   LND_REST_HIDDEN_SERVICE_FILE: process.env.LND_REST_HIDDEN_SERVICE_FILE || '/var/lib/tor/lnd-rest/hostname',
   LND_GRPC_HIDDEN_SERVICE_FILE: process.env.LND_GRPC_HIDDEN_SERVICE_FILE || '/var/lib/tor/lnd-grpc/hostname',
   LND_CERT_FILE: process.env.LND_CERT_FILE || '/lnd/tls.cert',
-  LND_ADMIN_MACAROON_FILE: process.env.LND_ADMIN_MACAROON_FILE || '/lnd/admin.macaroon',
+  LND_ADMIN_MACAROON_FILE: process.env.LND_ADMIN_MACAROON_FILE || '/lnd/data/chain/bitcoin/mainnet/admin.macaroon',
   GITHUB_REPO: process.env.GITHUB_REPO || 'getumbrel/umbrel',
   UMBREL_VERSION_FILE: process.env.UMBREL_VERSION_FILE || '/info.json',
   UPDATE_STATUS_FILE: process.env.UPDATE_STATUS_FILE || '/statuses/update-status.json',
