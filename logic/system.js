@@ -148,7 +148,7 @@ async function getBackupStatus() {
 
 async function getLndConnectUrl(type) {
     if (!type) {
-        throw new NodeError('Error: Please specify "rest" or "rpc" for lndconnect url type');
+        throw new NodeError('Error: Please specify "rest" or "grpc" for lndconnect url type');
     }
 
     let host;
@@ -156,17 +156,19 @@ async function getLndConnectUrl(type) {
     if (type === 'rest') {
         try {
             host = await diskLogic.readLndRestHiddenService();
+            host += ':8080';
         } catch (error) {
             throw new NodeError('Unable to read hostname file');
         }
-    } else if (type === 'rpc') {
+    } else if (type === 'grpc') {
         try {
-            host = await diskLogic.readLndRpcHiddenService();
+            host = await diskLogic.readLndGrpcHiddenService();
+            host += ':10009';
         } catch (error) {
             throw new NodeError('Unable to read hostname file');
         }
     } else {
-        throw new NodeError('Error: Please specify "rest" or "rpc" for lndconnect url type');
+        throw new NodeError('Error: Please specify "rest" or "grpc" for lndconnect url type');
     }
 
     let cert;

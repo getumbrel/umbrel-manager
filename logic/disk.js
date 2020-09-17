@@ -102,8 +102,8 @@ function readLndRestHiddenService() {
   return diskService.readUtf8File(constants.LND_REST_HIDDEN_SERVICE_FILE);
 }
 
-function readLndRpcHiddenService() {
-  return diskService.readUtf8File(constants.LND_RPC_HIDDEN_SERVICE_FILE);
+function readLndGrpcHiddenService() {
+  return diskService.readUtf8File(constants.LND_GRPC_HIDDEN_SERVICE_FILE);
 }
 
 function readLndCert() {
@@ -111,7 +111,7 @@ function readLndCert() {
 }
 
 function readLndAdminMacaroon() {
-  return diskService.readUtf8File(constants.LND_ADMIN_MACAROON_FILE);
+  return diskService.readFile(constants.LND_ADMIN_MACAROON_FILE);
 }
 
 function readUmbrelVersionFile() {
@@ -223,7 +223,7 @@ module.exports = {
   readHiddenService,
   readBitcoinP2PHiddenService,
   readLndRestHiddenService,
-  readLndRpcHiddenService,
+  readLndGrpcHiddenService,
   readLndCert,
   readLndAdminMacaroon,
   readUmbrelVersionFile,
