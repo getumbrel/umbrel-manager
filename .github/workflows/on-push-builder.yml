@@ -2,7 +2,10 @@ name: Build manager-builder image on push
 env:
         DOCKER_CLI_EXPERIMENTAL: enabled
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 jobs:
         build:

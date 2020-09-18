@@ -1,5 +1,5 @@
 # Build Stage
-FROM mayankchhabra/manager-builder:latest AS umbrel-manager-builder
+FROM getumbrel/manager-builder:latest AS umbrel-manager-builder
 
 # Create app directory
 WORKDIR /app
