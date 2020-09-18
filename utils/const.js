@@ -2,7 +2,7 @@
 module.exports = {
   REQUEST_CORRELATION_NAMESPACE_KEY: 'umbrel-manager-request',
   REQUEST_CORRELATION_ID_KEY: 'reqId',
-  DEVICE_IP: process.env.DEVICE_IP || '',
+  DEVICE_HOSTNAME: process.env.DEVICE_HOSTNAME || 'umbrel.local',
   USER_FILE: process.env.USER_FILE || '/db/user.json',
   SHUTDOWN_SIGNAL_FILE: process.env.SHUTDOWN_SIGNAL_FILE || '/signals/shutdown',
   REBOOT_SIGNAL_FILE: process.env.REBOOT_SIGNAL_FILE || '/signals/reboot',

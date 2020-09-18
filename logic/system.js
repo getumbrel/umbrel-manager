@@ -176,11 +176,11 @@ async function getLndConnectUrl(type, network) {
     }
 
     if (network === 'local' && type === 'rest') {
-        host = `${constants.DEVICE_IP}:8080`
+        host = `${constants.DEVICE_HOSTNAME}:8080`
     }
 
     if (network === 'local' && type === 'grpc') {
-        host = `${constants.DEVICE_IP}:10009`
+        host = `${constants.DEVICE_HOSTNAME}:10009`
     }
 
     let cert;
