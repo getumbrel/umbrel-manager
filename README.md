@@ -47,6 +47,8 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `DOCKER_COMPOSE_DIRECTORY` | Path to directory containing `docker-compose.yml` | `/docker-compose` |
 | `UMBREL_SEED_FILE` | Path to the seed used to deterministically generate entropy | `'/db/umbrel-seed/seed'` |
 | `UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE` | Path to Tor hostname of [`umbrel-dashboard`](https://github.com/getumbrel/umbrel-dashboard) | `/var/lib/tor/dashboard/hostname` |
+| `ELECTRUM_HIDDEN_SERVICE_FILE` | Path to Electrum hidden service hostname | `/var/lib/tor/electrum/hostname` |
+| `ELECTRUM_PORT` | Port the Electrum server is listening on | `50001` |
 | `BITCOIN_P2P_HIDDEN_SERVICE_FILE` | Path to P2P hidden service hostname of `bitcoin` | `/var/lib/tor/bitcoin-p2p/hostname` |
 | `BITCOIN_P2P_PORT` | P2P port of `bitcoin` | `8333` |
 | `GITHUB_REPO` | GitHub repository of Umbrel | `getumbrel/umbrel` |

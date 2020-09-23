@@ -25,6 +25,15 @@ async function getHiddenServiceUrl() {
     }
 };
 
+async function getElectrumHiddenServiceUrl() {
+    try {
+        const url = await diskLogic.readElectrumHiddenService();
+        return `${url}:${constants.ELECTRUM_PORT}:t`;
+    } catch (error) {
+        throw new NodeError('Unable to get Electrum hidden service url');
+    }
+};
+
 async function getBitcoinP2PHiddenServiceUrl() {
     try {
         const url = await diskLogic.readBitcoinP2PHiddenService();
@@ -63,7 +72,7 @@ async function getAvailableUpdate() {
             // satisfies the 'requires' condition of the new version
             isCompatibleWithCurrentVersion = semverSatisfies(currentVersion, requiresVersionRange);
 
-            // Calculate the minimum required version 
+            // Calculate the minimum required version
             let minimumVersionRequired = `v${semverMinVersion(requiresVersionRange)}`;
 
             // If the minimum required version is what we just checked for, exit
@@ -168,6 +177,7 @@ async function requestReboot() {
 module.exports = {
     getInfo,
     getHiddenServiceUrl,
+    getElectrumHiddenServiceUrl,
     getBitcoinP2PHiddenServiceUrl,
     getAvailableUpdate,
     getUpdateStatus,
