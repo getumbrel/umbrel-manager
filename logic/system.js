@@ -146,42 +146,7 @@ async function getBackupStatus() {
     }
 }
 
-async function getLndConnectUrl(type, network) {
-    if (!type) {
-        throw new NodeError('Error: Please specify "rest" or "grpc" for lndconnect url type');
-    }
-
-    if (!network) {
-        throw new NodeError('Error: Please specify "tor" or "local" network');
-    }
-
-    let host;
-
-    if (network === 'tor' && type === 'rest') {
-        try {
-            host = await diskLogic.readLndRestHiddenService();
-            host += ':8080';
-        } catch (error) {
-            throw new NodeError('Unable to read hostname file');
-        }
-    }
-
-    if (network === 'tor' && type === 'grpc') {
-        try {
-            host = await diskLogic.readLndGrpcHiddenService();
-            host += ':10009';
-        } catch (error) {
-            throw new NodeError('Unable to read hostname file');
-        }
-    }
-
-    if (network === 'local' && type === 'rest') {
-        host = `${constants.DEVICE_HOSTNAME}:8080`
-    }
-
-    if (network === 'local' && type === 'grpc') {
-        host = `${constants.DEVICE_HOSTNAME}:10009`
-    }
+async function getLndConnectUrls() {
 
     let cert;
     try {
@@ -197,13 +162,53 @@ async function getLndConnectUrl(type, network) {
         throw new NodeError('Unable to read lnd macaroon file');
     }
 
-    const lndConnectionString = encode({
-        host,
+    let restTorHost;
+    try {
+        restTorHost = await diskLogic.readLndRestHiddenService();
+        restTorHost += ':8080';
+    } catch (error) {
+        throw new NodeError('Unable to read hostname file');
+    }
+    const restTor = encode({
+        restTorHost,
         cert,
         macaroon,
     });
 
-    return lndConnectionString;
+    let grpcTorHost;
+    try {
+        grpcTorHost = await diskLogic.readLndGrpcHiddenService();
+        grpcTorHost += ':10009';
+    } catch (error) {
+        throw new NodeError('Unable to read hostname file');
+    }
+    const grpcTor = encode({
+        grpcTorHost,
+        cert,
+        macaroon,
+    });
+
+    let restLocalHost = `${constants.DEVICE_HOSTNAME}:8080`;
+    const restLocal = encode({
+        restLocalHost,
+        cert,
+        macaroon,
+    });
+
+    let grpcLocalHost = `${constants.DEVICE_HOSTNAME}:10009`;
+    const grpcLocal = encode({
+        grpcLocalHost,
+        cert,
+        macaroon,
+    });
+
+    return {
+        restTor,
+        restLocal,
+        grpcTor,
+        grpcLocal
+    }
+
 }
 
 async function requestShutdown() {
@@ -234,7 +239,7 @@ module.exports = {
     getUpdateStatus,
     startUpdate,
     getBackupStatus,
-    getLndConnectUrl,
+    getLndConnectUrls,
     requestShutdown,
     requestReboot
 };
