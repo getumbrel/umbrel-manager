@@ -207,7 +207,7 @@ async function getLndConnectUrls() {
         restLocal,
         grpcTor,
         grpcLocal
-    }
+    };
 
 }
 
