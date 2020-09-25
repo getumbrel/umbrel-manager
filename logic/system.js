@@ -165,6 +165,7 @@ async function getLndConnectUrls() {
     let restTorHost;
     try {
         restTorHost = await diskLogic.readLndRestHiddenService();
+        console.log(restTorHost);
         restTorHost += ':8080';
     } catch (error) {
         throw new NodeError('Unable to read lnd REST hostname file');
@@ -174,6 +175,7 @@ async function getLndConnectUrls() {
         cert,
         macaroon,
     });
+    console.log(restTor);
 
     let grpcTorHost;
     try {
@@ -201,6 +203,8 @@ async function getLndConnectUrls() {
         cert,
         macaroon,
     });
+
+    console.log(restTor, restLocal, grpcLocal, grpcTor);
 
     return {
         restTor,
