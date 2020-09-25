@@ -167,7 +167,7 @@ async function getLndConnectUrls() {
         restTorHost = await diskLogic.readLndRestHiddenService();
         restTorHost += ':8080';
     } catch (error) {
-        throw new NodeError('Unable to read hostname file');
+        throw new NodeError('Unable to read lnd REST hostname file');
     }
     const restTor = encode({
         restTorHost,
@@ -180,7 +180,7 @@ async function getLndConnectUrls() {
         grpcTorHost = await diskLogic.readLndGrpcHiddenService();
         grpcTorHost += ':10009';
     } catch (error) {
-        throw new NodeError('Unable to read hostname file');
+        throw new NodeError('Unable to read lnd gRPC hostname file');
     }
     const grpcTor = encode({
         grpcTorHost,
