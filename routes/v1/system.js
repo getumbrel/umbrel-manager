@@ -26,7 +26,7 @@ router.get('/bitcoin-p2p-hidden-service', auth.jwt, safeHandler(async (req, res)
     return res.status(constants.STATUS_CODES.OK).json(url);
 }));
 
-router.get('/lndconnect-url', auth.jwt, safeHandler(async (req, res) => {
+router.get('/lndconnect-urls', auth.jwt, safeHandler(async (req, res) => {
     const urls = await systemLogic.getLndConnectUrls();
 
     return res.status(constants.STATUS_CODES.OK).json(urls);
