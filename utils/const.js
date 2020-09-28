@@ -11,6 +11,8 @@ module.exports = {
   DOCKER_COMPOSE_DIRECTORY: process.env.DOCKER_COMPOSE_DIRECTORY || '/docker-compose',
   UMBREL_SEED_FILE: process.env.UMBREL_SEED_FILE || '/db/umbrel-seed/seed',
   UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE: process.env.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE || '/var/lib/tor/web/hostname',
+  ELECTRUM_HIDDEN_SERVICE_FILE: process.env.ELECTRUM_HIDDEN_SERVICE_FILE || '/var/lib/tor/electrum/hostname',
+  ELECTRUM_PORT: process.env.ELECTRUM_PORT || 50001,
   BITCOIN_P2P_HIDDEN_SERVICE_FILE: process.env.BITCOIN_P2P_HIDDEN_SERVICE_FILE || '/var/lib/tor/bitcoin-p2p/hostname',
   BITCOIN_P2P_PORT: process.env.BITCOIN_P2P_PORT || 8333,
   LND_REST_HIDDEN_SERVICE_FILE: process.env.LND_REST_HIDDEN_SERVICE_FILE || '/var/lib/tor/lnd-rest/hostname',
