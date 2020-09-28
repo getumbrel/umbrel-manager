@@ -98,6 +98,22 @@ function readBitcoinP2PHiddenService() {
   return diskService.readUtf8File(constants.BITCOIN_P2P_HIDDEN_SERVICE_FILE);
 }
 
+function readLndRestHiddenService() {
+  return diskService.readUtf8File(constants.LND_REST_HIDDEN_SERVICE_FILE);
+}
+
+function readLndGrpcHiddenService() {
+  return diskService.readUtf8File(constants.LND_GRPC_HIDDEN_SERVICE_FILE);
+}
+
+function readLndCert() {
+  return diskService.readUtf8File(constants.LND_CERT_FILE);
+}
+
+function readLndAdminMacaroon() {
+  return diskService.readFile(constants.LND_ADMIN_MACAROON_FILE);
+}
+
 function readUmbrelVersionFile() {
   return diskService.readJsonFile(constants.UMBREL_VERSION_FILE);
 }
@@ -206,6 +222,10 @@ module.exports = {
   readAppVersionFile,
   readHiddenService,
   readBitcoinP2PHiddenService,
+  readLndRestHiddenService,
+  readLndGrpcHiddenService,
+  readLndCert,
+  readLndAdminMacaroon,
   readUmbrelVersionFile,
   readUpdateStatusFile,
   writeUpdateStatusFile,

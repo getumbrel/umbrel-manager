@@ -2,6 +2,7 @@
 module.exports = {
   REQUEST_CORRELATION_NAMESPACE_KEY: 'umbrel-manager-request',
   REQUEST_CORRELATION_ID_KEY: 'reqId',
+  DEVICE_HOSTNAME: process.env.DEVICE_HOSTNAME || 'umbrel.local',
   USER_FILE: process.env.USER_FILE || '/db/user.json',
   SHUTDOWN_SIGNAL_FILE: process.env.SHUTDOWN_SIGNAL_FILE || '/signals/shutdown',
   REBOOT_SIGNAL_FILE: process.env.REBOOT_SIGNAL_FILE || '/signals/reboot',
@@ -12,6 +13,10 @@ module.exports = {
   UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE: process.env.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE || '/var/lib/tor/web/hostname',
   BITCOIN_P2P_HIDDEN_SERVICE_FILE: process.env.BITCOIN_P2P_HIDDEN_SERVICE_FILE || '/var/lib/tor/bitcoin-p2p/hostname',
   BITCOIN_P2P_PORT: process.env.BITCOIN_P2P_PORT || 8333,
+  LND_REST_HIDDEN_SERVICE_FILE: process.env.LND_REST_HIDDEN_SERVICE_FILE || '/var/lib/tor/lnd-rest/hostname',
+  LND_GRPC_HIDDEN_SERVICE_FILE: process.env.LND_GRPC_HIDDEN_SERVICE_FILE || '/var/lib/tor/lnd-grpc/hostname',
+  LND_CERT_FILE: process.env.LND_CERT_FILE || '/lnd/tls.cert',
+  LND_ADMIN_MACAROON_FILE: process.env.LND_ADMIN_MACAROON_FILE || '/lnd/data/chain/bitcoin/mainnet/admin.macaroon',
   GITHUB_REPO: process.env.GITHUB_REPO || 'getumbrel/umbrel',
   UMBREL_VERSION_FILE: process.env.UMBREL_VERSION_FILE || '/info.json',
   UPDATE_STATUS_FILE: process.env.UPDATE_STATUS_FILE || '/statuses/update-status.json',
