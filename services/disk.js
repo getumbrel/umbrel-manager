@@ -109,8 +109,8 @@ function readFile(filePath, encoding) {
 }
 
 // Reads a file as a utf8 string. Wraps fs.readFile into a native promise
-function readUtf8File(filePath) {
-  return readFile(filePath, 'utf8');
+async function readUtf8File(filePath) {
+  return (await readFile(filePath, 'utf8')).trim();
 }
 
 async function readJsonFile(filePath) {
