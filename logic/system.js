@@ -50,7 +50,7 @@ async function getBitcoinRPCConnectionDetails() {
           diskLogic.readUserFile(),
           diskLogic.readBitcoinRPCHiddenService(),
         ]);
-        const label = `${user.name}'s Umbrel`;
+        const label = encodeURIComponent(`${user.name}'s Umbrel`);
         const rpcuser = constants.BITCOIN_RPC_USER;
         const rpcpassword = constants.BITCOIN_RPC_PASSWORD;
         const address = `${hiddenService}:${constants.BITCOIN_RPC_PORT}`;
