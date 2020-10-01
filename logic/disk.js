@@ -102,6 +102,10 @@ function readBitcoinP2PHiddenService() {
   return diskService.readUtf8File(constants.BITCOIN_P2P_HIDDEN_SERVICE_FILE);
 }
 
+function readBitcoinRPCHiddenService() {
+  return diskService.readUtf8File(constants.BITCOIN_RPC_HIDDEN_SERVICE_FILE);
+}
+
 function readLndRestHiddenService() {
   return diskService.readUtf8File(constants.LND_REST_HIDDEN_SERVICE_FILE);
 }
@@ -227,6 +231,7 @@ module.exports = {
   readHiddenService,
   readElectrumHiddenService,
   readBitcoinP2PHiddenService,
+  readBitcoinRPCHiddenService,
   readLndRestHiddenService,
   readLndGrpcHiddenService,
   readLndCert,

@@ -32,6 +32,12 @@ router.get('/bitcoin-p2p-hidden-service', auth.jwt, safeHandler(async (req, res)
     return res.status(constants.STATUS_CODES.OK).json(url);
 }));
 
+router.get('/bitcoin-rpc-connection-details', auth.jwt, safeHandler(async (req, res) => {
+    const connectionDetails = await systemLogic.getBitcoinRPCConnectionDetails();
+
+    return res.status(constants.STATUS_CODES.OK).json(connectionDetails);
+}));
+
 router.get('/lndconnect-urls', auth.jwt, safeHandler(async (req, res) => {
     const urls = await systemLogic.getLndConnectUrls();
 
