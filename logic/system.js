@@ -62,7 +62,6 @@ async function getBitcoinRPCConnectionDetails() {
           connectionString,
         }
     } catch (error) {
-        throw error;
         throw new NodeError('Unable to get Bitcoin RPC connection details');
     }
 };
