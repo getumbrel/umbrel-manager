@@ -17,7 +17,7 @@ module.exports = {
   BITCOIN_P2P_PORT: process.env.BITCOIN_P2P_PORT || 8333,
   BITCOIN_RPC_HIDDEN_SERVICE_FILE: process.env.BITCOIN_RPC_HIDDEN_SERVICE_FILE || '/var/lib/tor/bitcoin-rpc/hostname',
   BITCOIN_RPC_PORT: process.env.BITCOIN_RPC_PORT || 8332,
-  BITCOIN_RPC_USER: process.env.BITCOIN_RPC_USER || 'umbrelrpc',
+  BITCOIN_RPC_USER: process.env.BITCOIN_RPC_USER || 'umbrel',
   BITCOIN_RPC_PASSWORD: process.env.BITCOIN_RPC_PASSWORD || 'moneyprintergobrrr',
   LND_REST_HIDDEN_SERVICE_FILE: process.env.LND_REST_HIDDEN_SERVICE_FILE || '/var/lib/tor/lnd-rest/hostname',
   LND_GRPC_HIDDEN_SERVICE_FILE: process.env.LND_GRPC_HIDDEN_SERVICE_FILE || '/var/lib/tor/lnd-grpc/hostname',

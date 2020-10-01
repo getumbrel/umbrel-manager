@@ -53,7 +53,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `BITCOIN_P2P_PORT` | P2P port of `bitcoin` | `8333` |
 | `BITCOIN_RPC_HIDDEN_SERVICE_FILE` | Path to RPC hidden service hostname of `bitcoin` | `/var/lib/tor/bitcoin-rpc/hostname` |
 | `BITCOIN_RPC_PORT` | RPC port of `bitcoin` | `8332` |
-| `BITCOIN_RPC_USER` | RPC user for `bitcoin` | `umbrelrpc` |
+| `BITCOIN_RPC_USER` | RPC user for `bitcoin` | `umbrel` |
 | `BITCOIN_RPC_PASSWORD` | RPC password for `bitcoin` | `moneyprintergobrrr` |
 | `GITHUB_REPO` | GitHub repository of Umbrel | `getumbrel/umbrel` |
 | `UMBREL_VERSION_FILE` | Path to the Umbrel's version file | `/info.json` |
