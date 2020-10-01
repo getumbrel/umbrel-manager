@@ -54,7 +54,7 @@ async function getBitcoinRPCConnectionDetails() {
         const rpcuser = constants.BITCOIN_RPC_USER;
         const rpcpassword = constants.BITCOIN_RPC_PASSWORD;
         const address = `${hiddenService}:${constants.BITCOIN_RPC_PORT}`;
-        const connectionString = `btcstandup://${rpcuser}:${rpcpassword}@${address}?label=${label}`;
+        const connectionString = `btcrpc://${rpcuser}:${rpcpassword}@${address}?label=${label}`;
         return {
           rpcuser,
           rpcpassword,
