@@ -44,6 +44,28 @@ async function getBitcoinP2PHiddenServiceUrl() {
     }
 };
 
+async function getBitcoinRPCConnectionDetails() {
+    try {
+        const [user, hiddenService] = await Promise.all([
+          diskLogic.readUserFile(),
+          diskLogic.readBitcoinRPCHiddenService(),
+        ]);
+        const label = encodeURIComponent(`${user.name}'s Umbrel`);
+        const rpcuser = constants.BITCOIN_RPC_USER;
+        const rpcpassword = constants.BITCOIN_RPC_PASSWORD;
+        const address = `${hiddenService}:${constants.BITCOIN_RPC_PORT}`;
+        const connectionString = `btcrpc://${rpcuser}:${rpcpassword}@${address}?label=${label}`;
+        return {
+          rpcuser,
+          rpcpassword,
+          address,
+          connectionString,
+        }
+    } catch (error) {
+        throw new NodeError('Unable to get Bitcoin RPC connection details');
+    }
+};
+
 async function getAvailableUpdate() {
     try {
         const current = await diskLogic.readUmbrelVersionFile();
@@ -245,6 +267,7 @@ module.exports = {
     getHiddenServiceUrl,
     getElectrumHiddenServiceUrl,
     getBitcoinP2PHiddenServiceUrl,
+    getBitcoinRPCConnectionDetails,
     getAvailableUpdate,
     getUpdateStatus,
     startUpdate,
