@@ -21,7 +21,7 @@ const logger = require('utils/logger.js');
 const ping = require('routes/ping.js');
 const account = require('routes/v1/account.js');
 const system = require('routes/v1/system.js');
-const utils = require('routes/v1/utils.js');
+const external = require('routes/v1/external.js');
 
 const app = express();
 
@@ -41,7 +41,7 @@ app.use(morgan(logger.morganConfiguration));
 app.use('/ping', ping);
 app.use('/v1/account', account);
 app.use('/v1/system', system);
-app.use('/v1/utils', utils);
+app.use('/v1/external', external);
 
 app.use(errorHandleMiddleware);
 app.use((req, res) => {
