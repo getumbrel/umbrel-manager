@@ -61,6 +61,8 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `UPDATE_SIGNAL_FILE` | Path to write the update signal file | `/signals/update` |
 | `UPDATE_LOCK_FILE` | Path to the update lock file | `/statuses/update-in-progress` |
 | `BACKUP_STATUS_FILE` | Path to backup status file | `/statuses/backup-status.json` |
+| `TOR_PROXY_IP` | IP or domain where Tor proxy is listening | `192.168.0.1` |
+| `TOR_PROXY_PORT` | Port where Tor proxy is listening | `9050` |
 
 ### Step 3. Run manager
 ```sh
