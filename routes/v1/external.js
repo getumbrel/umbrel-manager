@@ -15,7 +15,7 @@ const agent = new SocksProxyAgent(
 
 router.get('/price', auth.jwt, safeHandler(async(req, res) => {
   // Default to USD
-  const currency = req.params.currency || "USD";
+  const currency = req.query.currency || "USD";
   
   const response = await axios({
     url: `https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${currency}`,
@@ -23,18 +23,11 @@ router.get('/price', auth.jwt, safeHandler(async(req, res) => {
     method: 'GET'
   });
 
-        const response = await axios({
-            url: `https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${sym}`,
-            httpsAgent: agent,
-            method: "GET",
-        });
+  if (response.data) {
+    return res.status(constants.STATUS_CODES.OK).json(response.data);
+  }
 
-        if (response.data) {
-            return res.status(constants.STATUS_CODES.OK).json(response.data);
-        }
-
-        return res.status(constants.STATUS_CODES.BAD_GATEWAY).json();
-    })
-);
+  return res.status(constants.STATUS_CODES.BAD_GATEWAY).json();
+}));
 
 module.exports = router;
