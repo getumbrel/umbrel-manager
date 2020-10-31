@@ -13,11 +13,15 @@ const agent = new SocksProxyAgent(
     `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`
 );
 
-router.get(
-    "/price",
-    auth.jwt,
-    safeHandler(async (req, res) => {
-        const sym = req.params.sym || "USD";
+router.get('/price', auth.jwt, safeHandler(async(req, res) => {
+  // Default to USD
+  const currency = req.params.currency || "USD";
+  
+  const response = await axios({
+    url: `https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${currency}`,
+    httpsAgent: agent,
+    method: 'GET'
+  });
 
         const response = await axios({
             url: `https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${sym}`,
