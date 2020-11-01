@@ -199,6 +199,32 @@ async function getInfo() {
     }
 };
 
+async function getSettings() {
+    try {
+        const settings = await diskLogic.readSettingsFile();
+
+        return settings;
+    } catch (error) {
+        throw new NodeError('Unable to get account settings');
+    }
+};
+
+async function updateSetting(setting, value) {
+    try {
+        const settings = await diskLogic.readSettingsFile();
+
+        if(setting && value) {
+            settings[setting] = value;
+        }
+    
+        await diskLogic.writeSettingsFile(settings);
+
+        return settings;
+    } catch (error) {
+        throw new NodeError(`Unable to update ${setting || 'setting'}`);
+    }
+};
+
 async function seed(user) {
 
     //Decrypt mnemonic seed
@@ -228,9 +254,10 @@ async function register(user, seed) {
         throw new NodeError('Unable to encrypt mnemonic seed');
     }
 
-    //save user
+    //save user and init settings
     try {
         await diskLogic.writeUserFile({ name: user.name, password: user.password, seed: encryptedSeed });
+        await diskLogic.writeSettingsFile({});
     } catch (error) {
         throw new NodeError('Unable to register user');
     }
@@ -289,6 +316,8 @@ module.exports = {
     hashCredentials,
     isRegistered,
     getInfo,
+    getSettings,
+    updateSetting,
     seed,
     login,
     register,
