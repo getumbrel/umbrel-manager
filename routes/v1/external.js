@@ -1,13 +1,13 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const auth = require("middlewares/auth.js");
+const auth = require('middlewares/auth.js');
 
-const constants = require("utils/const.js");
-const safeHandler = require("utils/safeHandler");
+const constants = require('utils/const.js');
+const safeHandler = require('utils/safeHandler');
 
-const { SocksProxyAgent } = require("socks-proxy-agent");
-const axios = require("axios");
+const {SocksProxyAgent} = require('socks-proxy-agent');
+const axios = require('axios');
 
 const agent = new SocksProxyAgent(
     `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`
