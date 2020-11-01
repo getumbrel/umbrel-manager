@@ -205,6 +205,10 @@ async function getSettings() {
 
         return settings;
     } catch (error) {
+        if(error.code === 'ENOENT') {
+            await diskLogic.writeSettingsFile({});
+            return {};
+        }
         throw new NodeError('Unable to get account settings');
     }
 };
