@@ -61,6 +61,10 @@ async function readUserFile() {
   return {...defaultProperties, ...userFile};
 }
 
+function readDefaultSettingsFile() {
+  return diskService.readJsonFile(constants.DEFAULT_SETTINGS_FILE);
+}
+
 function readSettingsFile() {
   return diskService.readJsonFile(constants.SETTINGS_FILE);
 }
@@ -256,6 +260,7 @@ module.exports = {
   fileExists,
   getBuildDetails,
   listVersionsForApp,
+  readDefaultSettingsFile,
   readSettingsFile,
   readUserFile,
   writeAppVersionFile,

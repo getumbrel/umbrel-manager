@@ -201,14 +201,20 @@ async function getInfo() {
 
 async function getSettings() {
     try {
+        const defaultSettings = await diskLogic.readDefaultSettingsFile();
         const settings = await diskLogic.readSettingsFile();
 
-        return settings;
+        return { ...defaultSettings, ...settings };
     } catch (error) {
+        try {
         if(error.code === 'ENOENT') {
+                const defaultSettings = await diskLogic.readDefaultSettingsFile();
             await diskLogic.writeSettingsFile({});
-            return {};
+    
+                return defaultSettings;
         }
+        } catch { };
+ 
         throw new NodeError('Unable to get account settings');
     }
 };
