@@ -38,6 +38,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `DEVICE_HOSTS` | Comma separated list of IPs or domain names to whitelist for CORS | `http://umbrel.local` |
 | `USER_FILE` | Path to the user's data file (automatically created on user registration) | `/db/user.json` |
 | `SETTINGS_FILE` | Path to the user's settings file (automatically created on user registration) | `/db/settings.json` |
+| `DEFAULT_SETTINGS_FILE` | Path to the default settings file | `/templates/db-settings-sample.json` |
 | `SHUTDOWN_SIGNAL_FILE` | Path to write a file to signal a system shutdown | `/signals/shutdown` |
 | `REBOOT_SIGNAL_FILE` | Path to write a file to signal a system reboot | `/signals/reboot` |
 | `MIDDLEWARE_API_URL` | IP or domain where [`umbrel-middleware`](https://github.com/getumbrel/umbrel-middleware) is listening | `http://localhost` |

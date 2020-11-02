@@ -8,6 +8,8 @@ module.exports = {
   STATUS_DIR: process.env.STATUS_DIR || '/statuses',
   APPS_DIR: process.env.APPS_DIR || '/apps',
   TOR_HIDDEN_SERVICE_DIR: process.env.TOR_HIDDEN_SERVICE_DIR || '/var/lib/tor',
+  SETTINGS_FILE: process.env.SETTINGS_FILE || '/db/settings.json',
+  DEFAULT_SETTINGS_FILE: process.env.DEFAULT_SETTINGS_FILE || '/templates/db-settings-sample.json',
   SHUTDOWN_SIGNAL_FILE: process.env.SHUTDOWN_SIGNAL_FILE || '/signals/shutdown',
   REBOOT_SIGNAL_FILE: process.env.REBOOT_SIGNAL_FILE || '/signals/reboot',
   JWT_PUBLIC_KEY_FILE: process.env.JWT_PUBLIC_KEY_FILE || '/db/jwt-public-key/jwt.pem',
