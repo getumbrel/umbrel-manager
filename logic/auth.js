@@ -213,12 +213,14 @@ async function getSettings() {
 async function updateSetting(setting, value) {
     try {
         const user = await diskLogic.readUserFile();
+        const { settings = {} } = user;
 
-        if(setting && value) {
-            if(value == '') delete user.settings[setting];
-            else user.settings[setting] = value;
+        if(setting) {
+            if(value) settings[setting] = value;
+            else delete settings[setting];
         }
     
+        user.settings = settings;
         await diskLogic.writeUserFile(user);
 
         return user.settings;
