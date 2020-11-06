@@ -111,7 +111,7 @@ router.get('/settings', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(settings);
 }));
 
-router.post('/settings/update', auth.jwt, safeHandler(async (req, res) => {
+router.post('/settings', auth.jwt, safeHandler(async (req, res) => {
     const { setting, value } = req.body;
 
     try {
