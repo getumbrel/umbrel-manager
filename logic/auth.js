@@ -202,35 +202,26 @@ async function getInfo() {
 async function getSettings() {
     try {
         const defaultSettings = await diskLogic.readDefaultSettingsFile();
-        const settings = await diskLogic.readSettingsFile();
+        const { settings } = await diskLogic.readUserFile();
 
         return { ...defaultSettings, ...settings };
     } catch (error) {
-        try {
-            if(error.code === 'ENOENT') {
-                const defaultSettings = await diskLogic.readDefaultSettingsFile();
-                await diskLogic.writeSettingsFile({});
-    
-                return defaultSettings;
-            }
-        } catch { };
- 
         throw new NodeError('Unable to get account settings');
     }
 };
 
 async function updateSetting(setting, value) {
     try {
-        const settings = await diskLogic.readSettingsFile();
+        const user = await diskLogic.readUserFile();
 
         if(setting && value) {
-            if(value == '') delete settings[setting];
-            else settings[setting] = value;
+            if(value == '') delete user.settings[setting];
+            else user.settings[setting] = value;
         }
     
-        await diskLogic.writeSettingsFile(settings);
+        await diskLogic.writeUserFile(user);
 
-        return settings;
+        return user.settings;
     } catch (error) {
         throw new NodeError(`Unable to update ${setting || 'setting'}`);
     }
@@ -267,8 +258,7 @@ async function register(user, seed) {
 
     //save user and init settings
     try {
-        await diskLogic.writeUserFile({ name: user.name, password: user.password, seed: encryptedSeed });
-        await diskLogic.writeSettingsFile({});
+        await diskLogic.writeUserFile({ name: user.name, password: user.password, seed: encryptedSeed, settings: {} });
     } catch (error) {
         throw new NodeError('Unable to register user');
     }
