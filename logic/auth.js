@@ -12,6 +12,8 @@ const JWTHelper = require('utils/jwt.js');
 const constants = require('utils/const.js');
 const UUID = require('utils/UUID.js');
 
+const defaultSettings = require('resources/db-default-settings.json');
+
 const saltRounds = 10;
 const SYSTEM_USER = UUID.fetchBootUUID() || 'admin';
 
@@ -201,7 +203,6 @@ async function getInfo() {
 
 async function getSettings() {
     try {
-        const defaultSettings = await diskLogic.readDefaultSettingsFile();
         const { settings } = await diskLogic.readUserFile();
 
         return { ...defaultSettings, ...settings };
