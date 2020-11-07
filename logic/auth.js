@@ -213,20 +213,23 @@ async function getSettings() {
 
 async function updateSetting(setting, value) {
     try {
-        const user = await diskLogic.readUserFile();
-        const { settings = {} } = user;
+        const settings = await getSettings();
 
-        if(setting) {
-            if(value) settings[setting] = value;
-            else delete settings[setting];
+        if(!setting) return settings;
+        
+        if(typeof value !== undefined) {
+            settings[setting] = value;
+        } else {
+            delete settings[setting];
         }
-    
+       
+        const user = await diskLogic.readUserFile();
         user.settings = settings;
         await diskLogic.writeUserFile(user);
 
-        return user.settings;
+        return settings;
     } catch (error) {
-        throw new NodeError(`Unable to update ${setting || 'setting'}`);
+        throw new NodeError(`Unable to update setting`);
     }
 };
 
