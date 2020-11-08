@@ -20,16 +20,16 @@ router.get('/dashboard-hidden-service', auth.jwt, safeHandler(async (req, res) =
     return res.status(constants.STATUS_CODES.OK).json(url);
 }));
 
-router.get('/electrum-hidden-service', auth.jwt, safeHandler(async (req, res) => {
-    const url = await systemLogic.getElectrumHiddenServiceUrl();
+router.get('/electrum-connection-details', auth.jwt, safeHandler(async (req, res) => {
+    const connectionDetails = await systemLogic.getElectrumConnectionDetails();
 
-    return res.status(constants.STATUS_CODES.OK).json(url);
+    return res.status(constants.STATUS_CODES.OK).json(connectionDetails);
 }));
 
-router.get('/bitcoin-p2p-hidden-service', auth.jwt, safeHandler(async (req, res) => {
-    const url = await systemLogic.getBitcoinP2PHiddenServiceUrl();
+router.get('/bitcoin-p2p-connection-details', auth.jwt, safeHandler(async (req, res) => {
+    const connectionDetails = await systemLogic.getBitcoinP2PConnectionDetails();
 
-    return res.status(constants.STATUS_CODES.OK).json(url);
+    return res.status(constants.STATUS_CODES.OK).json(connectionDetails);
 }));
 
 router.get('/bitcoin-rpc-connection-details', auth.jwt, safeHandler(async (req, res) => {
