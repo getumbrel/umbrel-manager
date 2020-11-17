@@ -15,7 +15,7 @@ jobs:
                 name: Build and push manager image
                 steps:
                         - name: Set env variables
-                          run: echo "TAG::${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+                          run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
                         - name: Show set environment variables
                           run: |
