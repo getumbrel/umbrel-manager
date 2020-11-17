@@ -29,8 +29,8 @@ async function getHiddenServiceUrl() {
 async function getElectrumConnectionDetails() {
     try {
         const address = await diskLogic.readElectrumHiddenService();
-        const port = constants.ELECTRUM_PORT;
-        const connectionString = `${address}:${constants.ELECTRUM_PORT}:t`;
+        const port = String(constants.ELECTRUM_PORT);
+        const connectionString = `${address}:${port}:t`;
         return {
             address,
             port,
@@ -44,7 +44,7 @@ async function getElectrumConnectionDetails() {
 async function getBitcoinP2PConnectionDetails() {
     try {
         const address = await diskLogic.readBitcoinP2PHiddenService();
-        const port = constants.BITCOIN_P2P_PORT;
+        const port = String(constants.BITCOIN_P2P_PORT);
         return {
             address,
             port
@@ -64,7 +64,7 @@ async function getBitcoinRPCConnectionDetails() {
         const rpcuser = constants.BITCOIN_RPC_USER;
         const rpcpassword = constants.BITCOIN_RPC_PASSWORD;
         const address = hiddenService;
-        const port = constants.BITCOIN_RPC_PORT;
+        const port = String(constants.BITCOIN_RPC_PORT);
         const connectionString = `btcrpc://${rpcuser}:${rpcpassword}@${address}:${port}?label=${label}`;
         return {
             rpcuser,
