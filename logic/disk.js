@@ -1,3 +1,5 @@
+const path = require('path');
+
 const constants = require('utils/const.js');
 const diskService = require('services/disk.js');
 
@@ -210,6 +212,16 @@ function readSshSignalFile() {
   return diskService.readFile(constants.SSH_SIGNAL_FILE);
 }
 
+// TODO: Transition all logic to use this signal function
+function writeSignalFile(signalFile) {
+  if(!/^[0-9a-zA-Z-_]+$/.test(signalFile)) {
+    throw new Error('Invalid signal file characters');
+  }
+
+  const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
+  return diskService.writeFile(signalFilePath, 'true');
+}
+
 module.exports = {
   deleteItemsInDir,
   deleteUserFile,
@@ -255,5 +267,6 @@ module.exports = {
   readMigrationStatusFile,
   migration,
   enableSsh,
-  readSshSignalFile
+  readSshSignalFile,
+  writeSignalFile
 };

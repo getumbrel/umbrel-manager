@@ -4,6 +4,7 @@ module.exports = {
   REQUEST_CORRELATION_ID_KEY: 'reqId',
   DEVICE_HOSTNAME: process.env.DEVICE_HOSTNAME || 'umbrel.local',
   USER_FILE: process.env.USER_FILE || '/db/user.json',
+  SIGNAL_DIR: process.env.SIGNAL_DIR || '/signals',
   SHUTDOWN_SIGNAL_FILE: process.env.SHUTDOWN_SIGNAL_FILE || '/signals/shutdown',
   REBOOT_SIGNAL_FILE: process.env.REBOOT_SIGNAL_FILE || '/signals/reboot',
   JWT_PUBLIC_KEY_FILE: process.env.JWT_PUBLIC_KEY_FILE || '/db/jwt-public-key/jwt.pem',
