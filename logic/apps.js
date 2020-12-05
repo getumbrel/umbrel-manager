@@ -17,6 +17,8 @@ async function get(query) {
       compatible: true,
       dependencies: [{ id: "bitcoind", version: "0.20.1" }, { id: "lnd", version: "0.11.1" }],
       website: "https://btcpayserver.org",
+      hiddenService: "btcpayhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion",
+      port: 6001,
     },
     {
       id: "mempool-space",
@@ -31,6 +33,8 @@ async function get(query) {
       compatible: true,
       dependencies: [{ id: "bitcoind", version: "0.20.1" }, { id: "lnd", version: "0.11.1" }],
       website: "https://btcpayserver.org",
+      hiddenService: "mempoolhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion",
+      port: 6002,
     },
     {
       id: "btc-rpc-explorer",
@@ -45,6 +49,8 @@ async function get(query) {
       compatible: true,
       dependencies: [{ id: "bitcoind", version: "0.20.1" }, { id: "lnd", version: "0.11.1" }],
       website: "https://btcpayserver.org",
+      hiddenService: "btcrpcexplorerhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion",
+      port: 6003,
     },
     {
       id: "dojo",
@@ -59,6 +65,8 @@ async function get(query) {
       compatible: true,
       dependencies: [{ id: "bitcoind", version: "0.20.1" }, { id: "lnd", version: "0.11.1" }],
       website: "https://btcpayserver.org",
+      hiddenService: "dojohqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion",
+      port: 6004,
     },
     {
       id: "specter",
@@ -73,6 +81,8 @@ async function get(query) {
       compatible: true,
       dependencies: [{ id: "bitcoind", version: "0.20.1" }, { id: "lnd", version: "0.11.1" }],
       website: "https://btcpayserver.org",
+      hiddenService: "specterhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion",
+      port: 6005,
     },
     {
       id: "lndhub",
@@ -87,6 +97,8 @@ async function get(query) {
       compatible: true,
       dependencies: [{ id: "bitcoind", version: "0.20.1" }, { id: "lnd", version: "0.11.1" }],
       website: "https://btcpayserver.org",
+      hiddenService: "lndhubhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion",
+      port: 6006,
     },
     {
       id: "rtl",
@@ -101,6 +113,8 @@ async function get(query) {
       compatible: true,
       dependencies: [{ id: "bitcoind", version: "0.20.1" }, { id: "lnd", version: "0.11.1" }],
       website: "https://btcpayserver.org",
+      hiddenService: "rtlhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion",
+      port: 6007,
     },
     {
       id: "thunderhub",
@@ -115,6 +129,8 @@ async function get(query) {
       compatible: true,
       dependencies: [{ id: "bitcoind", version: "0.20.1" }, { id: "lnd", version: "0.11.1" }],
       website: "https://btcpayserver.org",
+      hiddenService: "thunderhubhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion",
+      port: 6008,
     },
     {
       id: "sphinx",
@@ -129,6 +145,8 @@ async function get(query) {
       compatible: true,
       dependencies: [{ id: "bitcoind", version: "0.20.1" }, { id: "lnd", version: "0.11.1" }],
       website: "https://btcpayserver.org",
+      hiddenService: "sphinxhqx4isw62xs7abwphsq7ldayuidyx2v2oethdhhj6mlo2r6ad.onion",
+      port: 6009,
     }
   ];
 
