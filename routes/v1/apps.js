@@ -9,7 +9,10 @@ const constants = require('utils/const.js');
 const safeHandler = require('utils/safeHandler');
 
 router.get('/', auth.jwt, safeHandler(async (req, res) => {
-    const apps = await appsLogic.get();
+    const query = {
+      installed: req.query.installed === '1',
+    };
+    const apps = await appsLogic.get(query);
 
     return res.status(constants.STATUS_CODES.OK).json(apps);
 }));

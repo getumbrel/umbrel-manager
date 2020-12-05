@@ -1,9 +1,9 @@
 const diskLogic = require('logic/disk.js');
 const NodeError = require('models/errors.js').NodeError;
 
-async function get() {
+async function get(query) {
   // TODO: Query this dynamically from disk.
-  const apps = [
+  let apps = [
     {
       id: "btcpay",
       category: "Merchants",
@@ -131,6 +131,12 @@ async function get() {
       website: "https://btcpayserver.org",
     }
   ];
+
+  if (query.installed === true) {
+    // TODO: Query this dynamically from disk.
+    const installedAppIds = ["btc-rpc-explorer"];
+    apps = apps.filter(app => installedAppIds.includes(app.id));
+  }
 
   return apps;
 }
