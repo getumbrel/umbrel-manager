@@ -50,8 +50,15 @@ async function writeAppVersionFile(application, json) {
   return diskService.writeJsonFile(constants.WORKING_DIRECTORY + '/' + application, json);
 }
 
-function readUserFile() {
-  return diskService.readJsonFile(constants.USER_FILE);
+async function readUserFile() {
+  const defaultProperties = {
+    name: "",
+    password: "",
+    seed: "",
+    installedApps: [],
+  };
+  const userFile = await diskService.readJsonFile(constants.USER_FILE);
+  return {...defaultProperties, ...userFile};
 }
 
 function readSettingsFile() {

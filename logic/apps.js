@@ -133,9 +133,8 @@ async function get(query) {
   ];
 
   if (query.installed === true) {
-    // TODO: Query this dynamically from disk.
-    const installedAppIds = ["btc-rpc-explorer"];
-    apps = apps.filter(app => installedAppIds.includes(app.id));
+    const {installedApps} = await diskLogic.readUserFile();
+    apps = apps.filter(app => installedApps.includes(app.id));
   }
 
   return apps;
