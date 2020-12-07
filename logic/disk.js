@@ -90,17 +90,13 @@ function settingsFileExists() {
 }
 
 function hiddenServiceFileExists() {
-  return readHiddenService()
+  return diskService.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE)
     .then(() => Promise.resolve(true))
     .catch(() => Promise.resolve(false));
 }
 
 async function readAppVersionFile(application) {
   return diskService.readJsonFile(constants.WORKING_DIRECTORY + '/' + application);
-}
-
-function readHiddenService() {
-  return diskService.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE);
 }
 
 function readElectrumHiddenService() {
@@ -229,6 +225,19 @@ function writeSignalFile(signalFile) {
   return diskService.writeFile(signalFilePath, 'true');
 }
 
+function readAppRegistry() {
+  const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
+  return diskService.readJsonFile(appRegistryFile);
+}
+
+function readHiddenService(id) {
+  if(!/^[0-9a-zA-Z-_]+$/.test(id)) {
+    throw new Error('Invalid hidden service ID');
+  }
+  const hiddenServiceFile = path.join(constants.TOR_HIDDEN_SERVICE_DIR, id, 'hostname');
+  return diskService.readUtf8File(hiddenServiceFile);
+}
+
 module.exports = {
   deleteItemsInDir,
   deleteUserFile,
@@ -247,7 +256,6 @@ module.exports = {
   settingsFileExists,
   hiddenServiceFileExists,
   readAppVersionFile,
-  readHiddenService,
   readElectrumHiddenService,
   readBitcoinP2PHiddenService,
   readBitcoinRPCHiddenService,
@@ -275,5 +283,7 @@ module.exports = {
   migration,
   enableSsh,
   readSshSignalFile,
-  writeSignalFile
+  writeSignalFile,
+  readAppRegistry,
+  readHiddenService,
 };
