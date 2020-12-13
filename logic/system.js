@@ -45,9 +45,11 @@ async function getBitcoinP2PConnectionDetails() {
     try {
         const address = await diskLogic.readBitcoinP2PHiddenService();
         const port = String(constants.BITCOIN_P2P_PORT);
+        const connectionString = `${address}:${port}`;        
         return {
             address,
-            port
+            port,
+            connectionString
         };
     } catch (error) {
         throw new NodeError('Unable to get Bitcoin P2P hidden service url');
@@ -71,7 +73,7 @@ async function getBitcoinRPCConnectionDetails() {
             rpcpassword,
             address,
             port,
-            connectionString,
+            connectionString
         };
     } catch (error) {
         throw new NodeError('Unable to get Bitcoin RPC connection details');
