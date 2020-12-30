@@ -1,3 +1,5 @@
+const path = require('path');
+
 const constants = require('utils/const.js');
 const diskService = require('services/disk.js');
 
@@ -48,8 +50,15 @@ async function writeAppVersionFile(application, json) {
   return diskService.writeJsonFile(constants.WORKING_DIRECTORY + '/' + application, json);
 }
 
-function readUserFile() {
-  return diskService.readJsonFile(constants.USER_FILE);
+async function readUserFile() {
+  const defaultProperties = {
+    name: "",
+    password: "",
+    seed: "",
+    installedApps: [],
+  };
+  const userFile = await diskService.readJsonFile(constants.USER_FILE);
+  return {...defaultProperties, ...userFile};
 }
 
 function readSettingsFile() {
@@ -81,17 +90,13 @@ function settingsFileExists() {
 }
 
 function hiddenServiceFileExists() {
-  return readHiddenService()
+  return diskService.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE)
     .then(() => Promise.resolve(true))
     .catch(() => Promise.resolve(false));
 }
 
 async function readAppVersionFile(application) {
   return diskService.readJsonFile(constants.WORKING_DIRECTORY + '/' + application);
-}
-
-function readHiddenService() {
-  return diskService.readUtf8File(constants.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE);
 }
 
 function readElectrumHiddenService() {
@@ -210,6 +215,29 @@ function readSshSignalFile() {
   return diskService.readFile(constants.SSH_SIGNAL_FILE);
 }
 
+// TODO: Transition all logic to use this signal function
+function writeSignalFile(signalFile) {
+  if(!/^[0-9a-zA-Z-_]+$/.test(signalFile)) {
+    throw new Error('Invalid signal file characters');
+  }
+
+  const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
+  return diskService.writeFile(signalFilePath, 'true');
+}
+
+function readAppRegistry() {
+  const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
+  return diskService.readJsonFile(appRegistryFile);
+}
+
+function readHiddenService(id) {
+  if(!/^[0-9a-zA-Z-_]+$/.test(id)) {
+    throw new Error('Invalid hidden service ID');
+  }
+  const hiddenServiceFile = path.join(constants.TOR_HIDDEN_SERVICE_DIR, id, 'hostname');
+  return diskService.readUtf8File(hiddenServiceFile);
+}
+
 module.exports = {
   deleteItemsInDir,
   deleteUserFile,
@@ -228,7 +256,6 @@ module.exports = {
   settingsFileExists,
   hiddenServiceFileExists,
   readAppVersionFile,
-  readHiddenService,
   readElectrumHiddenService,
   readBitcoinP2PHiddenService,
   readBitcoinRPCHiddenService,
@@ -255,5 +282,8 @@ module.exports = {
   readMigrationStatusFile,
   migration,
   enableSsh,
-  readSshSignalFile
+  readSshSignalFile,
+  writeSignalFile,
+  readAppRegistry,
+  readHiddenService,
 };

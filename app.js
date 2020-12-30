@@ -22,6 +22,7 @@ const ping = require('routes/ping.js');
 const account = require('routes/v1/account.js');
 const system = require('routes/v1/system.js');
 const external = require('routes/v1/external.js');
+const apps = require('routes/v1/apps.js');
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('/ping', ping);
 app.use('/v1/account', account);
 app.use('/v1/system', system);
 app.use('/v1/external', external);
+app.use('/v1/apps', apps);
 
 app.use(errorHandleMiddleware);
 app.use((req, res) => {
