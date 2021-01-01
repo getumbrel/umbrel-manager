@@ -22,8 +22,8 @@ async function get(query) {
 }
 
 async function isValidAppId(id) {
-  // TODO: validate id
-  return true;
+  const appRegExp = new RegExp("^[a-z0-9\-]+$");
+  return appRegExp.test(id);
 }
 
 async function install(id) {
