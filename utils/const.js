@@ -32,6 +32,8 @@ module.exports = {
   UPDATE_SIGNAL_FILE: process.env.UPDATE_SIGNAL_FILE || '/signals/update',
   UPDATE_LOCK_FILE: process.env.UPDATE_LOCK_FILE || '/statuses/update-in-progress',
   BACKUP_STATUS_FILE: process.env.BACKUP_STATUS_FILE || '/statuses/backup-status.json',
+  DEBUG_SIGNAL_FILE: process.env.DEBUG_SIGNAL_FILE || "/signals/debug",
+  DEBUG_STATUS_FILE: process.env.DEBUG_STATUS_FILE || "/statuses/debug-result.json",
   TOR_PROXY_IP: process.env.TOR_PROXY_IP || '192.168.0.1',
   TOR_PROXY_PORT: process.env.TOR_PROXY_PORT || 9050,
   STATUS_CODES: {
