@@ -215,6 +215,10 @@ function readSshSignalFile() {
   return diskService.readFile(constants.SSH_SIGNAL_FILE);
 }
 
+function readDebugResultFile() {
+  return diskService.readJsonFile(constants.DEBUG_STATUS_FILE);
+}
+
 // TODO: Transition all logic to use this signal function
 function writeSignalFile(signalFile) {
   if(!/^[0-9a-zA-Z-_]+$/.test(signalFile)) {
@@ -283,6 +287,7 @@ module.exports = {
   migration,
   enableSsh,
   readSshSignalFile,
+  readDebugResultFile,
   writeSignalFile,
   readAppRegistry,
   readHiddenService,
