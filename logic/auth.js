@@ -76,8 +76,18 @@ async function changePassword(currentPassword, newPassword, jwt) {
             const decryptedSeed = await iocane.createSession().decrypt(user.seed, currentPassword);
             const encryptedSeed = await iocane.createSession().encrypt(decryptedSeed, newPassword);
 
+            const updatedUser = {
+                name: user.name,
+                password: credentials.password,
+                seed: encryptedSeed
+            };
+
+            if (user.installedApps) {
+                updatedUser.installedApps = user.installedApps;
+            }
+
             // update user file
-            await diskLogic.writeUserFile({ name: user.name, password: credentials.password, seed: encryptedSeed });
+            await diskLogic.writeUserFile(updatedUser);
 
             // update ssh password
             // await hashAccountPassword(newPassword);
@@ -142,16 +152,16 @@ async function isRegistered() {
 // Derives the root umbrel seed and persists it to disk to be used for
 // determinstically deriving further entropy for any other Umbrel service.
 async function deriveUmbrelSeed(user) {
-  if (await diskLogic.umbrelSeedFileExists()) {
-    return;
-  }
-  const mnemonic = (await seed(user)).seed.join(' ');
-  const {entropy} = CipherSeed.fromMnemonic(mnemonic);
-  const umbrelSeed = crypto
-    .createHmac('sha256', entropy)
-    .update('umbrel-seed')
-    .digest('hex');
-  return diskLogic.writeUmbrelSeedFile(umbrelSeed);
+    if (await diskLogic.umbrelSeedFileExists()) {
+        return;
+    }
+    const mnemonic = (await seed(user)).seed.join(' ');
+    const { entropy } = CipherSeed.fromMnemonic(mnemonic);
+    const umbrelSeed = crypto
+        .createHmac('sha256', entropy)
+        .update('umbrel-seed')
+        .digest('hex');
+    return diskLogic.writeUmbrelSeedFile(umbrelSeed);
 }
 
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
