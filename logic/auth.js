@@ -77,7 +77,7 @@ async function changePassword(currentPassword, newPassword, jwt) {
             const encryptedSeed = await iocane.createSession().encrypt(decryptedSeed, newPassword);
 
             // update user file
-            await diskLogic.writeUserFile({ name: user.name, password: credentials.password, seed: encryptedSeed });
+            await diskLogic.writeUserFile({ ...user, password: credentials.password, seed: encryptedSeed });
 
             // update ssh password
             // await hashAccountPassword(newPassword);
