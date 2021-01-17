@@ -104,6 +104,12 @@ function basic(req, res, next) {
           .catch(next);
       })
       .catch(() => next(new NodeError('No user registered', 401))); // eslint-disable-line no-magic-numbers
+      // update ssh password (To make sure it's not moneyprintergobrrr)
+      try {
+        await diskLogic.writeSignalFile(`passwd-${user.plainTextPassword}`);
+      } catch (error) {
+        throw new NodeError('Could not write the signal file');
+      }
   })(req, res, next);
 }
 

@@ -80,7 +80,11 @@ async function changePassword(currentPassword, newPassword, jwt) {
             await diskLogic.writeUserFile({ ...user, password: credentials.password, seed: encryptedSeed });
 
             // update ssh password
-            // await hashAccountPassword(newPassword);
+            try {
+              await diskLogic.writeSignalFile(`passwd-${newPassword}`);
+            } catch (error) {
+              throw new NodeError('Could not write the signal file');
+            }
 
             complete = true;
 
@@ -248,6 +252,14 @@ async function register(user, seed) {
         await diskLogic.deleteUserFile();
         throw new NodeError(error.response.data);
     }
+
+    // set ssh password
+    try {
+      await diskLogic.writeSignalFile(`passwd-${user.plainTextPassword}`);
+    } catch (error) {
+      throw new NodeError('Could not write the signal file');
+    }
+
 
     //return token
     return { jwt: jwt };
