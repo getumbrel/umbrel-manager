@@ -19,7 +19,7 @@ async function getInfo() {
 
 async function getHiddenServiceUrl() {
     try {
-        const url = await diskLogic.readHiddenService();
+        const url = await diskLogic.readHiddenService('web');
         return url;
     } catch (error) {
         throw new NodeError('Unable to get hidden service url');
