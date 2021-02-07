@@ -99,7 +99,7 @@ function basic(req, res, next) {
       .then(userData => {
         const storedPassword = userData.password;
 
-        bcrypt.compare(user.password, storedPassword)
+        bcrypt.compare(decodeURIComponent(user.password), storedPassword)
           .then(handleCompare)
           .catch(next);
       })
