@@ -1,6 +1,6 @@
 const passport = require('passport');
 const passportJWT = require('passport-jwt');
-const passportHTTP = require('passport-http');
+const passportHTTP = require('modern-passport-http');
 const bcrypt = require('bcrypt');
 const diskLogic = require('logic/disk.js');
 const authLogic = require('logic/auth.js');

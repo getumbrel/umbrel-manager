@@ -31,7 +31,7 @@
     "node-rsa": "^1.0.8",
     "npm": "^6.14.6",
     "passport": "^0.4.0",
-    "passport-http": "^0.3.0",
+    "modern-passport-http": "^0.3.1",
     "passport-jwt": "^4.0.0",
     "request-promise": "^4.2.2",
     "semver": "^7.3.2",
