@@ -32,7 +32,7 @@ async function sleepSeconds(seconds) {
 
 // Caches the password.
 function cachePassword(password) {
-    devicePassword = password;
+    devicePassword = Buffer.from(password, "base64").toString();
 }
 
 // Gets the cached the password.
@@ -43,6 +43,8 @@ function getCachedPassword() {
 // Change the device and lnd password.
 async function changePassword(currentPassword, newPassword, jwt) {
 
+    currentPassword = Buffer.from(currentPassword, "base64").toString();
+    newPassword = Buffer.from(newPassword, "base64").toString();
 
     resetChangePasswordStatus();
     changePasswordStatus.percent = 1; // eslint-disable-line no-magic-numbers
@@ -123,6 +125,7 @@ function getChangePasswordStatus() {
 
 // Returns an object with the hashed credentials inside.
 function hashCredentials(username, password) {
+    password = Buffer.from(password, "base64").toString();
     const hash = bcrypt.hashSync(password, saltRounds);
 
     return { password: hash, username, plainTextPassword: password };
@@ -195,7 +198,7 @@ async function seed(user) {
     try {
         const { seed } = await diskLogic.readUserFile();
 
-        const decryptedSeed = await iocane.createSession().decrypt(seed, user.plainTextPassword);
+        const decryptedSeed = await iocane.createSession().decrypt(seed, Buffer.from(user.plainTextPassword, "base64").toString());
 
         return { seed: decryptedSeed.split(",") };
 
@@ -213,7 +216,7 @@ async function register(user, seed) {
     //Encrypt mnemonic seed for storage
     let encryptedSeed;
     try {
-        encryptedSeed = await iocane.createSession().encrypt(seed.join(), user.plainTextPassword);
+        encryptedSeed = await iocane.createSession().encrypt(seed.join(), Buffer.from(user.plainTextPassword, "base64").toString());
     } catch (error) {
         throw new NodeError('Unable to encrypt mnemonic seed');
     }
@@ -243,7 +246,7 @@ async function register(user, seed) {
 
     //initialize lnd wallet
     try {
-        await lndApiService.initializeWallet(user.plainTextPassword, seed, jwt);
+        await lndApiService.initializeWallet(Buffer.from(user.plainTextPassword, "base64").toString(), seed, jwt);
     } catch (error) {
         await diskLogic.deleteUserFile();
         throw new NodeError(error.response.data);
