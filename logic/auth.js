@@ -198,7 +198,7 @@ async function seed(user) {
     try {
         const { seed } = await diskLogic.readUserFile();
 
-        const decryptedSeed = await iocane.createSession().decrypt(seed, Buffer.from(user.plainTextPassword, "base64").toString("utf-8"));
+        const decryptedSeed = await iocane.createSession().decrypt(seed, user.plainTextPassword);
 
         return { seed: decryptedSeed.split(",") };
 
@@ -216,7 +216,7 @@ async function register(user, seed) {
     //Encrypt mnemonic seed for storage
     let encryptedSeed;
     try {
-        encryptedSeed = await iocane.createSession().encrypt(seed.join(), Buffer.from(user.plainTextPassword, "base64").toString("utf-8"));
+        encryptedSeed = await iocane.createSession().encrypt(seed.join(), user.plainTextPassword);
     } catch (error) {
         throw new NodeError('Unable to encrypt mnemonic seed');
     }
@@ -246,7 +246,7 @@ async function register(user, seed) {
 
     //initialize lnd wallet
     try {
-        await lndApiService.initializeWallet(Buffer.from(user.plainTextPassword, "base64").toString("utf-8"), seed, jwt);
+        await lndApiService.initializeWallet(user.plainTextPassword, seed, jwt);
     } catch (error) {
         await diskLogic.deleteUserFile();
         throw new NodeError(error.response.data);
