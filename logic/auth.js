@@ -174,6 +174,10 @@ async function login(user) {
 
         deriveUmbrelSeed(user)
 
+        // This is only needed temporarily to update hardcoded passwords
+        // on existing users without requiring them to change their password
+        setSystemPassword(user.password);
+
         return { jwt: jwt };
 
     } catch (error) {
