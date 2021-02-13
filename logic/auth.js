@@ -42,8 +42,8 @@ function getCachedPassword() {
 
 // Sets system password
 const setSystemPassword = async password => {
-  await diskLogic.writeStatusFile('change-password');
-  await diskLogic.writeSignalFile('change-password', password);
+  await diskLogic.writeStatusFile('password', password);
+  await diskLogic.writeSignalFile('change-password');
 }
 
 // Change the device and lnd password.
