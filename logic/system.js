@@ -26,19 +26,31 @@ async function getHiddenServiceUrl() {
     }
 };
 
-async function getElectrumHiddenServiceUrl() {
+async function getElectrumConnectionDetails() {
     try {
-        const url = await diskLogic.readElectrumHiddenService();
-        return `${url}:${constants.ELECTRUM_PORT}:t`;
+        const address = await diskLogic.readElectrumHiddenService();
+        const port = constants.ELECTRUM_PORT;
+        const connectionString = `${address}:${port}:t`;
+        return {
+            address,
+            port,
+            connectionString
+        };
     } catch (error) {
         throw new NodeError('Unable to get Electrum hidden service url');
     }
 };
 
-async function getBitcoinP2PHiddenServiceUrl() {
+async function getBitcoinP2PConnectionDetails() {
     try {
-        const url = await diskLogic.readBitcoinP2PHiddenService();
-        return `${url}:${constants.BITCOIN_P2P_PORT}`;
+        const address = await diskLogic.readBitcoinP2PHiddenService();
+        const port = constants.BITCOIN_P2P_PORT;
+        const connectionString = `${address}:${port}`;
+        return {
+            address,
+            port,
+            connectionString
+        };
     } catch (error) {
         throw new NodeError('Unable to get Bitcoin P2P hidden service url');
     }
@@ -53,14 +65,16 @@ async function getBitcoinRPCConnectionDetails() {
         const label = encodeURIComponent(`${user.name}'s Umbrel`);
         const rpcuser = constants.BITCOIN_RPC_USER;
         const rpcpassword = constants.BITCOIN_RPC_PASSWORD;
-        const address = `${hiddenService}:${constants.BITCOIN_RPC_PORT}`;
-        const connectionString = `btcrpc://${rpcuser}:${rpcpassword}@${address}?label=${label}`;
+        const address = hiddenService;
+        const port = constants.BITCOIN_RPC_PORT;
+        const connectionString = `btcrpc://${rpcuser}:${rpcpassword}@${address}:${port}?label=${label}`;
         return {
-          rpcuser,
-          rpcpassword,
-          address,
-          connectionString,
-        }
+            rpcuser,
+            rpcpassword,
+            address,
+            port,
+            connectionString
+        };
     } catch (error) {
         throw new NodeError('Unable to get Bitcoin RPC connection details');
     }
@@ -265,8 +279,8 @@ async function requestReboot() {
 module.exports = {
     getInfo,
     getHiddenServiceUrl,
-    getElectrumHiddenServiceUrl,
-    getBitcoinP2PHiddenServiceUrl,
+    getElectrumConnectionDetails,
+    getBitcoinP2PConnectionDetails,
     getBitcoinRPCConnectionDetails,
     getAvailableUpdate,
     getUpdateStatus,
