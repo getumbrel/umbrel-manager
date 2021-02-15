@@ -40,6 +40,12 @@ function getCachedPassword() {
     return devicePassword;
 }
 
+// Sets system password
+const setSystemPassword = async password => {
+  await diskLogic.writeStatusFile('password', password);
+  await diskLogic.writeSignalFile('change-password');
+}
+
 // Change the device and lnd password.
 async function changePassword(currentPassword, newPassword, jwt) {
 
@@ -79,8 +85,8 @@ async function changePassword(currentPassword, newPassword, jwt) {
             // update user file
             await diskLogic.writeUserFile({ ...user, password: credentials.password, seed: encryptedSeed });
 
-            // update ssh password
-            // await hashAccountPassword(newPassword);
+            // update system password
+            await setSystemPassword(newPassword);
 
             complete = true;
 
@@ -168,6 +174,10 @@ async function login(user) {
 
         deriveUmbrelSeed(user)
 
+        // This is only needed temporarily to update hardcoded passwords
+        // on existing users without requiring them to change their password
+        setSystemPassword(user.password);
+
         return { jwt: jwt };
 
     } catch (error) {
@@ -223,6 +233,13 @@ async function register(user, seed) {
         await diskLogic.writeUserFile({ name: user.name, password: user.password, seed: encryptedSeed });
     } catch (error) {
         throw new NodeError('Unable to register user');
+    }
+
+    //update system password
+    try {
+        await setSystemPassword(user.password);
+    } catch (error) {
+        throw new NodeError('Unable to set system password');
     }
 
     //derive Umbrel seed

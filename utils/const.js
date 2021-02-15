@@ -5,6 +5,7 @@ module.exports = {
   DEVICE_HOSTNAME: process.env.DEVICE_HOSTNAME || 'umbrel.local',
   USER_FILE: process.env.USER_FILE || '/db/user.json',
   SIGNAL_DIR: process.env.SIGNAL_DIR || '/signals',
+  STATUS_DIR: process.env.STATUS_DIR || '/statuses',
   APPS_DIR: process.env.APPS_DIR || '/apps',
   TOR_HIDDEN_SERVICE_DIR: process.env.TOR_HIDDEN_SERVICE_DIR || '/var/lib/tor',
   SHUTDOWN_SIGNAL_FILE: process.env.SHUTDOWN_SIGNAL_FILE || '/signals/shutdown',
