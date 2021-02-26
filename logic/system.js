@@ -244,7 +244,7 @@ async function getLndConnectUrls() {
 
 async function requestDebug() {
     try {
-        await diskLogic.writeSignalFile(`debug`);
+        await diskLogic.writeSignalFile('debug');
         return "Debug requested";
     } catch (error) {
         throw new NodeError('Could not write the signal file');
