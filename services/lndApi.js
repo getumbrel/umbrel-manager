@@ -1,73 +1,77 @@
-const axios = require('axios');
+/* eslint-disable unicorn/filename-case */
+const fetch = require('node-fetch');
 
-// axios requires http
-const lnapiUrl = process.env.MIDDLEWARE_API_URL || 'http://localhost';
-const lnapiPort = process.env.MIDDLEWARE_API_PORT || 3005;
+const middlewareUrl = process.env.MIDDLEWARE_API_URL || 'http://localhost';
+const middlewarePort = process.env.MIDDLEWARE_API_PORT || 3005;
 
 async function changePassword(currentPassword, newPassword, jwt) {
-
   const headers = {
-    headers: {
-      Authorization: 'JWT ' + jwt,
-    }
+    Authorization: 'JWT ' + jwt,
+    'Content-Type': 'application/json'
   };
 
   const body = {
     currentPassword,
-    newPassword,
+    newPassword
   };
 
-  return axios
-    .post(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/changePassword', body, headers);
+  return fetch(`${middlewareUrl}:${middlewarePort}/v1/lnd/wallet/changePassword`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body)
+  });
 }
 
 async function initializeWallet(password, seed, jwt) {
   const headers = {
-    headers: {
-      Authorization: 'JWT ' + jwt,
-    }
+    Authorization: 'JWT ' + jwt,
+    'Content-Type': 'application/json'
   };
 
   const body = {
     password,
-    seed,
+    seed
   };
 
-  return axios
-    .post(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/init', body, headers);
+  return fetch(`${middlewareUrl}:${middlewarePort}/v1/lnd/wallet/init`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body)
+  });
 }
 
 async function unlockLnd(password, jwt) {
-
   const headers = {
-    headers: {
-      Authorization: 'JWT ' + jwt,
-    }
+    Authorization: 'JWT ' + jwt,
+    'Content-Type': 'application/json'
   };
 
   const body = {
-    password,
+    password
   };
 
-  return axios
-    .post(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/unlock', body, headers);
+  return fetch(`${middlewareUrl}:${middlewarePort}/v1/lnd/wallet/unlock`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body)
+  });
 }
 
 async function getBitcoindAddresses(jwt) {
-
   const headers = {
-    headers: {
-      Authorization: 'JWT ' + jwt,
-    }
+    Authorization: 'JWT ' + jwt,
+    'Content-Type': 'application/json'
   };
 
-  return axios
-    .get(lnapiUrl + ':' + lnapiPort + '/v1/bitcoind/info/addresses', headers);
+  return fetch(`${middlewareUrl}:${middlewarePort}/v1/bitcoind/info/addresses`, {
+    method: 'POST',
+    headers
+  });
 }
 
 module.exports = {
   changePassword,
   initializeWallet,
   unlockLnd,
-  getBitcoindAddresses,
+  getBitcoindAddresses
 };

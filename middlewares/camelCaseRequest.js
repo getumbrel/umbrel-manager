@@ -1,12 +1,13 @@
 const camelizeKeys = require('camelize-keys');
 
-function camelCaseRequest(req, res, next) {
-  if (req && req.body) {
-    req.body = camelizeKeys(req.body, '_');
+function camelCaseRequest(request, res, next) {
+  if (request && request.body) {
+    request.body = camelizeKeys(request.body, '_');
   }
+
   next();
 }
 
 module.exports = {
-  camelCaseRequest,
+  camelCaseRequest
 };

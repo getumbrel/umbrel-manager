@@ -1,12 +1,11 @@
 /* eslint-disable no-unused-vars, no-magic-numbers */
 const logger = require('utils/logger.js');
-const LndError = require('models/errors.js').LndError;
+const constants = require('utils/const.js');
 
-function handleError(error, req, res, next) {
-
-  var statusCode = error.statusCode || 500;
-  var route = req.url || '';
-  var message = error.message || '';
+function handleError(error, request, res, next) {
+  const statusCode = error.statusCode || constants.STATUS_CODES.SERVER_ERROR;
+  const route = request.url || '';
+  const message = error.message || '';
 
   logger.error(message, route, error.stack);
 

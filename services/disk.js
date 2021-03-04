@@ -3,26 +3,25 @@
  */
 
 const logger = require('utils/logger');
-const fs = require('fs');
-const fse = require('fs-extra');
+const fs = require('fs-extra');
 const crypto = require('crypto');
 const uint32Bytes = 4;
 
 // Deletes a file from the filesystem
 function deleteFile(filePath) {
-  return new Promise((resolve, reject) => fs.unlink(filePath, (err, str) => {
-    if (err) {
-      reject(err);
+  return new Promise((resolve, reject) => fs.unlink(filePath, (error, string) => {
+    if (error) {
+      reject(error);
     } else {
-      resolve(str);
+      resolve(string);
     }
   }));
 }
 
 async function copyFolder(fromFile, toFile) {
-  return new Promise((resolve, reject) => fse.copy(fromFile, toFile, err => {
-    if (err) {
-      reject(err);
+  return new Promise((resolve, reject) => fs.copy(fromFile, toFile, error => {
+    if (error) {
+      reject(error);
     } else {
       resolve();
     }
@@ -31,11 +30,9 @@ async function copyFolder(fromFile, toFile) {
 
 // Delete all items in a directory.
 async function deleteItemsInDir(path) {
-
   const contents = fs.readdirSync(path);
 
   for (const item of contents) {
-
     const curPath = path + '/' + item;
     if (fs.statSync(curPath).isDirectory()) {
       deleteFolderRecursive(curPath);
@@ -46,7 +43,6 @@ async function deleteItemsInDir(path) {
 }
 
 async function deleteFoldersInDir(path) {
-
   const contents = fs.readdirSync(path);
 
   for (const item of contents) {
@@ -68,6 +64,7 @@ function deleteFolderRecursive(path) {
         fs.unlinkSync(curPath);
       }
     }
+
     fs.rmdirSync(path);
   }
 }
@@ -87,7 +84,6 @@ async function listDirsInDir(dir) {
 }
 
 async function moveFoldersToDir(fromDir, toDir) {
-
   const contents = fs.readdirSync(fromDir);
 
   for (const item of contents) {
@@ -99,11 +95,11 @@ async function moveFoldersToDir(fromDir, toDir) {
 
 // Reads a file. Wraps fs.readFile into a native promise
 function readFile(filePath, encoding) {
-  return new Promise((resolve, reject) => fs.readFile(filePath, encoding, (err, str) => {
-    if (err) {
-      reject(err);
+  return new Promise((resolve, reject) => fs.readFile(filePath, encoding, (error, string) => {
+    if (error) {
+      reject(error);
     } else {
-      resolve(str);
+      resolve(string);
     }
   }));
 }
@@ -120,9 +116,9 @@ async function readJsonFile(filePath) {
 // Writes a string to a file. Wraps fs.writeFile into a native promise
 // This is _not_ concurrency safe, so don't export it without making it like writeJsonFile
 function writeFile(filePath, data, encoding) {
-  return new Promise((resolve, reject) => fs.writeFile(filePath, data, encoding, err => {
-    if (err) {
-      reject(err);
+  return new Promise((resolve, reject) => fs.writeFile(filePath, data, encoding, error => {
+    if (error) {
+      reject(error);
     } else {
       resolve();
     }
@@ -131,49 +127,51 @@ function writeFile(filePath, data, encoding) {
 
 // Like writeFile but will create the file if it doesn't already exist
 async function ensureWriteFile(filePath, data, encoding) {
-  await fse.ensureFile(filePath);
-  return await writeFile(filePath, data, encoding);
+  await fs.ensureFile(filePath);
+  return writeFile(filePath, data, encoding);
 }
 
-function writeJsonFile(filePath, obj) {
-  const tempFileName = `${filePath}.${crypto.randomBytes(uint32Bytes).readUInt32LE(0)}`;
+function writeJsonFile(filePath, object) {
+  const temporaryFileName = `${filePath}.${crypto.randomBytes(uint32Bytes).readUInt32LE(0)}`;
 
-  return writeFile(tempFileName, JSON.stringify(obj, null, 2), 'utf8')
-    .then(() => new Promise((resolve, reject) => fs.rename(tempFileName, filePath, err => {
-      if (err) {
-        reject(err);
+  return writeFile(temporaryFileName, JSON.stringify(object, null, 2), 'utf8')
+    .then(() => new Promise((resolve, reject) => fs.rename(temporaryFileName, filePath, error => {
+      if (error) {
+        reject(error);
       } else {
         resolve();
       }
     })))
-    .catch(err => {
-      if (err) {
-        fs.unlink(tempFileName, err => {
-          logger.warn('Error removing temporary file after error', 'disk', { err, tempFileName });
+    .catch(error => {
+      if (error) {
+        fs.unlink(temporaryFileName, error_ => {
+          logger.warn('Error removing temporary file after error', 'disk', {err: error_, tempFileName: temporaryFileName});
         });
       }
-      throw err;
+
+      throw error;
     });
 }
 
-function writeKeyFile(filePath, obj) {
-  const tempFileName = `${filePath}.${crypto.randomBytes(uint32Bytes).readUInt32LE(0)}`;
+function writeKeyFile(filePath, object) {
+  const temporaryFileName = `${filePath}.${crypto.randomBytes(uint32Bytes).readUInt32LE(0)}`;
 
-  return writeFile(tempFileName, obj, 'utf8')
-    .then(() => new Promise((resolve, reject) => fs.rename(tempFileName, filePath, err => {
-      if (err) {
-        reject(err);
+  return writeFile(temporaryFileName, object, 'utf8')
+    .then(() => new Promise((resolve, reject) => fs.rename(temporaryFileName, filePath, error => {
+      if (error) {
+        reject(error);
       } else {
         resolve();
       }
     })))
-    .catch(err => {
-      if (err) {
-        fs.unlink(tempFileName, err => {
-          logger.warn('Error removing temporary file after error', 'disk', { err, tempFileName });
+    .catch(error => {
+      if (error) {
+        fs.unlink(temporaryFileName, error_ => {
+          logger.warn('Error removing temporary file after error', 'disk', {err: error_, tempFileName: temporaryFileName});
         });
       }
-      throw err;
+
+      throw error;
     });
 }
 
@@ -189,5 +187,5 @@ module.exports = {
   writeJsonFile,
   writeKeyFile,
   writeFile,
-  ensureWriteFile,
+  ensureWriteFile
 };

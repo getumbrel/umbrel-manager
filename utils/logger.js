@@ -1,4 +1,4 @@
-require('winston-daily-rotate-file');
+require('winston-daily-rotate-file'); // eslint-disable-line import/no-unassigned-import
 const constants = require('utils/const.js');
 const fs = require('fs');
 const path = require('path');
@@ -15,8 +15,8 @@ if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
 }
 
-const appendCorrelationId = format((info, opts) => {
-  var apiRequest = getNamespace(constants.REQUEST_CORRELATION_NAMESPACE_KEY);
+const appendCorrelationId = format((info, _options) => {
+  const apiRequest = getNamespace(constants.REQUEST_CORRELATION_NAMESPACE_KEY);
   if (apiRequest) {
     info.internalCorrelationId = apiRequest.get(constants.REQUEST_CORRELATION_ID_KEY);
   }
@@ -40,9 +40,9 @@ const apiFileTransport = new winston.transports.DailyRotateFile({
 });
 
 const localLogFormat = printf(info => {
-  var data = '';
+  let data = '';
   if (info.data) {
-    data = JSON.stringify({ data: info.data });
+    data = JSON.stringify({data: info.data});
   }
 
   return `${info.timestamp} ${info.level.toUpperCase()}: ${info.internalCorrelationId} [${info._module}] ${info.message} ${data}`;
@@ -50,7 +50,7 @@ const localLogFormat = printf(info => {
 
 const localLoggerTransports = [
   errorFileTransport,
-  apiFileTransport,
+  apiFileTransport
 ];
 
 if (ENV === 'development') {
@@ -69,7 +69,7 @@ winston.loggers.add(LOCAL, {
 
 const morganConfiguration = {
   stream: {
-    write: function (message) {
+    write(message) {
       info(message, 'umbrel-manager');
     }
   }
@@ -88,8 +88,8 @@ function error(message, _module, data) {
   printToStandardOut(_module);
   printToStandardOut(data);
   localLogger.error(message, {
-    _module: _module,
-    data: data
+    _module,
+    data
   });
 }
 
@@ -98,8 +98,8 @@ function warn(message, _module, data) {
   printToStandardOut(_module);
   printToStandardOut(data);
   localLogger.warn(message, {
-    _module: _module,
-    data: data
+    _module,
+    data
   });
 }
 
@@ -108,8 +108,8 @@ function info(message, _module, data) {
   printToStandardOut(_module);
   printToStandardOut(data);
   localLogger.info(message, {
-    _module: _module,
-    data: data
+    _module,
+    data
   });
 }
 
@@ -118,16 +118,16 @@ function debug(message, _module, data) {
   printToStandardOut(_module);
   printToStandardOut(data);
   localLogger.debug(message, {
-    _module: _module,
-    data: data
+    _module,
+    data
   });
 }
 
 module.exports = {
-  error: error,
-  warn: warn,
-  info: info,
-  debug: debug,
-  morganConfiguration: morganConfiguration,
+  error,
+  warn,
+  info,
+  debug,
+  morganConfiguration
 };
 
