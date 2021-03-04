@@ -8,27 +8,27 @@ const auth = require('middlewares/auth.js');
 const constants = require('utils/const.js');
 const safeHandler = require('utils/safeHandler');
 
-router.get('/', auth.jwt, safeHandler(async (req, res) => {
-    const query = {
-      installed: req.query.installed === '1',
-    };
-    const apps = await appsLogic.get(query);
+router.get('/', auth.jwt, safeHandler(async (request, res) => {
+  const query = {
+    installed: request.query.installed === '1'
+  };
+  const apps = await appsLogic.get(query);
 
-    return res.status(constants.STATUS_CODES.OK).json(apps);
+  return res.status(constants.STATUS_CODES.OK).json(apps);
 }));
 
-router.post('/:id/install', auth.jwt, safeHandler(async (req, res) => {
-    const {id} = req.params;
-    const result = await appsLogic.install(id);
+router.post('/:id/install', auth.jwt, safeHandler(async (request, res) => {
+  const {id} = request.params;
+  const result = await appsLogic.install(id);
 
-    return res.status(constants.STATUS_CODES.OK).json(result);
+  return res.status(constants.STATUS_CODES.OK).json(result);
 }));
 
-router.post('/:id/uninstall', auth.jwt, safeHandler(async (req, res) => {
-    const {id} = req.params;
-    const result = await appsLogic.uninstall(id);
+router.post('/:id/uninstall', auth.jwt, safeHandler(async (request, res) => {
+  const {id} = request.params;
+  const result = await appsLogic.uninstall(id);
 
-    return res.status(constants.STATUS_CODES.OK).json(result);
+  return res.status(constants.STATUS_CODES.OK).json(result);
 }));
 
 module.exports = router;

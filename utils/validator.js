@@ -8,7 +8,6 @@ const MAX_MEMO_LENGTH = 1024;
 const MIN_PASSWORD_LENGTH = 12;
 
 function isAlphanumeric(string) {
-
   isDefined(string);
 
   if (!validator.isAlphanumeric(string)) {
@@ -17,7 +16,6 @@ function isAlphanumeric(string) {
 }
 
 function isAlphanumericAndSpaces(string) {
-
   isDefined(string);
 
   if (!validator.matches(string, '^[a-zA-Z0-9\\s]*$')) {
@@ -50,13 +48,13 @@ function isMinPasswordLength(password) {
 }
 
 function isPositiveInteger(amount) {
-  if (!validator.isInt(amount + '', { gt: 0 })) {
+  if (!validator.isInt(String(amount), {gt: 0})) {
     throw new ValidationError('Must be positive integer.');
   }
 }
 
 function isPositiveIntegerOrZero(amount) {
-  if (!validator.isInt(amount + '', { gt: -1 })) {
+  if (!validator.isInt(String(amount), {gt: -1})) {
     throw new ValidationError('Must be positive integer.');
   }
 }
@@ -82,5 +80,5 @@ module.exports = {
   isPositiveInteger,
   isPositiveIntegerOrZero,
   isString,
-  isValidMemoLength,
+  isValidMemoLength
 };

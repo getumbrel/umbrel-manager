@@ -1,14 +1,16 @@
+/* eslint-disable no-promise-executor-return */
+
 const path = require('path');
 
 const constants = require('utils/const.js');
 const diskService = require('services/disk.js');
 
 async function deleteUserFile() {
-  return await diskService.deleteFile(constants.USER_FILE);
+  return diskService.deleteFile(constants.USER_FILE);
 }
 
 async function deleteItemsInDir(directory) {
-  return await diskService.deleteItemsInDir(directory);
+  return diskService.deleteItemsInDir(directory);
 }
 
 async function deleteFoldersInDir(directory) {
@@ -22,40 +24,39 @@ async function fileExists(path) {
 }
 
 async function getBuildDetails(appsToLaunch) {
-
   const details = [];
 
-  for (const applicationName of Object.keys(appsToLaunch)) {
-    const application = {};
-    application.name = applicationName;
-    const path = constants.WORKING_DIRECTORY + '/' + application.name + '/'
-      + appsToLaunch[application.name].version + '/';
-    application.ymlPath = path + application.name + '.yml';
-    application.digestsPath = path + 'digests.json';
-    details.push(application);
+  for (const appName of Object.keys(appsToLaunch)) {
+    const app = {};
+    app.name = appName;
+    const path = constants.WORKING_DIRECTORY + '/' + app.name + '/' +
+      appsToLaunch[app.name].version + '/';
+    app.ymlPath = path + app.name + '.yml';
+    app.digestsPath = path + 'digests.json';
+    details.push(app);
   }
 
   return details;
 }
 
 async function listVersionsForApp(app) {
-  return await diskService.listDirsInDir(constants.WORKING_DIRECTORY + '/' + app);
+  return diskService.listDirsInDir(constants.WORKING_DIRECTORY + '/' + app);
 }
 
 async function moveFoldersToDir(fromDir, toDir) {
   await diskService.moveFoldersToDir(fromDir, toDir);
 }
 
-async function writeAppVersionFile(application, json) {
-  return diskService.writeJsonFile(constants.WORKING_DIRECTORY + '/' + application, json);
+async function writeAppVersionFile(app, json) {
+  return diskService.writeJsonFile(constants.WORKING_DIRECTORY + '/' + app, json);
 }
 
 async function readUserFile() {
   const defaultProperties = {
-    name: "",
-    password: "",
-    seed: "",
-    installedApps: [],
+    name: '',
+    password: '',
+    seed: '',
+    installedApps: []
   };
   const userFile = await diskService.readJsonFile(constants.USER_FILE);
   return {...defaultProperties, ...userFile};
@@ -77,7 +78,7 @@ async function writeUmbrelSeedFile(umbrelSeed) {
   return diskService.ensureWriteFile(constants.UMBREL_SEED_FILE, umbrelSeed);
 }
 
-async function umbrelSeedFileExists(umbrelSeed) {
+async function umbrelSeedFileExists() {
   return diskService.readFile(constants.UMBREL_SEED_FILE)
     .then(() => Promise.resolve(true))
     .catch(() => Promise.resolve(false));
@@ -95,8 +96,8 @@ function hiddenServiceFileExists() {
     .catch(() => Promise.resolve(false));
 }
 
-async function readAppVersionFile(application) {
-  return diskService.readJsonFile(constants.WORKING_DIRECTORY + '/' + application);
+async function readAppVersionFile(app) {
+  return diskService.readJsonFile(constants.WORKING_DIRECTORY + '/' + app);
 }
 
 function readElectrumHiddenService() {
@@ -131,32 +132,10 @@ function readUmbrelVersionFile() {
   return diskService.readJsonFile(constants.UMBREL_VERSION_FILE);
 }
 
-function readUpdateStatusFile() {
-  return diskService.readJsonFile(constants.UPDATE_STATUS_FILE);
-}
-
-function writeUpdateStatusFile(json) {
-  return diskService.writeJsonFile(constants.UPDATE_STATUS_FILE, json);
-}
-
-function updateSignalFileExists(version) {
-  return diskService.readUtf8File(constants.UPDATE_SIGNAL_FILE)
-    .then(() => Promise.resolve(true))
-    .catch(() => Promise.resolve(false));
-}
-
 function updateLockFileExists(version) {
   return diskService.readUtf8File(constants.UPDATE_LOCK_FILE)
     .then(() => Promise.resolve(true))
     .catch(() => Promise.resolve(false));
-}
-
-function writeUpdateSignalFile() {
-  return diskService.writeFile(constants.UPDATE_SIGNAL_FILE, 'true');
-}
-
-function readBackupStatusFile() {
-  return diskService.readJsonFile(constants.BACKUP_STATUS_FILE);
 }
 
 function readJWTPrivateKeyFile() {
@@ -175,49 +154,18 @@ function writeJWTPublicKeyFile(data) {
   return diskService.writeKeyFile(constants.JWT_PUBLIC_KEY_FILE, data);
 }
 
-async function shutdown() {
-  await diskService.writeFile(constants.SHUTDOWN_SIGNAL_FILE, 'true');
-}
-
-async function reboot() {
-  await diskService.writeFile(constants.REBOOT_SIGNAL_FILE, 'true');
-}
-
 // Read the contends of a file.
 async function readUtf8File(path) {
-  return await diskService.readUtf8File(path);
+  return diskService.readUtf8File(path);
 }
 
 // Read the contents of a file and return a json object.
 async function readJsonFile(path) {
-  return await diskService.readJsonFile(path);
+  return diskService.readJsonFile(path);
 }
 
-// Send a signal to perform a migration.
-async function migration() {
-  await diskService.writeFile(constants.MIGRATION_SIGNAL_FILE, 'true');
-}
-
-function readMigrationStatusFile() {
-  return diskService.readJsonFile(constants.MIGRATION_STATUS_FILE);
-}
-
-async function writeMigrationStatusFile(json) {
-  return diskService.writeJsonFile(constants.MIGRATION_STATUS_FILE, json);
-}
-
-// Send a signal to enable/disable SSH.
-async function enableSsh(state) {
-  await diskService.writeFile(constants.SSH_SIGNAL_FILE, state);
-}
-
-function readSshSignalFile() {
-  return diskService.readFile(constants.SSH_SIGNAL_FILE);
-}
-
-// TODO: Transition all logic to use this signal function
 function writeSignalFile(signalFile) {
-  if(!/^[0-9a-zA-Z-_]+$/.test(signalFile)) {
+  if (!/^[\w-]+$/.test(signalFile)) {
     throw new Error('Invalid signal file characters');
   }
 
@@ -225,14 +173,22 @@ function writeSignalFile(signalFile) {
   return diskService.writeFile(signalFilePath, 'true');
 }
 
-// TODO: Transition all logic to use this status function
 function writeStatusFile(statusFile, contents) {
-  if(!/^[0-9a-zA-Z-_]+$/.test(statusFile)) {
-    throw new Error('Invalid signal file characters');
+  if (!/^[\w-]+$/.test(statusFile)) {
+    throw new Error('Invalid status file characters');
   }
 
   const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
   return diskService.writeFile(statusFilePath, contents);
+}
+
+function readStatusFile(statusFile) {
+  if (!/^[\w-]+$/.test(statusFile)) {
+    throw new Error('Invalid status file characters');
+  }
+
+  const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
+  return diskService.readJsonFile(statusFilePath);
 }
 
 function readAppRegistry() {
@@ -241,9 +197,10 @@ function readAppRegistry() {
 }
 
 function readHiddenService(id) {
-  if(!/^[0-9a-zA-Z-_]+$/.test(id)) {
+  if (!/^[\w-]+$/.test(id)) {
     throw new Error('Invalid hidden service ID');
   }
+
   const hiddenServiceFile = path.join(constants.TOR_HIDDEN_SERVICE_DIR, id, 'hostname');
   return diskService.readUtf8File(hiddenServiceFile);
 }
@@ -274,27 +231,16 @@ module.exports = {
   readLndCert,
   readLndAdminMacaroon,
   readUmbrelVersionFile,
-  readUpdateStatusFile,
-  writeUpdateStatusFile,
-  writeUpdateSignalFile,
-  updateSignalFileExists,
   updateLockFileExists,
-  readBackupStatusFile,
   readJWTPrivateKeyFile,
   readJWTPublicKeyFile,
   writeJWTPrivateKeyFile,
   writeJWTPublicKeyFile,
-  shutdown,
-  reboot,
   readUtf8File,
   readJsonFile,
-  writeMigrationStatusFile,
-  readMigrationStatusFile,
-  migration,
-  enableSsh,
-  readSshSignalFile,
   writeSignalFile,
   writeStatusFile,
+  readStatusFile,
   readAppRegistry,
-  readHiddenService,
+  readHiddenService
 };

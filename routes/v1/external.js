@@ -1,5 +1,4 @@
-const express = require('express');
-const router = express.Router();
+import {Router as router} from 'express';
 
 const auth = require('middlewares/auth.js');
 
@@ -7,25 +6,23 @@ const constants = require('utils/const.js');
 const safeHandler = require('utils/safeHandler');
 
 const {SocksProxyAgent} = require('socks-proxy-agent');
-const axios = require('axios');
+const fetch = require('node-fetch');
 
 const agent = new SocksProxyAgent(`socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`);
 
-router.get('/price', auth.jwt, safeHandler(async(req, res) => {
+router.get('/price', auth.jwt, safeHandler(async (request, response) => {
   // Default to USD
-  const currency = req.query.currency || "USD";
-  
-  const response = await axios({
-    url: `https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${currency}`,
-    httpsAgent: agent,
-    method: 'GET'
+  const currency = request.query.currency || 'USD';
+
+  const apiResponse = await fetch(`https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=${currency}`, {
+    agent
   });
 
-  if (response.data) {
-    return res.status(constants.STATUS_CODES.OK).json(response.data);
+  if (apiResponse.data) {
+    return response.status(constants.STATUS_CODES.OK).json(apiResponse.data);
   }
 
-  return res.status(constants.STATUS_CODES.BAD_GATEWAY).json();
+  return response.status(constants.STATUS_CODES.BAD_GATEWAY).json();
 }));
 
 module.exports = router;

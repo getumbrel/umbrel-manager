@@ -8,7 +8,7 @@ async function get(query) {
   await Promise.all(apps.map(async app => {
     try {
       app.hiddenService = await diskLogic.readHiddenService(`app-${app.id}`);
-    } catch(e) {
+    } catch {
       app.hiddenService = '';
     }
   }));
@@ -27,31 +27,31 @@ async function isValidAppId(id) {
 }
 
 async function install(id) {
-  if(! await isValidAppId(id)) {
+  if (!await isValidAppId(id)) {
     throw new NodeError('Invalid app id');
   }
 
   try {
     await diskLogic.writeSignalFile(`app-install-${id}`);
-  } catch (error) {
+  } catch {
     throw new NodeError('Could not write the signal file');
   }
-};
+}
 
 async function uninstall(id) {
-  if(! await isValidAppId(id)) {
+  if (!await isValidAppId(id)) {
     throw new NodeError('Invalid app id');
   }
 
   try {
     await diskLogic.writeSignalFile(`app-uninstall-${id}`);
-  } catch (error) {
+  } catch {
     throw new NodeError('Could not write the signal file');
   }
-};
+}
 
 module.exports = {
   get,
   install,
-  uninstall,
+  uninstall
 };

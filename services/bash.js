@@ -3,14 +3,14 @@ const childProcess = require('child_process');
 // Sets environment variables on container.
 // Env should not contain sensitive data, because environment variables are not secure.
 function extendProcessEnv(env) {
-  Object.keys(env).map(function (objectKey) { // eslint-disable-line array-callback-return
+  Object.keys(env).map(objectKey => { // eslint-disable-line array-callback-return
     process.env[objectKey] = env[objectKey];
   });
 }
 
 // Executes docker-compose command with common options
-const exec = (command, args, opts) => new Promise((resolve, reject) => {
-  const options = opts || {};
+const exec = (command, args, options_) => new Promise((resolve, reject) => {
+  const options = options_ || {};
 
   const cwd = options.cwd || null;
 
@@ -18,10 +18,10 @@ const exec = (command, args, opts) => new Promise((resolve, reject) => {
     extendProcessEnv(options.env);
   }
 
-  const childProc = childProcess.spawn(command, args, { cwd });
+  const childProc = childProcess.spawn(command, args, {cwd});
 
-  childProc.on('error', err => {
-    reject(err);
+  childProc.on('error', error => {
+    reject(error);
   });
 
   const result = {
@@ -52,5 +52,5 @@ const exec = (command, args, opts) => new Promise((resolve, reject) => {
 });
 
 module.exports = {
-  exec,
+  exec
 };
