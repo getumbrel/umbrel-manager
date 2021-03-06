@@ -127,6 +127,10 @@ function readLndAdminMacaroon() {
   return diskService.readFile(constants.LND_ADMIN_MACAROON_FILE);
 }
 
+function readLndReadonlyMacaroon() {
+  return diskService.readFile(constants.LND_READONLY_MACAROON_FILE);
+}
+
 function readUmbrelVersionFile() {
   return diskService.readJsonFile(constants.UMBREL_VERSION_FILE);
 }

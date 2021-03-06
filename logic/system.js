@@ -207,6 +207,13 @@ async function getLndConnectUrls() {
         throw new NodeError('Unable to read lnd macaroon file');
     }
 
+    let macaroonReadonly;
+    try {
+        macaroonReadonly = await diskLogic.readLndReadonlyMacaroon();
+    } catch (error) {
+        throw new NodeError('Unable to read lnd readonly.macaroon file');
+    }
+
     let restTorHost;
     try {
         restTorHost = await diskLogic.readLndRestHiddenService();
@@ -251,7 +258,9 @@ async function getLndConnectUrls() {
         restTor,
         restLocal,
         grpcTor,
-        grpcLocal
+        grpcLocal,
+        adminMacaroonHex: macaroon.toString('hex'),
+        readonlyMacaroonHex: macaroonReadonly.toString('hex')
     };
 
 }
