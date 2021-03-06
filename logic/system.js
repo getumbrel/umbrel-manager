@@ -200,11 +200,18 @@ async function getLndConnectUrls() {
         throw new NodeError('Unable to read lnd cert file');
     }
 
-    let macaroon;
+    let adminMacaroon;
     try {
-        macaroon = await diskLogic.readLndAdminMacaroon();
+        adminMacaroon = await diskLogic.readLndAdminMacaroon();
     } catch (error) {
-        throw new NodeError('Unable to read lnd macaroon file');
+        throw new NodeError('Unable to read lnd admin.macaroon file');
+    }
+
+    let readonlyMacaroon;
+    try {
+        readonlyMacaroon = await diskLogic.readLndReadonlyMacaroon();
+    } catch (error) {
+        throw new NodeError('Unable to read lnd readonly.macaroon file');
     }
 
     let restTorHost;
@@ -217,7 +224,7 @@ async function getLndConnectUrls() {
     const restTor = encode({
         host: restTorHost,
         cert,
-        macaroon,
+        macaroon: adminMacaroon,
     });
 
     let grpcTorHost;
@@ -230,28 +237,30 @@ async function getLndConnectUrls() {
     const grpcTor = encode({
         host: grpcTorHost,
         cert,
-        macaroon,
+        macaroon: adminMacaroon,
     });
 
     let restLocalHost = `${constants.DEVICE_HOSTNAME}:8080`;
     const restLocal = encode({
         host: restLocalHost,
         cert,
-        macaroon,
+        macaroon: adminMacaroon,
     });
 
     let grpcLocalHost = `${constants.DEVICE_HOSTNAME}:10009`;
     const grpcLocal = encode({
         host: grpcLocalHost,
         cert,
-        macaroon,
+        macaroon: adminMacaroon,
     });
 
     return {
         restTor,
         restLocal,
         grpcTor,
-        grpcLocal
+        grpcLocal,
+        adminMacaroonHex: adminMacaroon.toString('hex'),
+        readonlyMacaroonHex: readonlyMacaroon.toString('hex')
     };
 
 }
