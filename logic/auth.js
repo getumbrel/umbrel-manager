@@ -46,50 +46,6 @@ const setSystemPassword = async password => {
   await diskLogic.writeSignalFile('change-password');
 }
 
-// Change the lnd password.
-async function changeLndPassword(currentPassword, newPassword, jwt) {
-    // restart lnd
-    try {
-        await compose.restartOne('lnd', { cwd: constants.DOCKER_COMPOSE_DIRECTORY });
-    } catch (error) {
-        throw new Error('Unable to change password as lnd wouldn\'t restart');
-    }
-
-    let complete = false;
-    let attempt = 0;
-    let unauthorized = false;
-    const MAX_ATTEMPTS = 20;
-
-    do {
-        try {
-            attempt++;
-
-            // call lnapi to change password
-            changePasswordStatus.percent = 60 + attempt; // eslint-disable-line no-magic-numbers
-            await lndApiService.changePassword(currentPassword, newPassword, jwt);
-            return true;
-        } catch (error) {
-            // wait for lnd to boot up
-            if (error.response.status === constants.STATUS_CODES.BAD_GATEWAY) {
-                await sleepSeconds(1);
-
-                // user supplied incorrect credentials
-            } else if (error.response.status === constants.STATUS_CODES.FORBIDDEN) {
-                unauthorized = true;
-
-                // unknown error occurred
-            } else {
-                changePasswordStatus.error = true;
-                changePasswordStatus.percent = 100;
-
-                throw error;
-            }
-        }
-    } while (!complete && attempt < MAX_ATTEMPTS && !unauthorized && !changePasswordStatus.error);
-
-    throw new Error('Unable to change password');
-}
-
 // Change the dashboard and system password.
 async function changePassword(currentPassword, newPassword, jwt) {
     resetChangePasswordStatus();
