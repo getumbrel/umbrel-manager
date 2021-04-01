@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { CipherSeed } = require('aezeed');
 const iocane = require("iocane");
-const compose = require("docker-compose");
 const diskLogic = require('logic/disk.js');
 const lndApiService = require('services/lndApi.js');
 const bashService = require('services/bash.js');

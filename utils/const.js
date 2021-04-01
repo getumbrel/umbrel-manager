@@ -12,7 +12,6 @@ module.exports = {
   REBOOT_SIGNAL_FILE: process.env.REBOOT_SIGNAL_FILE || '/signals/reboot',
   JWT_PUBLIC_KEY_FILE: process.env.JWT_PUBLIC_KEY_FILE || '/db/jwt-public-key/jwt.pem',
   JWT_PRIVATE_KEY_FILE: process.env.JWT_PRIVATE_KEY_FILE || '/db/jwt-private-key/jwt.key',
-  DOCKER_COMPOSE_DIRECTORY: process.env.DOCKER_COMPOSE_DIRECTORY || '/docker-compose',
   UMBREL_SEED_FILE: process.env.UMBREL_SEED_FILE || '/db/umbrel-seed/seed',
   UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE: process.env.UMBREL_DASHBOARD_HIDDEN_SERVICE_FILE || '/var/lib/tor/web/hostname',
   ELECTRUM_HIDDEN_SERVICE_FILE: process.env.ELECTRUM_HIDDEN_SERVICE_FILE || '/var/lib/tor/electrum/hostname',
