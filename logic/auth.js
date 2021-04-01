@@ -134,6 +134,13 @@ async function login(user) {
         // on existing users without requiring them to change their password
         setSystemPassword(user.password);
 
+        // This is only needed temporarily to remove the user set LND wallet
+        // password for old users and change it to a hardcoded one so we can
+        // auto unlock it in the future.
+        if (! (await lndApiService.getStatus()).data.unlocked) {
+          await lndApiService.changePassword(user.password, 'moneyprintergobrrr', jwt);
+        }
+
         return { jwt: jwt };
 
     } catch (error) {
