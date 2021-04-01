@@ -65,9 +65,14 @@ async function getBitcoindAddresses(jwt) {
     .get(lnapiUrl + ':' + lnapiPort + '/v1/bitcoind/info/addresses', headers);
 }
 
+async function getStatus() {
+  return axios.get(lnapiUrl + ':' + lnapiPort + '/v1/lnd/info/status');
+}
+
 module.exports = {
   changePassword,
   initializeWallet,
   unlockLnd,
   getBitcoindAddresses,
+  getStatus,
 };
