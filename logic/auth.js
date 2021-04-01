@@ -46,13 +46,8 @@ const setSystemPassword = async password => {
   await diskLogic.writeSignalFile('change-password');
 }
 
-// Change the device and lnd password.
-async function changePassword(currentPassword, newPassword, jwt) {
-
-
-    resetChangePasswordStatus();
-    changePasswordStatus.percent = 1; // eslint-disable-line no-magic-numbers
-
+// Change the lnd password.
+async function changeLndPassword(currentPassword, newPassword, jwt) {
     // restart lnd
     try {
         await compose.restartOne('lnd', { cwd: constants.DOCKER_COMPOSE_DIRECTORY });
@@ -60,10 +55,9 @@ async function changePassword(currentPassword, newPassword, jwt) {
         throw new Error('Unable to change password as lnd wouldn\'t restart');
     }
 
-    changePasswordStatus.percent = 40; // eslint-disable-line no-magic-numbers
-
     let complete = false;
     let attempt = 0;
+    let unauthorized = false;
     const MAX_ATTEMPTS = 20;
 
     do {
@@ -73,36 +67,15 @@ async function changePassword(currentPassword, newPassword, jwt) {
             // call lnapi to change password
             changePasswordStatus.percent = 60 + attempt; // eslint-disable-line no-magic-numbers
             await lndApiService.changePassword(currentPassword, newPassword, jwt);
-
-            // update user file
-            const user = await diskLogic.readUserFile();
-            const credentials = hashCredentials(SYSTEM_USER, newPassword);
-
-            // re-encrypt seed with new password
-            const decryptedSeed = await iocane.createSession().decrypt(user.seed, currentPassword);
-            const encryptedSeed = await iocane.createSession().encrypt(decryptedSeed, newPassword);
-
-            // update user file
-            await diskLogic.writeUserFile({ ...user, password: credentials.password, seed: encryptedSeed });
-
-            // update system password
-            await setSystemPassword(newPassword);
-
-            complete = true;
-
-            // cache the password for later use
-            cachePassword(newPassword);
-
-            changePasswordStatus.percent = 100;
+            return true;
         } catch (error) {
-
             // wait for lnd to boot up
             if (error.response.status === constants.STATUS_CODES.BAD_GATEWAY) {
                 await sleepSeconds(1);
 
                 // user supplied incorrect credentials
             } else if (error.response.status === constants.STATUS_CODES.FORBIDDEN) {
-                changePasswordStatus.unauthorized = true;
+                unauthorized = true;
 
                 // unknown error occurred
             } else {
@@ -112,15 +85,42 @@ async function changePassword(currentPassword, newPassword, jwt) {
                 throw error;
             }
         }
-    } while (!complete && attempt < MAX_ATTEMPTS && !changePasswordStatus.unauthorized && !changePasswordStatus.error);
+    } while (!complete && attempt < MAX_ATTEMPTS && !unauthorized && !changePasswordStatus.error);
 
-    if (!complete && attempt === MAX_ATTEMPTS) {
-        changePasswordStatus.error = true;
-        changePasswordStatus.percent = 100;
+    throw new Error('Unable to change password');
+}
 
-        throw new Error('Unable to change password');
+// Change the dashboard and system password.
+async function changePassword(currentPassword, newPassword, jwt) {
+    resetChangePasswordStatus();
+    changePasswordStatus.percent = 1; // eslint-disable-line no-magic-numbers
+
+    try {
+      // update user file
+      const user = await diskLogic.readUserFile();
+      const credentials = hashCredentials(SYSTEM_USER, newPassword);
+
+      // re-encrypt seed with new password
+      const decryptedSeed = await iocane.createSession().decrypt(user.seed, currentPassword);
+      const encryptedSeed = await iocane.createSession().encrypt(decryptedSeed, newPassword);
+
+      // update user file
+      await diskLogic.writeUserFile({ ...user, password: credentials.password, seed: encryptedSeed });
+
+      // update system password
+      await setSystemPassword(newPassword);
+
+      changePasswordStatus.percent = 100;
+      complete = true;
+
+      // cache the password for later use
+      cachePassword(newPassword);
+    } catch (error) {
+      changePasswordStatus.percent = 100;
+      changePasswordStatus.error = true;
+
+      throw new Error('Unable to change password');
     }
-
 }
 
 function getChangePasswordStatus() {
