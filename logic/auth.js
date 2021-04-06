@@ -124,9 +124,6 @@ async function login(user) {
         // cachePassword(user.plainTextPassword);
         cachePassword(user.password);
 
-        //unlock lnd wallet
-        // await lndApiService.unlock(user.plainTextPassword, jwt);
-
         deriveUmbrelSeed(user)
 
         // This is only needed temporarily to update hardcoded passwords
