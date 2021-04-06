@@ -138,7 +138,7 @@ async function login(user) {
         if (!lndStatus.data.unlocked) {
           console.log('LND is locked on login, attmepting to change password...');
           try {
-            await lndApiService.changePassword(user.password, 'moneyprintergobrrr', jwt);
+            await lndApiService.changePassword(user.password, constants.LND_WALLET_PASSWORD, jwt);
             console.log('Sucessfully changed LND password!');
           } catch (e) {
             console.log('Failed to change LND password!');
@@ -227,7 +227,7 @@ async function register(user, seed) {
 
     //initialize lnd wallet
     try {
-        await lndApiService.initializeWallet('moneyprintergobrrr', seed, jwt);
+        await lndApiService.initializeWallet(constants.LND_WALLET_PASSWORD, seed, jwt);
     } catch (error) {
         await diskLogic.deleteUserFile();
         throw new NodeError(error.response.data);
