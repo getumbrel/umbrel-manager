@@ -230,7 +230,7 @@ async function register(user, seed) {
 
     //initialize lnd wallet
     try {
-        await lndApiService.initializeWallet(user.plainTextPassword, seed, jwt);
+        await lndApiService.initializeWallet('moneyprintergobrrr', seed, jwt);
     } catch (error) {
         await diskLogic.deleteUserFile();
         throw new NodeError(error.response.data);
