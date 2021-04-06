@@ -136,8 +136,16 @@ async function login(user) {
         // This is only needed temporarily to remove the user set LND wallet
         // password for old users and change it to a hardcoded one so we can
         // auto unlock it in the future.
-        if (! (await lndApiService.getStatus()).data.unlocked) {
-          await lndApiService.changePassword(user.password, 'moneyprintergobrrr', jwt);
+        const lndStatus = await lndApiService.getStatus();
+
+        if (!lndStatus.data.unlocked) {
+          console.log('LND is locked on login, attmepting to change password...');
+          try {
+            await lndApiService.changePassword(user.password, 'moneyprintergobrrr', jwt);
+            console.log('Sucessfully changed LND password!');
+          } catch (e) {
+            console.log('Failed to change LND password!');
+          }
         }
 
         return { jwt: jwt };
