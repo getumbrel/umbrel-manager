@@ -121,7 +121,7 @@ async function removeLndPasswordIfLocked(currentPassword, jwt) {
   const lndStatus = await lndApiService.getStatus();
 
   if (!lndStatus.data.unlocked) {
-    console.log('LND is locked on login, attmepting to change password...');
+    console.log('LND is locked on login, attempting to change password...');
     try {
       await lndApiService.changePassword(currentPassword, constants.LND_WALLET_PASSWORD, jwt);
       console.log('Sucessfully changed LND password!');
