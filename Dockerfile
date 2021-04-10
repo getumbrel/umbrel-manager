@@ -1,5 +1,8 @@
 # Build Stage
-FROM getumbrel/manager-builder:latest AS umbrel-manager-builder
+FROM node:12-buster-slim as umbrel-manager-builder
+
+# Install tools
+RUN apt-get update && apt-get install -y build-essential libffi-dev libssl-dev python3
 
 # Create app directory
 WORKDIR /app
