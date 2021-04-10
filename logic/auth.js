@@ -211,7 +211,7 @@ async function register(user, seed) {
 
     //update system password
     try {
-        await setSystemPassword(user.password);
+        await setSystemPassword(user.plainTextPassword);
     } catch (error) {
         throw new NodeError('Unable to set system password');
     }
