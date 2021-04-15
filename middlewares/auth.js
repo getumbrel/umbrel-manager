@@ -18,6 +18,9 @@ const BASIC_AUTH = 'basic';
 
 const SYSTEM_USER = UUID.fetchBootUUID() || 'admin';
 
+const b64encode = str => Buffer.from(str, 'utf-8').toString('base64');
+const b64decode = b64 => Buffer.from(b64, 'base64').toString('utf-8');
+
 async function generateJWTKeys() {
   const key = new rsa({ b: 512 }); // eslint-disable-line id-length
 
@@ -44,6 +47,7 @@ passport.serializeUser(function (user, done) {
 });
 
 passport.use(BASIC_AUTH, new BasicStrategy(function (username, password, next) {
+  password = b64decode(password);
   const user = {
     username: SYSTEM_USER,
     password,
@@ -61,6 +65,7 @@ createJwtOptions().then(function (data) {
 });
 
 passport.use(REGISTRATION_AUTH, new BasicStrategy(function (username, password, next) {
+  password = b64decode(password);
   const credentials = authLogic.hashCredentials(SYSTEM_USER, password);
 
   return next(null, credentials);
@@ -69,7 +74,9 @@ passport.use(REGISTRATION_AUTH, new BasicStrategy(function (username, password, 
 // Override the authorization header with password that is in the body of the request if basic auth was not supplied.
 function convertReqBodyToBasicAuth(req, res, next) {
   if (req.body.password && !req.headers.authorization) {
-    req.headers.authorization = 'Basic ' + Buffer.from(SYSTEM_USER + ':' + req.body.password).toString('base64');
+    // We need to Base64 encode because Passport breaks on ":" characters
+    const password = b64encode(req.body.password);
+    req.headers.authorization = 'Basic ' + Buffer.from(SYSTEM_USER + ':' + password).toString('base64');
   }
 
   next();

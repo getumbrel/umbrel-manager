@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { CipherSeed } = require('aezeed');
 const iocane = require("iocane");
-const compose = require("docker-compose");
 const diskLogic = require('logic/disk.js');
 const lndApiService = require('services/lndApi.js');
 const bashService = require('services/bash.js');
@@ -40,81 +39,43 @@ function getCachedPassword() {
     return devicePassword;
 }
 
-// Change the device and lnd password.
+// Sets system password
+const setSystemPassword = async password => {
+  await diskLogic.writeStatusFile('password', password);
+  await diskLogic.writeSignalFile('change-password');
+}
+
+// Change the dashboard and system password.
 async function changePassword(currentPassword, newPassword, jwt) {
-
-
     resetChangePasswordStatus();
     changePasswordStatus.percent = 1; // eslint-disable-line no-magic-numbers
 
-    // restart lnd
     try {
-        await compose.restartOne('lnd', { cwd: constants.DOCKER_COMPOSE_DIRECTORY });
+      // update user file
+      const user = await diskLogic.readUserFile();
+      const credentials = hashCredentials(SYSTEM_USER, newPassword);
+
+      // re-encrypt seed with new password
+      const decryptedSeed = await iocane.createSession().decrypt(user.seed, currentPassword);
+      const encryptedSeed = await iocane.createSession().encrypt(decryptedSeed, newPassword);
+
+      // update user file
+      await diskLogic.writeUserFile({ ...user, password: credentials.password, seed: encryptedSeed });
+
+      // update system password
+      await setSystemPassword(newPassword);
+
+      changePasswordStatus.percent = 100;
+      complete = true;
+
+      // cache the password for later use
+      cachePassword(newPassword);
     } catch (error) {
-        throw new Error('Unable to change password as lnd wouldn\'t restart');
+      changePasswordStatus.percent = 100;
+      changePasswordStatus.error = true;
+
+      throw new Error('Unable to change password');
     }
-
-    changePasswordStatus.percent = 40; // eslint-disable-line no-magic-numbers
-
-    let complete = false;
-    let attempt = 0;
-    const MAX_ATTEMPTS = 20;
-
-    do {
-        try {
-            attempt++;
-
-            // call lnapi to change password
-            changePasswordStatus.percent = 60 + attempt; // eslint-disable-line no-magic-numbers
-            await lndApiService.changePassword(currentPassword, newPassword, jwt);
-
-            // update user file
-            const user = await diskLogic.readUserFile();
-            const credentials = hashCredentials(SYSTEM_USER, newPassword);
-
-            // re-encrypt seed with new password
-            const decryptedSeed = await iocane.createSession().decrypt(user.seed, currentPassword);
-            const encryptedSeed = await iocane.createSession().encrypt(decryptedSeed, newPassword);
-
-            // update user file
-            await diskLogic.writeUserFile({ name: user.name, password: credentials.password, seed: encryptedSeed });
-
-            // update ssh password
-            // await hashAccountPassword(newPassword);
-
-            complete = true;
-
-            // cache the password for later use
-            cachePassword(newPassword);
-
-            changePasswordStatus.percent = 100;
-        } catch (error) {
-
-            // wait for lnd to boot up
-            if (error.response.status === constants.STATUS_CODES.BAD_GATEWAY) {
-                await sleepSeconds(1);
-
-                // user supplied incorrect credentials
-            } else if (error.response.status === constants.STATUS_CODES.FORBIDDEN) {
-                changePasswordStatus.unauthorized = true;
-
-                // unknown error occurred
-            } else {
-                changePasswordStatus.error = true;
-                changePasswordStatus.percent = 100;
-
-                throw error;
-            }
-        }
-    } while (!complete && attempt < MAX_ATTEMPTS && !changePasswordStatus.unauthorized && !changePasswordStatus.error);
-
-    if (!complete && attempt === MAX_ATTEMPTS) {
-        changePasswordStatus.error = true;
-        changePasswordStatus.percent = 100;
-
-        throw new Error('Unable to change password');
-    }
-
 }
 
 function getChangePasswordStatus() {
@@ -154,6 +115,23 @@ async function deriveUmbrelSeed(user) {
   return diskLogic.writeUmbrelSeedFile(umbrelSeed);
 }
 
+// Sets the LND password to a hardcoded password if it's locked so we can
+// auto unlock it in future
+async function removeLndPasswordIfLocked(currentPassword, jwt) {
+  const lndStatus = await lndApiService.getStatus();
+
+  if (!lndStatus.data.unlocked) {
+    console.log('LND is locked on login, attempting to change password...');
+    try {
+      await lndApiService.changePassword(currentPassword, constants.LND_WALLET_PASSWORD, jwt);
+      console.log('Sucessfully changed LND password!');
+    } catch (e) {
+      console.log('Failed to change LND password!');
+    }
+  }
+}
+
+
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
 async function login(user) {
     try {
@@ -163,10 +141,16 @@ async function login(user) {
         // cachePassword(user.plainTextPassword);
         cachePassword(user.password);
 
-        //unlock lnd wallet
-        // await lndApiService.unlock(user.plainTextPassword, jwt);
-
         deriveUmbrelSeed(user)
+
+        // This is only needed temporarily to update hardcoded passwords
+        // on existing users without requiring them to change their password
+        setSystemPassword(user.password);
+
+        // This is only needed temporarily to remove the user set LND wallet
+        // password for old users and change it to a hardcoded one so we can
+        // auto unlock it in the future.
+        removeLndPasswordIfLocked(user.password, jwt);
 
         return { jwt: jwt };
 
@@ -225,6 +209,13 @@ async function register(user, seed) {
         throw new NodeError('Unable to register user');
     }
 
+    //update system password
+    try {
+        await setSystemPassword(user.plainTextPassword);
+    } catch (error) {
+        throw new NodeError('Unable to set system password');
+    }
+
     //derive Umbrel seed
     try {
         await deriveUmbrelSeed(user);
@@ -243,7 +234,7 @@ async function register(user, seed) {
 
     //initialize lnd wallet
     try {
-        await lndApiService.initializeWallet(user.plainTextPassword, seed, jwt);
+        await lndApiService.initializeWallet(constants.LND_WALLET_PASSWORD, seed, jwt);
     } catch (error) {
         await diskLogic.deleteUserFile();
         throw new NodeError(error.response.data);

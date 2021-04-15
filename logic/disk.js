@@ -229,6 +229,16 @@ function writeSignalFile(signalFile) {
   return diskService.writeFile(signalFilePath, 'true');
 }
 
+// TODO: Transition all logic to use this status function
+function writeStatusFile(statusFile, contents) {
+  if(!/^[0-9a-zA-Z-_]+$/.test(statusFile)) {
+    throw new Error('Invalid signal file characters');
+  }
+
+  const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
+  return diskService.writeFile(statusFilePath, contents);
+}
+
 function readAppRegistry() {
   const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
   return diskService.readJsonFile(appRegistryFile);
@@ -289,6 +299,7 @@ module.exports = {
   readSshSignalFile,
   readDebugResultFile,
   writeSignalFile,
+  writeStatusFile,
   readAppRegistry,
   readHiddenService,
 };

@@ -13,7 +13,7 @@ const validator = require('utils/validator.js');
 
 const COMPLETE = 100;
 
-// Endpoint to change your lnd password. Wallet must exist and be unlocked.
+// Endpoint to change your password.
 router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic, incorrectPasswordAuthHandler, safeHandler(async (req, res, next) => {
     // Use password from the body by default. Basic auth has issues handling special characters.
     const currentPassword = req.body.password;
