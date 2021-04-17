@@ -215,8 +215,12 @@ function readSshSignalFile() {
   return diskService.readFile(constants.SSH_SIGNAL_FILE);
 }
 
-function readDebugResultFile() {
+function readDebugStatusFile() {
   return diskService.readJsonFile(constants.DEBUG_STATUS_FILE);
+}
+
+function readDebugResultFile() {
+  return diskService.readFile(constants.DEBUG_RESULT_FILE);
 }
 
 // TODO: Transition all logic to use this signal function
@@ -297,6 +301,7 @@ module.exports = {
   migration,
   enableSsh,
   readSshSignalFile,
+  readDebugStatusFile,
   readDebugResultFile,
   writeSignalFile,
   writeStatusFile,
