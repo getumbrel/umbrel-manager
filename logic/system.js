@@ -268,11 +268,14 @@ async function requestDebug() {
 async function getDebugResult() {
     try {
         const status = await diskLogic.readDebugStatusFile();
-        const result = await diskLogic.readDebugResultFile();
-        console.log(status);
-        console.log(result);
-        console.log({ ...status, result: result });
-        return { ...status, result: result };
+        let result;
+        try {
+            result = await diskLogic.readDebugResultFile();
+        } catch (error) {
+            result = "An error occured or the debug result is not yet available.";
+        }
+
+        return { ...status, result: result.toString() };
     } catch (error) {
         throw new NodeError('Unable to get debug results');
     }

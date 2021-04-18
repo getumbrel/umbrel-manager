@@ -220,7 +220,7 @@ function readDebugStatusFile() {
 }
 
 function readDebugResultFile() {
-  return diskService.readFile(constants.DEBUG_RESULT_FILE);
+  return diskService.readUtf8File(constants.DEBUG_RESULT_FILE);
 }
 
 // TODO: Transition all logic to use this signal function
