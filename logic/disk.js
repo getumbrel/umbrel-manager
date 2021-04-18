@@ -223,6 +223,10 @@ function readDebugResultFile() {
   return diskService.readUtf8File(constants.DEBUG_RESULT_FILE);
 }
 
+function readDmesgResultFile() {
+  return diskService.readUtf8File(constants.DMESG_RESULT_FILE);
+}
+
 // TODO: Transition all logic to use this signal function
 function writeSignalFile(signalFile) {
   if(!/^[0-9a-zA-Z-_]+$/.test(signalFile)) {
@@ -303,6 +307,7 @@ module.exports = {
   readSshSignalFile,
   readDebugStatusFile,
   readDebugResultFile,
+  readDmesgResultFile,
   writeSignalFile,
   writeStatusFile,
   readAppRegistry,

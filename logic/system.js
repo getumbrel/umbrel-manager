@@ -268,14 +268,17 @@ async function requestDebug() {
 async function getDebugResult() {
     try {
         const status = await diskLogic.readDebugStatusFile();
-        let result;
+        let debug;
+        let dmesg;
         try {
-            result = await diskLogic.readDebugResultFile();
+            debug = await diskLogic.readDebugResultFile();
+            dmesg = await diskLogic.readDmesgResultFile();
         } catch (error) {
-            result = "An error occured or the debug result is not yet available.";
+            debug = "An error occured or the debug result is not yet available.";
+            dmesg = "An error occured or the debug result is not yet available.";
         }
 
-        return { ...status, result: result.toString() };
+        return { ...status, debug: debug.toString(), dmesg: dmesg.toString() };
     } catch (error) {
         throw new NodeError('Unable to get debug results');
     }
@@ -289,9 +292,10 @@ async function getDebugLink() {
             return "";
         }
 
+        const payload = debugResult.debug + "=== Umbrel-Paste split ===" + debugResult.dmesg;
         const response = await axios({
             url: `https://debug.umbrel.tech/documents`,
-            data: debugResult.result,
+            data: payload,
             method: 'POST',
             headers: {
                 'Content-Type': 'text/plain',
