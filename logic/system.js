@@ -281,6 +281,36 @@ async function getDebugResult() {
     }
 }
 
+async function getDebugLink() {
+    try {
+        const debugResult = await getDebugResult();
+
+        if(debugResult.status != "success") {
+            return "";
+        }
+
+        const response = await axios({
+            url: `https://debug.umbrel.tech/documents`,
+            data: debugResult.result,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain',
+            }
+        });
+
+        if (response.data.key) {
+            const link = `https://debug.umbrel.tech/${response.data.key}`
+            return link;
+        } else if (response.data.error) {
+            return response.data.error;
+        }
+
+        return;
+    } catch (error) {
+        throw new NodeError('Unable to get debug link');
+    }
+}
+
 async function requestShutdown() {
     try {
         await diskLogic.shutdown();
@@ -314,6 +344,7 @@ module.exports = {
     getLndConnectUrls,
     requestDebug,
     getDebugResult,
+    getDebugLink,
     requestShutdown,
     requestReboot
 };

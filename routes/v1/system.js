@@ -68,6 +68,16 @@ router.get('/backup-status', safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(backup);
 }));
 
+router.get('/debug-link', auth.jwt, safeHandler(async(req, res) => {
+    const result = await systemLogic.getDebugLink();
+
+    if (result) {
+      return res.status(constants.STATUS_CODES.OK).json(result);
+    }
+
+    return res.status(constants.STATUS_CODES.BAD_GATEWAY).json();
+  }));
+
 router.get('/debug-result', auth.jwt, safeHandler(async (req, res) => {
     const result = await systemLogic.getDebugResult();
 
