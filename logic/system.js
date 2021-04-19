@@ -278,7 +278,7 @@ async function getDebugResult() {
             dmesg = "An error occured or the debug result is not yet available.";
         }
 
-        return { ...status, debug: debug.toString(), dmesg: dmesg.toString() };
+        return { ...status, debug, dmesg };
     } catch (error) {
         throw new NodeError('Unable to get debug results');
     }
