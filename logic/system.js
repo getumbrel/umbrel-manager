@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { SocksProxyAgent } = require('socks-proxy-agent');
 const semverGt = require('semver/functions/gt');
 const semverSatisfies = require('semver/functions/satisfies');
 const semverMinVersion = require('semver/ranges/min-version');
@@ -7,6 +8,8 @@ const encode = require('lndconnect').encode;
 const diskLogic = require('logic/disk.js');
 const constants = require('utils/const.js');
 const NodeError = require('models/errors.js').NodeError;
+
+const torAgent = new SocksProxyAgent(`socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`);
 
 async function getInfo() {
     try {
@@ -286,6 +289,7 @@ async function getDebugLink() {
             url: `https://debug.umbrel.tech/documents`,
             data: payload,
             method: 'POST',
+            httpsAgent: torAgent,
             headers: {
                 'Content-Type': 'text/plain',
             }
