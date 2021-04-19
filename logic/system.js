@@ -266,22 +266,11 @@ async function requestDebug() {
 }
 
 async function getDebugResult() {
-    try {
-        const status = await diskLogic.readDebugStatusFile();
-        let debug;
-        let dmesg;
-        try {
-            debug = await diskLogic.readDebugResultFile();
-            dmesg = await diskLogic.readDmesgResultFile();
-        } catch (error) {
-            debug = "An error occured or the debug result is not yet available.";
-            dmesg = "An error occured or the debug result is not yet available.";
-        }
-
-        return { ...status, debug, dmesg };
-    } catch (error) {
-        throw new NodeError('Unable to get debug results');
-    }
+  try {
+    return await diskLogic.readDebugStatusFile();
+  } catch (error) {
+    throw new NodeError('Unable to get debug results');
+  }
 }
 
 async function getDebugLink() {
