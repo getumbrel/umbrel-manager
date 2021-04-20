@@ -1,5 +1,4 @@
 const axios = require('axios');
-const { SocksProxyAgent } = require('socks-proxy-agent');
 const semverGt = require('semver/functions/gt');
 const semverSatisfies = require('semver/functions/satisfies');
 const semverMinVersion = require('semver/ranges/min-version');
@@ -276,38 +275,6 @@ async function getDebugResult() {
   }
 }
 
-async function getDebugLink() {
-    try {
-        const debugResult = await getDebugResult();
-
-        if(debugResult.status != "success") {
-            return "";
-        }
-
-        const payload = debugResult.debug + "=== Umbrel-Paste split ===" + debugResult.dmesg;
-        const response = await axios({
-            url: `https://debug.umbrel.tech/documents`,
-            data: payload,
-            method: 'POST',
-            httpsAgent: torAgent,
-            headers: {
-                'Content-Type': 'text/plain',
-            }
-        });
-
-        if (response.data.key) {
-            const link = `https://debug.umbrel.tech/${response.data.key}`
-            return link;
-        } else if (response.data.error) {
-            return response.data.error;
-        }
-
-        return;
-    } catch (error) {
-        throw new NodeError('Unable to get debug link');
-    }
-}
-
 async function requestShutdown() {
     try {
         await diskLogic.shutdown();
@@ -341,7 +308,6 @@ module.exports = {
     getLndConnectUrls,
     requestDebug,
     getDebugResult,
-    getDebugLink,
     requestShutdown,
     requestReboot
 };
