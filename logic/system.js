@@ -8,8 +8,6 @@ const diskLogic = require('logic/disk.js');
 const constants = require('utils/const.js');
 const NodeError = require('models/errors.js').NodeError;
 
-const torAgent = new SocksProxyAgent(`socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`);
-
 async function getInfo() {
     try {
         const info = await diskLogic.readUmbrelVersionFile();
