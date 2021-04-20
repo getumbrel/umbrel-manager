@@ -286,10 +286,10 @@ async function getDebugLink() {
 
         const payload = debugResult.debug + "=== Umbrel-Paste split ===" + debugResult.dmesg;
         const response = await axios({
-            url: `https://debug.umbrel.tech/documents`,
+            url: `http://umbrelopukcebzp3vnqukb46nqx7wrgbo4p5rupcycakdbrh4qnlgdad.onion/documents`,
             data: payload,
             method: 'POST',
-            httpsAgent: torAgent,
+            httpAgent: torAgent,
             headers: {
                 'Content-Type': 'text/plain',
             }
