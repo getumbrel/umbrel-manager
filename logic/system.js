@@ -256,6 +256,23 @@ async function getLndConnectUrls() {
 
 }
 
+async function requestDebug() {
+    try {
+        await diskLogic.writeSignalFile('debug');
+        return "Debug requested";
+    } catch (error) {
+        throw new NodeError('Could not write the signal file');
+    }
+}
+
+async function getDebugResult() {
+  try {
+    return await diskLogic.readDebugStatusFile();
+  } catch (error) {
+    throw new NodeError('Unable to get debug results');
+  }
+}
+
 async function requestShutdown() {
     try {
         await diskLogic.shutdown();
@@ -287,6 +304,8 @@ module.exports = {
     startUpdate,
     getBackupStatus,
     getLndConnectUrls,
+    requestDebug,
+    getDebugResult,
     requestShutdown,
     requestReboot
 };
