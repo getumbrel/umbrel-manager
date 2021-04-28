@@ -291,7 +291,25 @@ async function requestReboot() {
     }
 };
 
+async function status() {
+    try {
+      const highMemoryUsage = await diskLogic.memoryWarningStatusFileExists();
+      return {
+        highMemoryUsage
+      };
+    } catch (error) {
+        throw new NodeError('Unable check system status');
+    }
+};
 
+async function clearMemoryWarning() {
+    try {
+      await diskLogic.deleteMemoryWarningStatusFile();
+      return "High memory warning dismissed"
+    } catch (error) {
+        throw new NodeError('Unable to dismiss high memory warning');
+    }
+};
 
 module.exports = {
     getInfo,
@@ -307,5 +325,7 @@ module.exports = {
     requestDebug,
     getDebugResult,
     requestShutdown,
-    requestReboot
+    requestReboot,
+    status,
+    clearMemoryWarning,
 };
