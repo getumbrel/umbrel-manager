@@ -13,6 +13,31 @@ const validator = require('utils/validator.js');
 
 const COMPLETE = 100;
 
+router.post('/change-name', auth.jwt, safeHandler(async (req, res, next) => {
+    const newName = req.body.newName;
+
+    try {
+        validator.isString(newName);
+    } catch (error) {
+        return next(error);
+    }
+
+    const status = await authLogic.getChangeNameStatus();
+
+    // return a conflict if a change name process is already running
+    if (status.percent > 0 && status.percent !== COMPLETE) {
+        return res.status(constants.STATUS_CODES.CONFLICT).json();
+    }
+
+    try {
+        // start change name process in the background and immediately return
+        await authLogic.changeName(newName);
+        return res.status(constants.STATUS_CODES.OK).json();
+    } catch (error) {
+        return next(error);
+    }
+}));
+
 // Endpoint to change your lnd password. Wallet must exist and be unlocked.
 router.post('/change-password', auth.convertReqBodyToBasicAuth, auth.basic, incorrectPasswordAuthHandler, safeHandler(async (req, res, next) => {
     // Use password from the body by default. Basic auth has issues handling special characters.

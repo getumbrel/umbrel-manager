@@ -16,12 +16,18 @@ const saltRounds = 10;
 const SYSTEM_USER = UUID.fetchBootUUID() || 'admin';
 
 let devicePassword = '';
+let changeNameStatus;
 let changePasswordStatus;
 
+resetChangeNameStatus();
 resetChangePasswordStatus();
 
 function resetChangePasswordStatus() {
     changePasswordStatus = { percent: 0 };
+}
+
+function resetChangeNameStatus() {
+    changeNameStatus = { percent: 0 };
 }
 
 async function sleepSeconds(seconds) {
@@ -38,6 +44,34 @@ function cachePassword(password) {
 // Gets the cached the password.
 function getCachedPassword() {
     return devicePassword;
+}
+
+// Change the device name
+async function changeName(name) {
+    resetChangeNameStatus();
+
+    changeNameStatus.percent = 1; // eslint-disable-line no-magic-numbers
+
+    changeNameStatus.percent = 30; // eslint-disable-line no-magic-numbers
+
+    try {
+        // get user data
+        const user = await diskLogic.readUserFile();
+        changeNameStatus.percent = 60; // eslint-disable-line no-magic-numbers
+
+        // update user name
+        user.name = name;
+
+        // update user file
+        await diskLogic.writeUserFile({ ...user });
+
+        changeNameStatus.percent = 100;
+    } catch (error) {
+        changeNameStatus.error = true;
+        changeNameStatus.percent = 100;
+
+        throw error;
+    }
 }
 
 // Change the device and lnd password.
@@ -115,6 +149,10 @@ async function changePassword(currentPassword, newPassword, jwt) {
         throw new Error('Unable to change password');
     }
 
+}
+
+function getChangeNameStatus() {
+    return changeNameStatus;
 }
 
 function getChangePasswordStatus() {
@@ -266,8 +304,10 @@ async function refresh(user) {
 
 
 module.exports = {
+    changeName,
     changePassword,
     getCachedPassword,
+    getChangeNameStatus,
     getChangePasswordStatus,
     hashCredentials,
     isRegistered,
