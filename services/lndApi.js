@@ -37,22 +37,6 @@ async function initializeWallet(password, seed, jwt) {
     .post(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/init', body, headers);
 }
 
-async function unlockLnd(password, jwt) {
-
-  const headers = {
-    headers: {
-      Authorization: 'JWT ' + jwt,
-    }
-  };
-
-  const body = {
-    password,
-  };
-
-  return axios
-    .post(lnapiUrl + ':' + lnapiPort + '/v1/lnd/wallet/unlock', body, headers);
-}
-
 async function getBitcoindAddresses(jwt) {
 
   const headers = {
@@ -65,9 +49,13 @@ async function getBitcoindAddresses(jwt) {
     .get(lnapiUrl + ':' + lnapiPort + '/v1/bitcoind/info/addresses', headers);
 }
 
+async function getStatus() {
+  return axios.get(lnapiUrl + ':' + lnapiPort + '/v1/lnd/info/status');
+}
+
 module.exports = {
   changePassword,
   initializeWallet,
-  unlockLnd,
   getBitcoindAddresses,
+  getStatus,
 };

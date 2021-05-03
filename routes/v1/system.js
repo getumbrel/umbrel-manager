@@ -20,16 +20,16 @@ router.get('/dashboard-hidden-service', auth.jwt, safeHandler(async (req, res) =
     return res.status(constants.STATUS_CODES.OK).json(url);
 }));
 
-router.get('/electrum-hidden-service', auth.jwt, safeHandler(async (req, res) => {
-    const url = await systemLogic.getElectrumHiddenServiceUrl();
+router.get('/electrum-connection-details', auth.jwt, safeHandler(async (req, res) => {
+    const connectionDetails = await systemLogic.getElectrumConnectionDetails();
 
-    return res.status(constants.STATUS_CODES.OK).json(url);
+    return res.status(constants.STATUS_CODES.OK).json(connectionDetails);
 }));
 
-router.get('/bitcoin-p2p-hidden-service', auth.jwt, safeHandler(async (req, res) => {
-    const url = await systemLogic.getBitcoinP2PHiddenServiceUrl();
+router.get('/bitcoin-p2p-connection-details', auth.jwt, safeHandler(async (req, res) => {
+    const connectionDetails = await systemLogic.getBitcoinP2PConnectionDetails();
 
-    return res.status(constants.STATUS_CODES.OK).json(url);
+    return res.status(constants.STATUS_CODES.OK).json(connectionDetails);
 }));
 
 router.get('/bitcoin-rpc-connection-details', auth.jwt, safeHandler(async (req, res) => {
@@ -66,6 +66,18 @@ router.get('/backup-status', safeHandler(async (req, res) => {
     const backup = await systemLogic.getBackupStatus();
 
     return res.status(constants.STATUS_CODES.OK).json(backup);
+}));
+
+router.get('/debug-result', auth.jwt, safeHandler(async (req, res) => {
+    const result = await systemLogic.getDebugResult();
+
+    return res.status(constants.STATUS_CODES.OK).json(result);
+}));
+
+router.post('/debug', auth.jwt, safeHandler(async (req, res) => {
+    const result = await systemLogic.requestDebug();
+
+    return res.status(constants.STATUS_CODES.OK).json(result);
 }));
 
 router.post('/shutdown', auth.jwt, safeHandler(async (req, res) => {

@@ -215,6 +215,10 @@ function readSshSignalFile() {
   return diskService.readFile(constants.SSH_SIGNAL_FILE);
 }
 
+function readDebugStatusFile() {
+  return diskService.readJsonFile(constants.DEBUG_STATUS_FILE);
+}
+
 // TODO: Transition all logic to use this signal function
 function writeSignalFile(signalFile) {
   if(!/^[0-9a-zA-Z-_]+$/.test(signalFile)) {
@@ -223,6 +227,16 @@ function writeSignalFile(signalFile) {
 
   const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
   return diskService.writeFile(signalFilePath, 'true');
+}
+
+// TODO: Transition all logic to use this status function
+function writeStatusFile(statusFile, contents) {
+  if(!/^[0-9a-zA-Z-_]+$/.test(statusFile)) {
+    throw new Error('Invalid signal file characters');
+  }
+
+  const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
+  return diskService.writeFile(statusFilePath, contents);
 }
 
 function readAppRegistry() {
@@ -283,7 +297,9 @@ module.exports = {
   migration,
   enableSsh,
   readSshSignalFile,
+  readDebugStatusFile,
   writeSignalFile,
+  writeStatusFile,
   readAppRegistry,
   readHiddenService,
 };
