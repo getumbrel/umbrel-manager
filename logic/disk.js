@@ -244,12 +244,30 @@ function readAppRegistry() {
   return diskService.readJsonFile(appRegistryFile);
 }
 
+function writeAppRegistry(data) {
+  const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
+  return diskService.writeJsonFile(appRegistryFile, data);
+}
+
+function checkAppRegistry(data) {
+  const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
+  return fileExists(appRegistryFile);
+}
+
 function readHiddenService(id) {
   if(!/^[0-9a-zA-Z-_]+$/.test(id)) {
     throw new Error('Invalid hidden service ID');
   }
   const hiddenServiceFile = path.join(constants.TOR_HIDDEN_SERVICE_DIR, id, 'hostname');
   return diskService.readUtf8File(hiddenServiceFile);
+}
+
+function listAppsInAppsDir() {
+  return diskService.listDirsInDir(constants.APPS_DIR);
+}
+
+function readAppInfo(app) {
+  return diskService.readJsonFile(path.join(constants.APPS_DIR, app, 'app.yml'));
 }
 
 module.exports = {
@@ -301,5 +319,9 @@ module.exports = {
   writeSignalFile,
   writeStatusFile,
   readAppRegistry,
+  writeAppRegistry,
+  checkAppRegistry,
   readHiddenService,
+  listAppsInAppsDir,
+  readAppInfo,
 };
