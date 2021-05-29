@@ -38,7 +38,8 @@
     "uuid": "^8.0.0",
     "validator": "^13.0.0",
     "winston": "^3.0.0-rc5",
-    "winston-daily-rotate-file": "^4.4.2"
+    "winston-daily-rotate-file": "^4.4.2",
+    "yaml": "^1.10.2"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",

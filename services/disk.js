@@ -6,6 +6,7 @@ const logger = require('utils/logger');
 const fs = require('fs');
 const fse = require('fs-extra');
 const crypto = require('crypto');
+const YAML = require('yaml');
 const uint32Bytes = 4;
 
 // Deletes a file from the filesystem
@@ -114,7 +115,7 @@ async function readUtf8File(filePath) {
 }
 
 async function readJsonFile(filePath) {
-  return readUtf8File(filePath).then(JSON.parse);
+  return readUtf8File(filePath).then(YAML.parse);
 }
 
 // Writes a string to a file. Wraps fs.writeFile into a native promise

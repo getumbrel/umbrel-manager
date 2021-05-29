@@ -17,6 +17,11 @@ router.get('/', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(apps);
 }));
 
+router.get('/updateRegistry', auth.jwt, safeHandler(async (req, res) => {
+    await appsLogic.generateRegisty();
+    return res.status(constants.STATUS_CODES.OK);
+}));
+
 router.post('/:id/install', auth.jwt, safeHandler(async (req, res) => {
     const {id} = req.params;
     const result = await appsLogic.install(id);
