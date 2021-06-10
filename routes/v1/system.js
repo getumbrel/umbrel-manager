@@ -14,6 +14,18 @@ router.get('/info', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(info);
 }));
 
+router.get('/status', auth.jwt, safeHandler(async (req, res) => {
+    const status = await systemLogic.status();
+
+    return res.status(constants.STATUS_CODES.OK).json(status);
+}));
+
+router.post('/clear-memory-warning', auth.jwt, safeHandler(async (req, res) => {
+    const result = await systemLogic.clearMemoryWarning();
+
+    return res.status(constants.STATUS_CODES.OK).json(result);
+}));
+
 router.get('/dashboard-hidden-service', auth.jwt, safeHandler(async (req, res) => {
     const url = await systemLogic.getHiddenServiceUrl();
 

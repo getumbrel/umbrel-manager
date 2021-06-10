@@ -239,6 +239,26 @@ function writeStatusFile(statusFile, contents) {
   return diskService.writeFile(statusFilePath, contents);
 }
 
+function statusFileExists(statusFile) {
+  if(!/^[0-9a-zA-Z-_]+$/.test(statusFile)) {
+    throw new Error('Invalid signal file characters');
+  }
+
+  const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
+  return diskService.readUtf8File(statusFilePath)
+    .then(() => Promise.resolve(true))
+    .catch(() => Promise.resolve(false));
+}
+
+function deleteStatusFile(statusFile) {
+  if(!/^[0-9a-zA-Z-_]+$/.test(statusFile)) {
+    throw new Error('Invalid signal file characters');
+  }
+
+  const statusFilePath = path.join(constants.STATUS_DIR, statusFile);
+  return diskService.deleteFile(statusFilePath);
+}
+
 function readAppRegistry() {
   const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
   return diskService.readJsonFile(appRegistryFile);
@@ -250,6 +270,14 @@ function readHiddenService(id) {
   }
   const hiddenServiceFile = path.join(constants.TOR_HIDDEN_SERVICE_DIR, id, 'hostname');
   return diskService.readUtf8File(hiddenServiceFile);
+}
+
+function memoryWarningStatusFileExists() {
+  return statusFileExists('memory-warning');
+}
+
+function deleteMemoryWarningStatusFile() {
+  return deleteStatusFile('memory-warning');
 }
 
 module.exports = {
@@ -302,4 +330,6 @@ module.exports = {
   writeStatusFile,
   readAppRegistry,
   readHiddenService,
+  memoryWarningStatusFileExists,
+  deleteMemoryWarningStatusFile,
 };
