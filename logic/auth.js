@@ -188,8 +188,12 @@ async function seed(user) {
     }
 }
 
+async function getName() {
+    return diskLogic.readUserFile().name;
+}
+
 // Registers the the user to the device. Returns an error if a user already exists.
-async function register(user, seed) {
+async function register(user, seed, isFirstSetup = true) {
     if ((await isRegistered()).registered) {
         throw new NodeError('User already exists', 400); // eslint-disable-line no-magic-numbers
     }
@@ -232,12 +236,15 @@ async function register(user, seed) {
         throw new NodeError('Unable to generate JWT');
     }
 
-    //initialize lnd wallet
-    try {
-        await lndApiService.initializeWallet(constants.LND_WALLET_PASSWORD, seed, jwt);
-    } catch (error) {
-        await diskLogic.deleteUserFile();
-        throw new NodeError(error.response.data);
+    // When recovering, a wallet already exists
+    if(!isFirstSetup) {
+        //initialize lnd wallet
+        try {
+            await lndApiService.initializeWallet(constants.LND_WALLET_PASSWORD, seed, jwt);
+        } catch (error) {
+            await diskLogic.deleteUserFile();
+            throw new NodeError(error.response.data);
+        }
     }
 
     //return token
@@ -267,4 +274,5 @@ module.exports = {
     login,
     register,
     refresh,
+    getName,
 };

@@ -91,6 +91,37 @@ router.post('/register', auth.convertReqBodyToBasicAuth, auth.register, safeHand
     return res.json(jwt);
 }));
 
+router.post('/forgot-pw', auth.convertReqBodyToBasicAuth, auth.register, safeHandler(async (req, res) => {
+    const seed = await authLogic.seed(req.user);
+    const user_seed = req.body.seed;
+
+    if (user_seed.length !== 24) { // eslint-disable-line no-magic-numbers
+        throw new Error('Invalid seed length');
+    }
+
+    if (user_seed !== seed) {
+        throw new Error('Seeds don\'t match');
+    }
+
+    try {
+        validator.isString(req.user.plainTextPassword);
+        validator.isMinPasswordLength(req.user.plainTextPassword);
+    } catch (error) {
+        return next(error);
+    }
+
+    const user = req.user;
+
+    //add name to user obj
+    user.name = await authLogic.getName();
+
+    const jwt = await authLogic.register(user, seed, false);
+
+    return res.json(jwt);
+}
+
+));
+
 router.post('/login', auth.convertReqBodyToBasicAuth, auth.basic, safeHandler(async (req, res) => {
     const jwt = await authLogic.login(req.user);
 
