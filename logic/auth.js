@@ -16,11 +16,17 @@ const SYSTEM_USER = UUID.fetchBootUUID() || 'admin';
 
 let devicePassword = '';
 let changePasswordStatus;
+let changeUsernameStatus;
 
 resetChangePasswordStatus();
+resetChangeUsernameStatus();
 
 function resetChangePasswordStatus() {
     changePasswordStatus = { percent: 0 };
+}
+
+function resetChangeUsernameStatus() {
+    changeUsernameStatus = { percent: 0 };
 }
 
 async function sleepSeconds(seconds) {
@@ -41,8 +47,8 @@ function getCachedPassword() {
 
 // Sets system password
 const setSystemPassword = async password => {
-  await diskLogic.writeStatusFile('password', password);
-  await diskLogic.writeSignalFile('change-password');
+    await diskLogic.writeStatusFile('password', password);
+    await diskLogic.writeSignalFile('change-password');
 }
 
 // Change the dashboard and system password.
@@ -51,35 +57,61 @@ async function changePassword(currentPassword, newPassword, jwt) {
     changePasswordStatus.percent = 1; // eslint-disable-line no-magic-numbers
 
     try {
-      // update user file
-      const user = await diskLogic.readUserFile();
-      const credentials = hashCredentials(SYSTEM_USER, newPassword);
+        // update user file
+        const user = await diskLogic.readUserFile();
+        const credentials = hashCredentials(SYSTEM_USER, newPassword);
 
-      // re-encrypt seed with new password
-      const decryptedSeed = await iocane.createSession().decrypt(user.seed, currentPassword);
-      const encryptedSeed = await iocane.createSession().encrypt(decryptedSeed, newPassword);
+        // re-encrypt seed with new password
+        const decryptedSeed = await iocane.createSession().decrypt(user.seed, currentPassword);
+        const encryptedSeed = await iocane.createSession().encrypt(decryptedSeed, newPassword);
 
-      // update user file
-      await diskLogic.writeUserFile({ ...user, password: credentials.password, seed: encryptedSeed });
+        // update user file
+        await diskLogic.writeUserFile({ ...user, password: credentials.password, seed: encryptedSeed });
 
-      // update system password
-      await setSystemPassword(newPassword);
+        // update system password
+        await setSystemPassword(newPassword);
 
-      changePasswordStatus.percent = 100;
-      complete = true;
+        changePasswordStatus.percent = 100;
+        complete = true;
 
-      // cache the password for later use
-      cachePassword(newPassword);
+        // cache the password for later use
+        cachePassword(newPassword);
     } catch (error) {
-      changePasswordStatus.percent = 100;
-      changePasswordStatus.error = true;
+        changePasswordStatus.percent = 100;
+        changePasswordStatus.error = true;
 
-      throw new Error('Unable to change password');
+        throw new Error('Unable to change password');
     }
 }
 
 function getChangePasswordStatus() {
     return changePasswordStatus;
+}
+
+// Change the dashboard username.
+async function changeUsername(newUsername) {
+    resetChangeUsernameStatus();
+    changeUsernameStatus.percent = 1; // eslint-disable-line no-magic-numbers
+
+    try {
+        // update user file
+        const user = await diskLogic.readUserFile();
+
+        // update user file
+        await diskLogic.writeUserFile({ ...user, name: newUsername });
+
+        changeUsernameStatus.percent = 100;
+
+    } catch (error) {
+        changeUsernameStatus.percent = 100;
+        changeUsernameStatus.error = true;
+
+        throw new Error('Unable to change username');
+    }
+}
+
+function getChangeUsernameStatus() {
+    return changeUsernameStatus;
 }
 
 // Returns an object with the hashed credentials inside.
@@ -103,32 +135,32 @@ async function isRegistered() {
 // Derives the root umbrel seed and persists it to disk to be used for
 // determinstically deriving further entropy for any other Umbrel service.
 async function deriveUmbrelSeed(user) {
-  if (await diskLogic.umbrelSeedFileExists()) {
-    return;
-  }
-  const mnemonic = (await seed(user)).seed.join(' ');
-  const {entropy} = CipherSeed.fromMnemonic(mnemonic);
-  const umbrelSeed = crypto
-    .createHmac('sha256', entropy)
-    .update('umbrel-seed')
-    .digest('hex');
-  return diskLogic.writeUmbrelSeedFile(umbrelSeed);
+    if (await diskLogic.umbrelSeedFileExists()) {
+        return;
+    }
+    const mnemonic = (await seed(user)).seed.join(' ');
+    const { entropy } = CipherSeed.fromMnemonic(mnemonic);
+    const umbrelSeed = crypto
+        .createHmac('sha256', entropy)
+        .update('umbrel-seed')
+        .digest('hex');
+    return diskLogic.writeUmbrelSeedFile(umbrelSeed);
 }
 
 // Sets the LND password to a hardcoded password if it's locked so we can
 // auto unlock it in future
 async function removeLndPasswordIfLocked(currentPassword, jwt) {
-  const lndStatus = await lndApiService.getStatus();
+    const lndStatus = await lndApiService.getStatus();
 
-  if (!lndStatus.data.unlocked) {
-    console.log('LND is locked on login, attempting to change password...');
-    try {
-      await lndApiService.changePassword(currentPassword, constants.LND_WALLET_PASSWORD, jwt);
-      console.log('Sucessfully changed LND password!');
-    } catch (e) {
-      console.log('Failed to change LND password!');
+    if (!lndStatus.data.unlocked) {
+        console.log('LND is locked on login, attempting to change password...');
+        try {
+            await lndApiService.changePassword(currentPassword, constants.LND_WALLET_PASSWORD, jwt);
+            console.log('Sucessfully changed LND password!');
+        } catch (e) {
+            console.log('Failed to change LND password!');
+        }
     }
-  }
 }
 
 
@@ -260,6 +292,8 @@ module.exports = {
     changePassword,
     getCachedPassword,
     getChangePasswordStatus,
+    changeUsername,
+    getChangeUsernameStatus,
     hashCredentials,
     isRegistered,
     getInfo,

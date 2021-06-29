@@ -56,6 +56,43 @@ router.get('/change-password/status', auth.jwt, safeHandler(async (req, res) => 
     return res.status(constants.STATUS_CODES.OK).json(status);
 }));
 
+//Endpoint to change your username.
+router.post('/change-username', auth.convertReqBodyToBasicAuth, auth.basic, incorrectPasswordAuthHandler, safeHandler(async (req, res, next) => {
+    const currentUsername = req.body.currentUsername;
+    const newUsername = req.body.newUsername;
+
+    try {
+        validator.isString(newUsername);
+        if (newUsername === currentUsername) {
+            throw new Error('The new username must not be the same as existing username');
+        }
+    } catch (error) {
+        return next(error);
+    }
+
+    const status = await authLogic.getChangeUsernameStatus();
+
+    // return a conflict if a change username process is already running
+    if (status.percent > 0 && status.percent !== COMPLETE) {
+        return res.status(constants.STATUS_CODES.CONFLICT).json();
+    }
+
+    try {
+        // start change username process in the background and immediately return
+        await authLogic.changeUsername(newUsername);
+        return res.status(constants.STATUS_CODES.OK).json();
+    } catch (error) {
+        return next(error);
+    }
+}));
+
+// Returns the current status of the change username process.
+router.get('/change-username/status', auth.jwt, safeHandler(async (req, res) => {
+    const status = await authLogic.getChangeUsernameStatus();
+
+    return res.status(constants.STATUS_CODES.OK).json(status);
+}));
+
 // Registered does not need auth. This is because the user may not be registered at the time and thus won't always have
 // an auth token.
 router.get('/registered', safeHandler((req, res) =>
