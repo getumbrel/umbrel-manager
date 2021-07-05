@@ -61,14 +61,6 @@ async function readUserFile() {
   return {...defaultProperties, ...userFile};
 }
 
-function readSettingsFile() {
-  return diskService.readJsonFile(constants.SETTINGS_FILE);
-}
-
-function writeSettingsFile(json) {
-  return diskService.writeJsonFile(constants.SETTINGS_FILE, json);
-}
-
 async function writeUserFile(json) {
   return diskService.writeJsonFile(constants.USER_FILE, json);
 }
@@ -288,10 +280,8 @@ module.exports = {
   fileExists,
   getBuildDetails,
   listVersionsForApp,
-  readSettingsFile,
   readUserFile,
   writeAppVersionFile,
-  writeSettingsFile,
   writeUserFile,
   writeUmbrelSeedFile,
   umbrelSeedFileExists,
