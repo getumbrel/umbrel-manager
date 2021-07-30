@@ -239,6 +239,12 @@ function writeStatusFile(statusFile, contents) {
   return diskService.writeFile(statusFilePath, contents);
 }
 
+function readSystemStatusFile(resource) {
+  const statusFilePath = path.join(constants.STATUS_DIR, `${resource}-status.json`);
+  return diskService.readJsonFile(statusFilePath)
+    .catch(() => null);
+}
+
 function statusFileExists(statusFile) {
   if(!/^[0-9a-zA-Z-_]+$/.test(statusFile)) {
     throw new Error('Invalid signal file characters');
@@ -332,4 +338,5 @@ module.exports = {
   readHiddenService,
   memoryWarningStatusFileExists,
   deleteMemoryWarningStatusFile,
+  readSystemStatusFile,
 };

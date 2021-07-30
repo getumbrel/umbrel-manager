@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const systemLogic = require('logic/system.js');
+const diskLogic = require('logic/disk.js');
 
 const auth = require('middlewares/auth.js');
 
@@ -103,5 +104,31 @@ router.post('/reboot', auth.jwt, safeHandler(async (req, res) => {
 
     return res.status(constants.STATUS_CODES.OK).json(result);
 }));
+
+router.get('/storage', safeHandler(async (req, res) => {
+    const update = await diskLogic.readSystemStatusFile('storage');
+
+    return res.status(constants.STATUS_CODES.OK).json(update);
+}));
+
+router.get('/memory', safeHandler(async (req, res) => {
+    const update = await diskLogic.readSystemStatusFile('memory');
+
+    return res.status(constants.STATUS_CODES.OK).json(update);
+}));
+
+router.get('/temperature', safeHandler(async (req, res) => {
+    const update = await diskLogic.readSystemStatusFile('temperature');
+
+    return res.status(constants.STATUS_CODES.OK).json(update);
+}));
+
+router.get('/uptime', safeHandler(async (req, res) => {
+    const update = await diskLogic.readSystemStatusFile('uptime');
+
+    return res.status(constants.STATUS_CODES.OK).json(update);
+}));
+
+
 
 module.exports = router;
