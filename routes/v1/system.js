@@ -129,6 +129,10 @@ router.get('/uptime', safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(update);
 }));
 
+router.get('/is-umbrel-os', safeHandler(async (req, res) => {
+    return res.status(constants.STATUS_CODES.OK).json(constants.IS_UMBREL_OS);
+}));
+
 
 
 module.exports = router;
