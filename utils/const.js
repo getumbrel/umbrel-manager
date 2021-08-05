@@ -36,6 +36,7 @@ module.exports = {
   DEBUG_STATUS_FILE: process.env.DEBUG_STATUS_FILE || "/statuses/debug-status.json",
   TOR_PROXY_IP: process.env.TOR_PROXY_IP || '192.168.0.1',
   TOR_PROXY_PORT: process.env.TOR_PROXY_PORT || 9050,
+  IS_UMBREL_OS: process.env.IS_UMBREL_OS === 'true',
   STATUS_CODES: {
     ACCEPTED: 202,
     BAD_GATEWAY: 502,
