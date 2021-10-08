@@ -94,7 +94,7 @@ async function getAvailableUpdate() {
         // Try finding for a new update until there's a new version available
         // which is compatible with the currently installed version
         while (isNewVersionAvailable && !isCompatibleWithCurrentVersion) {
-            const infoUrl = `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json`;
+            const infoUrl = `https://raw.githubusercontent.com/${constants.GITHUB_REPO}/${tag}/info.json?time=${Date.now()}`;
 
             const latestVersionInfo = await axios.get(infoUrl);
             data = latestVersionInfo.data;
