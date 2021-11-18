@@ -1,4 +1,6 @@
 const express = require('express');
+const notp = require('notp');
+
 const router = express.Router();
 
 // const applicationLogic = require('logic/application.js');
@@ -54,6 +56,82 @@ router.get('/change-password/status', auth.jwt, safeHandler(async (req, res) => 
     const status = await authLogic.getChangePasswordStatus();
 
     return res.status(constants.STATUS_CODES.OK).json(status);
+}));
+
+router.get('/totp/setup', auth.jwt, safeHandler(async (req, res, next) => {
+    const info = await authLogic.getInfo();
+    let key;
+    if (info.totpKey && info.totpKey != "") {
+        // TOTP is already set up
+        key = info.totpKey;
+    } else {
+        // New TOTP setup
+        key = authLogic.generateRandomKey();
+        authLogic.setTotpKey(key);
+    }
+
+    const encodedKey = authLogic.encodeKey(key);
+    return res.json(encodedKey.toString());
+}));
+
+router.post('/totp/enable', auth.jwt, safeHandler(async (req, res, next) => {
+    const info = await authLogic.getInfo();
+    
+    if (info.totpKey && req.body.authenticatorToken) {
+        // TOTP should be already set up
+        const key = info.totpKey;
+    
+        let vres = notp.totp.verify(req.body.authenticatorToken, key)
+
+        if(vres && vres.delta == 0) {
+            authLogic.enableTotp();
+            return res.json("success");
+        } else {
+            throw new Error('TOTP token invalid');
+        }
+    } else {
+        throw new Error('TOTP enable failed');
+    }
+}));
+
+router.post('/totp/disable', auth.jwt, safeHandler(async (req, res, next) => {
+    const info = await authLogic.getInfo();
+    
+    if (info.totpKey && req.body.authenticatorToken) {
+        // TOTP should be already set up
+        const key = info.totpKey;
+    
+        let vres = notp.totp.verify(req.body.authenticatorToken, key)
+
+        if(vres && vres.delta == 0) {
+            await authLogic.disableTotp();
+            await authLogic.setTotpKey("");
+            return res.json("success");
+        } else {
+            throw new Error('TOTP token invalid');
+        }
+    } else {
+        throw new Error('TOTP disable failed');
+    }
+}));
+
+// Returns the current status of TOTP.
+router.get('/totp/status', safeHandler(async (req, res) => {
+    const status = await authLogic.getTotpStatus();
+    return res.json({ "totpEnabled": status });
+}));
+
+router.post('/totp/auth', auth.jwt, safeHandler(async (req, res) => {
+    const info = await authLogic.getInfo();
+    if (info.totpKey && req.body.totpToken) {
+        let vres = notp.totp.verify(req.body.totpToken, info.totpKey)
+        if (vres && vres.delta == 0) {
+            req.session.totpAuthenticated = true;
+            return res.json("success");
+        } else {
+            throw new Error('TOTP token invalid');
+        }
+    }
 }));
 
 // Registered does not need auth. This is because the user may not be registered at the time and thus won't always have

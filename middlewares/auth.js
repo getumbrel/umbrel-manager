@@ -1,20 +1,26 @@
 const passport = require('passport');
 const passportJWT = require('passport-jwt');
 const passportHTTP = require('passport-http');
+const passportTOTP = require('passport-totp');
 const bcrypt = require('bcrypt');
 const diskLogic = require('logic/disk.js');
 const authLogic = require('logic/auth.js');
 const NodeError = require('models/errors.js').NodeError;
 const UUID = require('utils/UUID.js');
 const rsa = require('node-rsa');
+const notp = require('notp');
 
 const JwtStrategy = passportJWT.Strategy;
 const BasicStrategy = passportHTTP.BasicStrategy;
+const TotpStrategy = passportTOTP.Strategy;
+
+
 const ExtractJwt = passportJWT.ExtractJwt;
 
 const JWT_AUTH = 'jwt';
 const REGISTRATION_AUTH = 'register';
 const BASIC_AUTH = 'basic';
+const TOTP_AUTH = 'totp';
 
 const SYSTEM_USER = UUID.fetchBootUUID() || 'admin';
 
@@ -54,6 +60,10 @@ passport.use(BASIC_AUTH, new BasicStrategy(function (username, password, next) {
     plainTextPassword: password
   };
   return next(null, user);
+}));
+
+passport.use(new TotpStrategy(function(user, done) {
+  done(null, user.totpKey, 30)
 }));
 
 createJwtOptions().then(function (data) {
@@ -106,6 +116,17 @@ function basic(req, res, next) {
       .then(userData => {
         const storedPassword = userData.password;
 
+        // check 2FA token when enabled
+        if(userData.totpEnabled) {
+          let vres = notp.totp.verify(req.body.totpToken, userData.totpKey)
+    
+          if(vres && vres.delta == 0) {
+            
+          } else {
+            return next(new NodeError('Unable to authenticate', 401)); 
+          }
+        }
+
         bcrypt.compare(user.password, storedPassword)
           .then(handleCompare)
           .catch(next);
@@ -136,7 +157,10 @@ async function accountJWTProtected(req, res, next) {
       if (error || user === false) {
         return next(new NodeError('Invalid JWT', 401)); // eslint-disable-line no-magic-numbers
       }
+
       req.logIn(user, function (err) {
+
+
         if (err) {
           return next(new NodeError('Unable to authenticate', 401)); // eslint-disable-line no-magic-numbers
         }

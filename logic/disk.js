@@ -55,6 +55,8 @@ async function readUserFile() {
     name: "",
     password: "",
     seed: "",
+    totpKey: "",
+    totpEnabled: false,
     installedApps: [],
   };
   const userFile = await diskService.readJsonFile(constants.USER_FILE);
