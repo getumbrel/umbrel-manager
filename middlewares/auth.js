@@ -120,9 +120,7 @@ function basic(req, res, next) {
         if(userData.totpEnabled) {
           let vres = notp.totp.verify(req.body.totpToken, userData.totpKey)
     
-          if(vres && vres.delta == 0) {
-            
-          } else {
+          if(!vres || vres.delta == 0) {
             return next(new NodeError('Unable to authenticate', 401)); 
           }
         }
