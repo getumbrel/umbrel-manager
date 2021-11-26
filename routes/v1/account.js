@@ -121,7 +121,7 @@ router.post('/refresh', auth.jwt, safeHandler((req, res) =>
         .then(jwt => res.json(jwt))
 ));
 
-// Returns the current status of the change password process.
+// Gets a new random OTP uri
 router.get('/otpUri', auth.jwt, safeHandler(async (req, res) => {
     const otpUri = otp.generateUri();
 
