@@ -3,6 +3,7 @@ const router = express.Router();
 
 // const applicationLogic = require('logic/application.js');
 const authLogic = require('logic/auth.js');
+const diskLogic = require('logic/disk.js');
 
 const auth = require('middlewares/auth.js');
 const incorrectPasswordAuthHandler = require('middlewares/incorrectPasswordAuthHandler.js');
@@ -127,4 +128,41 @@ router.get('/otpUri', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(otpUri);
 }));
 
+// Enables OTP
+router.post('/otp/enable', auth.jwt, safeHandler(async (req, res) => {
+    const {otpToken, otpUri} = req.body;
+
+    if(!otp.verify(otpUri, otpToken)) {
+        throw new Error('Invalid OTP Token');
+    }
+
+    // Insert otpUri into the user file
+    diskLogic.updateUserFile(userData => {
+        userData.otpUri = otpUri;
+        return userData;
+    });
+
+    return res.status(constants.STATUS_CODES.OK).json();
+}));
+
+// Disables OTP
+router.post('/otp/disable', auth.jwt, safeHandler(async (req, res) => {
+    const {otpToken} = req.body;
+
+    // Read otpUri on disk
+    const {otpUri} = await diskLogic.readUserFile();
+
+    // Verify provided OTP token
+    if(!otp.verify(otpUri, otpToken)) {
+        throw new Error('Invalid OTP Token');
+    }
+
+    // Remove OTP entry from user file
+    diskLogic.updateUserFile(userData => {
+        delete userData.otpUri;
+        return userData;
+    });
+
+    return res.status(constants.STATUS_CODES.OK).json();
+}));
 module.exports = router;
