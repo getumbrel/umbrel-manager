@@ -166,7 +166,7 @@ async function getInfo() {
         //remove sensitive info
         delete user.password;
         delete user.seed;
-        user.otpEnabled = Bool(user.otpUri);
+        user.otpEnabled = Boolean(user.otpUri);
         delete user.otpUri;
 
         return user;
