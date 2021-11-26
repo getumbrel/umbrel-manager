@@ -100,7 +100,7 @@ function basic(req, res, next) {
           return next(new NodeError('Missing OTP token', 401)); // eslint-disable-line no-magic-numbers
         }
 
-        // Validate OTP token
+        // Return an error if provided OTP token is invalid
         if(!otp.verify(userData.otpUri, req.body.otpToken)) {
           return next(new NodeError('Invalid OTP token', 401)); // eslint-disable-line no-magic-numbers
         }
