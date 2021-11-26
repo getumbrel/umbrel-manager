@@ -7,6 +7,7 @@ const authLogic = require('logic/auth.js');
 const NodeError = require('models/errors.js').NodeError;
 const UUID = require('utils/UUID.js');
 const rsa = require('node-rsa');
+const otp = require('modules/otp');
 
 const JwtStrategy = passportJWT.Strategy;
 const BasicStrategy = passportHTTP.BasicStrategy;
@@ -85,10 +86,26 @@ function convertReqBodyToBasicAuth(req, res, next) {
 function basic(req, res, next) {
   passport.authenticate(BASIC_AUTH, { session: false }, function (error, user) {
 
-    function handleCompare(equal) {
+    async function handleCompare(equal) {
       if (!equal) {
         return next(new NodeError('Incorrect password', 401)); // eslint-disable-line no-magic-numbers
       }
+
+      // Check if we have 2FA enabled
+      const userData = await diskLogic.readUserFile();
+      if (userData.otpUri) {
+
+        // Return an error if no OTP token is provided
+        if (!req.body.otpToken) {
+          return next(new NodeError('Missing OTP token', 401)); // eslint-disable-line no-magic-numbers
+        }
+
+        // Validate OTP token
+        if(!otp.verify(userData.otpUri, req.body.otpToken)) {
+          return next(new NodeError('Invalid OTP token', 401)); // eslint-disable-line no-magic-numbers
+        }
+      }
+
       req.logIn(user, function (err) {
         if (err) {
           return next(new NodeError('Unable to authenticate', 401)); // eslint-disable-line no-magic-numbers
