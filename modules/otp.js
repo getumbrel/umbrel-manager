@@ -17,7 +17,7 @@ const verify = (uri, token) => {
   const period = parsedUri.searchParams.get('period');
   const isValid = totp.verify(token, secret, {window: 6, time: period});
 
-  return !!isValid;
+  return Boolean(isValid);
 };
 
 module.exports = {
