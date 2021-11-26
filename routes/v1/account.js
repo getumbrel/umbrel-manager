@@ -132,6 +132,7 @@ router.get('/otpUri', auth.jwt, safeHandler(async (req, res) => {
 router.post('/otp/enable', auth.jwt, safeHandler(async (req, res) => {
     const {otpToken, otpUri} = req.body;
 
+    // Verify provided OTP token matched provided OTP uri
     if(!otp.verify(otpUri, otpToken)) {
         throw new Error('Invalid OTP Token');
     }
@@ -149,7 +150,7 @@ router.post('/otp/enable', auth.jwt, safeHandler(async (req, res) => {
 router.post('/otp/disable', auth.jwt, safeHandler(async (req, res) => {
     const {otpToken} = req.body;
 
-    // Read otpUri on disk
+    // Read OTP uri on disk
     const {otpUri} = await diskLogic.readUserFile();
 
     // Verify provided OTP token
