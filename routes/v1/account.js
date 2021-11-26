@@ -3,6 +3,7 @@ const router = express.Router();
 
 // const applicationLogic = require('logic/application.js');
 const authLogic = require('logic/auth.js');
+const diskLogic = require('logic/disk.js');
 
 const auth = require('middlewares/auth.js');
 const incorrectPasswordAuthHandler = require('middlewares/incorrectPasswordAuthHandler.js');
@@ -10,6 +11,8 @@ const incorrectPasswordAuthHandler = require('middlewares/incorrectPasswordAuthH
 const constants = require('utils/const.js');
 const safeHandler = require('utils/safeHandler');
 const validator = require('utils/validator.js');
+
+const otp = require('modules/otp');
 
 const COMPLETE = 100;
 
@@ -117,5 +120,13 @@ router.post('/refresh', auth.jwt, safeHandler((req, res) =>
     authLogic.refresh(req.user)
         .then(jwt => res.json(jwt))
 ));
+
+// Returns the current status of the change password process.
+router.get('/otpUri', auth.jwt, safeHandler(async (req, res) => {
+    const userData = await diskLogic.readUserFile();
+    const otpUri = userData.otpUri || otp.generateUri();
+
+    return res.status(constants.STATUS_CODES.OK).json(otpUri);
+}));
 
 module.exports = router;
