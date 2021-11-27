@@ -73,6 +73,14 @@ async function writeUserFile(json) {
   return diskService.writeJsonFile(constants.USER_FILE, json);
 }
 
+// Accept a function to apply a transformation to the user file
+async function updateUserFile(update) {
+  const userData = await readUserFile();
+  const updatedUserData = update(userData);
+
+  return writeUserFile(updatedUserData);
+}
+
 async function writeUmbrelSeedFile(umbrelSeed) {
   return diskService.ensureWriteFile(constants.UMBREL_SEED_FILE, umbrelSeed);
 }
@@ -299,6 +307,7 @@ module.exports = {
   writeAppVersionFile,
   writeSettingsFile,
   writeUserFile,
+  updateUserFile,
   writeUmbrelSeedFile,
   umbrelSeedFileExists,
   settingsFileExists,
