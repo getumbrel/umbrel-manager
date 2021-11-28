@@ -14,7 +14,7 @@ function handleError(error, req, res, next) {
     return next(new NodeError(error.message, 403));
   } else {
 
-    return next();
+    return next(error);
   }
 
 }
