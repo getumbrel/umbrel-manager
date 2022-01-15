@@ -63,6 +63,8 @@ router.get('/get-update', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(update);
 }));
 
+// This doesn't require a JWT because we want the user to be able to query
+// the update process during the Umbrel restart which will log them out.
 router.get('/update-status', safeHandler(async (req, res) => {
     const update = await systemLogic.getUpdateStatus();
 
@@ -75,7 +77,7 @@ router.post('/update', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(status);
 }));
 
-router.get('/backup-status', safeHandler(async (req, res) => {
+router.get('/backup-status', auth.jwt, safeHandler(async (req, res) => {
     const backup = await systemLogic.getBackupStatus();
 
     return res.status(constants.STATUS_CODES.OK).json(backup);
@@ -105,31 +107,31 @@ router.post('/reboot', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(result);
 }));
 
-router.get('/storage', safeHandler(async (req, res) => {
+router.get('/storage', auth.jwt, safeHandler(async (req, res) => {
     const update = await diskLogic.readSystemStatusFile('storage');
 
     return res.status(constants.STATUS_CODES.OK).json(update);
 }));
 
-router.get('/memory', safeHandler(async (req, res) => {
+router.get('/memory', auth.jwt, safeHandler(async (req, res) => {
     const update = await diskLogic.readSystemStatusFile('memory');
 
     return res.status(constants.STATUS_CODES.OK).json(update);
 }));
 
-router.get('/temperature', safeHandler(async (req, res) => {
+router.get('/temperature', auth.jwt, safeHandler(async (req, res) => {
     const update = await diskLogic.readSystemStatusFile('temperature');
 
     return res.status(constants.STATUS_CODES.OK).json(update);
 }));
 
-router.get('/uptime', safeHandler(async (req, res) => {
+router.get('/uptime', auth.jwt, safeHandler(async (req, res) => {
     const update = await diskLogic.readSystemStatusFile('uptime');
 
     return res.status(constants.STATUS_CODES.OK).json(update);
 }));
 
-router.get('/is-umbrel-os', safeHandler(async (req, res) => {
+router.get('/is-umbrel-os', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(constants.IS_UMBREL_OS);
 }));
 
