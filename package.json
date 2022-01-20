@@ -6,8 +6,8 @@
   "scripts": {
     "lint": "eslint",
     "start": "node ./bin/www",
-    "test": "mocha --file test.setup 'test/**/*.js'",
-    "coverage": "nyc --all mocha --file test.setup 'test/**/*.js'",
+    "test": "mocha 'test/**/*.js'",
+    "coverage": "nyc --all mocha 'test/**/*.js'",
     "postcoverage": "codecov"
   },
   "dependencies": {

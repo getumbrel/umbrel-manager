@@ -3,7 +3,7 @@ const pjson = require('../package.json');
 const router = express.Router();
 
 router.get('/', function (req, res) {
-  res.json({ version: 'umbrel-manager-' + pjson.version });
+  res.json({ version: pjson.name });
 });
 
 module.exports = router;
