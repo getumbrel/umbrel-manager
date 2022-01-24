@@ -11,6 +11,8 @@ const JWTHelper = require('utils/jwt.js');
 const constants = require('utils/const.js');
 const UUID = require('utils/UUID.js');
 
+const defaultSettings = require('resources/db-default-settings.json');
+
 const saltRounds = 10;
 const SYSTEM_USER = UUID.fetchBootUUID() || 'admin';
 
@@ -175,6 +177,38 @@ async function getInfo() {
     }
 };
 
+async function getSettings() {
+    try {
+        const { settings } = await diskLogic.readUserFile();
+
+        return { ...defaultSettings, ...settings };
+    } catch (error) {
+        throw new NodeError('Unable to get account settings');
+    }
+};
+
+async function updateSetting(setting, value) {
+    try {
+        const settings = await getSettings();
+
+        if(!setting) return settings;
+        
+        if(typeof value !== undefined) {
+            settings[setting] = value;
+        } else {
+            delete settings[setting];
+        }
+       
+        const user = await diskLogic.readUserFile();
+        user.settings = settings;
+        await diskLogic.writeUserFile(user);
+
+        return settings;
+    } catch (error) {
+        throw new NodeError(`Unable to update setting`);
+    }
+};
+
 async function seed(user) {
 
     //Decrypt mnemonic seed
@@ -204,9 +238,9 @@ async function register(user, seed) {
         throw new NodeError('Unable to encrypt mnemonic seed');
     }
 
-    //save user
+    //save user and init settings
     try {
-        await diskLogic.writeUserFile({ name: user.name, password: user.password, seed: encryptedSeed });
+        await diskLogic.writeUserFile({ name: user.name, password: user.password, seed: encryptedSeed, settings: {} });
     } catch (error) {
         throw new NodeError('Unable to register user');
     }
@@ -265,6 +299,8 @@ module.exports = {
     hashCredentials,
     isRegistered,
     getInfo,
+    getSettings,
+    updateSetting,
     seed,
     login,
     register,

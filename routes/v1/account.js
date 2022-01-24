@@ -108,6 +108,24 @@ router.get('/info', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(info);
 }));
 
+router.get('/settings', auth.jwt, safeHandler(async (req, res) => {
+    const settings = await authLogic.getSettings();
+
+    return res.status(constants.STATUS_CODES.OK).json(settings);
+}));
+
+router.post('/settings', auth.jwt, safeHandler(async (req, res) => {
+    const { setting, value } = req.body;
+
+    try {
+        const settings = await authLogic.updateSetting(setting, value);
+
+        return res.status(constants.STATUS_CODES.OK).json(settings);
+    } catch (error) {
+        return next(error);
+    }
+}));
+
 router.post('/seed', auth.convertReqBodyToBasicAuth, auth.basic, incorrectPasswordAuthHandler, safeHandler(async (req, res) => {
     const seed = await authLogic.seed(req.user);
 
