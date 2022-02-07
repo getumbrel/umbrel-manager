@@ -27,7 +27,7 @@ const apps = require('routes/v1/apps.js');
 const app = express();
 
 // Handles CORS
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
