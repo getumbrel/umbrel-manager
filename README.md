@@ -62,6 +62,8 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `BACKUP_STATUS_FILE` | Path to backup status file | `/statuses/backup-status.json` |
 | `TOR_PROXY_IP` | IP or domain where Tor proxy is listening | `192.168.0.1` |
 | `TOR_PROXY_PORT` | Port where Tor proxy is listening | `9050` |
+| `APP_DATA_DIR` | Path to the 'app-data' directory | `/app-data` |
+| `REPOS_DIR` | Path to the 'repos' directory | `/repos` |
 
 ### Step 3. Run manager
 ```sh

@@ -56,6 +56,7 @@ async function readUserFile() {
     password: "",
     seed: "",
     installedApps: [],
+    repoUrl: ""
   };
   const userFile = await diskService.readJsonFile(constants.USER_FILE);
   return {...defaultProperties, ...userFile};
@@ -273,11 +274,6 @@ function deleteStatusFile(statusFile) {
   return diskService.deleteFile(statusFilePath);
 }
 
-function readAppRegistry() {
-  const appRegistryFile = path.join(constants.APPS_DIR, 'registry.json');
-  return diskService.readJsonFile(appRegistryFile);
-}
-
 function readHiddenService(id) {
   if(!/^[0-9a-zA-Z-_]+$/.test(id)) {
     throw new Error('Invalid hidden service ID');
@@ -343,7 +339,6 @@ module.exports = {
   readDebugStatusFile,
   writeSignalFile,
   writeStatusFile,
-  readAppRegistry,
   readHiddenService,
   memoryWarningStatusFileExists,
   deleteMemoryWarningStatusFile,

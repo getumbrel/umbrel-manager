@@ -24,6 +24,13 @@ router.post('/:id/install', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(result);
 }));
 
+router.post('/:id/update', auth.jwt, safeHandler(async (req, res) => {
+    const {id} = req.params;
+    const result = await appsLogic.update(id);
+
+    return res.status(constants.STATUS_CODES.OK).json(result);
+}));
+
 router.post('/:id/uninstall', auth.jwt, safeHandler(async (req, res) => {
     const {id} = req.params;
     const result = await appsLogic.uninstall(id);
