@@ -64,6 +64,8 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `TOR_PROXY_PORT` | Port where Tor proxy is listening | `9050` |
 | `APP_DATA_DIR` | Path to the 'app-data' directory | `/app-data` |
 | `REPOS_DIR` | Path to the 'repos' directory | `/repos` |
+| `SESSIONS_DIR` | Path to the file-based sessions directory | `/db/sessions` |
+| `UMBREL_AUTH_SECRET` | A shared secret to sign (using hmac) the auth cookie | `undefined` |
 
 ### Step 3. Run manager
 ```sh

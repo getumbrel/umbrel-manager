@@ -6,6 +6,7 @@ const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const passport = require('passport');
 
 // Keep requestCorrelationId middleware as the first middleware. Otherwise we risk losing logs.
@@ -21,9 +22,21 @@ const account = require('routes/v1/account.js');
 const system = require('routes/v1/system.js');
 const external = require('routes/v1/external.js');
 const apps = require('routes/v1/apps.js');
+const constants = require('utils/const.js');
 
 const app = express();
 
+// Define custom response method for setting
+// the Umbrel auth/session cookie
+app.response.umbrelSessionCookie = function (token) {
+  return this.cookie(constants.UMBREL_COOKIE_NAME, token, {
+    httpOnly: true,
+    signed: true,
+    sameSite: "lax"
+  });
+};
+
+app.use(cookieParser(constants.UMBREL_AUTH_SECRET));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));

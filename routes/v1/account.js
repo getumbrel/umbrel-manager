@@ -4,6 +4,7 @@ const router = express.Router();
 // const applicationLogic = require('logic/application.js');
 const authLogic = require('logic/auth.js');
 const diskLogic = require('logic/disk.js');
+const sessionLogic = require('logic/session.js');
 
 const auth = require('middlewares/auth.js');
 const incorrectPasswordAuthHandler = require('middlewares/incorrectPasswordAuthHandler.js');
@@ -90,17 +91,23 @@ router.post('/register', auth.convertReqBodyToBasicAuth, auth.register, safeHand
     user.name = req.body.name;
 
     const jwt = await authLogic.register(user, seed);
+    const token = await sessionLogic.create();
 
-    return res.json(jwt);
+    return res.umbrelSessionCookie(token).json(jwt);
 }));
 
 router.post('/login', auth.convertReqBodyToBasicAuth, auth.basic, safeHandler(async (req, res) => {
     const jwt = await authLogic.login(req.user);
+    const token = await sessionLogic.create();
 
-    return res.json(jwt);
-}
+    return res.umbrelSessionCookie(token).json({...jwt, token});
+}));
 
-));
+router.post('/logout', auth.jwt, safeHandler(async (req, res) => {
+    await sessionLogic.deleteAll();
+
+    return res.status(constants.STATUS_CODES.OK).json();
+}));
 
 router.get('/info', auth.jwt, safeHandler(async (req, res) => {
     const info = await authLogic.getInfo();
@@ -108,13 +115,19 @@ router.get('/info', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(info);
 }));
 
+router.get('/token', safeHandler(async (req, res) => {
+    const isValid = await sessionLogic.isValid(req.query.token);
+
+    return res.status(constants.STATUS_CODES.OK).json({
+        isValid
+    });
+}));
+
 router.post('/seed', auth.convertReqBodyToBasicAuth, auth.basic, incorrectPasswordAuthHandler, safeHandler(async (req, res) => {
     const seed = await authLogic.seed(req.user);
 
     return res.json(seed);
-}
-
-));
+}));
 
 router.post('/refresh', auth.jwt, safeHandler((req, res) =>
     authLogic.refresh(req.user)

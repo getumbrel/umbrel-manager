@@ -1,4 +1,17 @@
 /* eslint-disable id-length */
+
+function readFromEnvOrTerminate(key) {
+	const value = process.env[key];
+
+	if(typeof(value) !== "string" || value.trim().length === 0) {
+		console.error(`The env. variable '${key}' is not set. Terminating...`);
+
+		process.exit(0);
+	}
+
+	return value;
+}
+
 module.exports = {
   REQUEST_CORRELATION_NAMESPACE_KEY: 'umbrel-manager-request',
   REQUEST_CORRELATION_ID_KEY: 'reqId',
@@ -8,6 +21,7 @@ module.exports = {
   STATUS_DIR: process.env.STATUS_DIR || '/statuses',
   APP_DATA_DIR: process.env.APP_DATA_DIR || '/app-data',
   REPOS_DIR: process.env.REPOS_DIR || '/repos',
+  SESSIONS_DIR: process.env.SESSIONS_DIR || '/db/sessions',
   TOR_HIDDEN_SERVICE_DIR: process.env.TOR_HIDDEN_SERVICE_DIR || '/var/lib/tor',
   SHUTDOWN_SIGNAL_FILE: process.env.SHUTDOWN_SIGNAL_FILE || '/signals/shutdown',
   REBOOT_SIGNAL_FILE: process.env.REBOOT_SIGNAL_FILE || '/signals/reboot',
@@ -38,6 +52,8 @@ module.exports = {
   TOR_PROXY_IP: process.env.TOR_PROXY_IP || '192.168.0.1',
   TOR_PROXY_PORT: process.env.TOR_PROXY_PORT || 9050,
   IS_UMBREL_OS: process.env.IS_UMBREL_OS === 'true',
+  UMBREL_COOKIE_NAME: "UMBREL_SESSION",
+  UMBREL_AUTH_SECRET: readFromEnvOrTerminate("UMBREL_AUTH_SECRET"),
   STATUS_CODES: {
     ACCEPTED: 202,
     BAD_GATEWAY: 502,
