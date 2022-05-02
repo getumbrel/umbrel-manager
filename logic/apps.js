@@ -1,22 +1,15 @@
 const diskService = require('services/disk.js');
 const diskLogic = require('logic/disk.js');
+const reposLogic = require('logic/repos.js');
 const NodeError = require('models/errors.js').NodeError;
 const deriveEntropy = require('modules/derive-entropy');
 const constants = require('utils/const.js');
 const YAML = require('yaml');
+const semver = require('semver');
 const path = require('path');
 
 const APP_MANIFEST_FILENAME = "umbrel-app.yml";
-
-function getRepoId(user) {
-  if(typeof(user.appRepo) !== "string")
-  {
-    throw new NodeError("appRepo is not defined within user.json");
-  }
-
-  // Replace all non alpha-numeric characters with hyphen
-  return user.appRepo.replace(/[\W_]+/g, "-");
-}
+const APP_MANIFEST_SUPPORTED_VERSION = 1;
 
 async function addAppMetadata(apps) {
   // Do all hidden service lookups concurrently
@@ -53,7 +46,7 @@ async function get(query) {
   // Read all app yaml files within the active app repo
   const appDataFolder = constants.APP_DATA_DIR;
   const appRepoFolder = constants.REPOS_DIR;
-  const activeRepoId = getRepoId(user);
+  const activeRepoId = reposLogic.getId(user);
   const foldersInRepo = await diskService.listDirsInDir(path.join(appRepoFolder, activeRepoId));
 
   let apps = await Promise.all(foldersInRepo.map(async app => {
@@ -64,12 +57,9 @@ async function get(query) {
     }
 
     try {
-      const appYamlPath = path.join(appRepoFolder, activeRepoId, app, APP_MANIFEST_FILENAME);
-      const appYaml = await diskService.readFile(appYamlPath, "utf-8");
-
-      return YAML.parse(appYaml)
+      return reposLogic.getAppManifest(activeRepoId, app, APP_MANIFEST_FILENAME);
     } catch(e) {
-      console.error("Error parsing app in repo", e);
+      console.error(`Error parsing app (${app}) in repo`, e);
 
       return null
     }
@@ -117,9 +107,23 @@ async function isValidAppId(id) {
   return true;
 }
 
+async function canInstallOrUpdateApp(id) {
+  const user = await diskLogic.readUserFile();
+
+  const activeRepoId = reposLogic.getId(user);
+  const app = await reposLogic.getAppManifest(activeRepoId, id, APP_MANIFEST_FILENAME);
+
+  // Now check the app's manifest version
+  return semver.lte(semver.coerce(app.manifestVersion), semver.coerce(APP_MANIFEST_SUPPORTED_VERSION));
+}
+
 async function install(id) {
   if(! await isValidAppId(id)) {
     throw new NodeError('Invalid app id');
+  }
+
+  if(! await canInstallOrUpdateApp(id)) {
+    throw new NodeError('This app requires a newer version of Umbrel. Please update your Umbrel to install it.');
   }
 
   try {
@@ -132,6 +136,10 @@ async function install(id) {
 async function update(id) {
   if(! await isValidAppId(id)) {
     throw new NodeError('Invalid app id');
+  }
+
+  if(! await canInstallOrUpdateApp(id)) {
+    throw new NodeError('Unsupported app manifest version. Please update your Umbrel.');
   }
 
   try {
