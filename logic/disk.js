@@ -56,7 +56,7 @@ async function readUserFile() {
     password: "",
     seed: "",
     installedApps: [],
-    repoUrl: ""
+    appRepo: constants.UMBREL_APP_REPO_URL
   };
   const userFile = await diskService.readJsonFile(constants.USER_FILE);
   return {...defaultProperties, ...userFile};

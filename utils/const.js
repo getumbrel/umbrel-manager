@@ -54,6 +54,7 @@ module.exports = {
   IS_UMBREL_OS: process.env.IS_UMBREL_OS === 'true',
   UMBREL_COOKIE_NAME: "UMBREL_SESSION",
   UMBREL_AUTH_SECRET: readFromEnvOrTerminate("UMBREL_AUTH_SECRET"),
+  UMBREL_APP_REPO_URL: process.env.UMBREL_APP_REPO_URL || 'https://github.com/getumbrel/umbrel-apps.git',
   STATUS_CODES: {
     ACCEPTED: 202,
     BAD_GATEWAY: 502,

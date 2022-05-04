@@ -206,7 +206,12 @@ async function register(user, seed) {
 
     //save user
     try {
-        await diskLogic.writeUserFile({ name: user.name, password: user.password, seed: encryptedSeed });
+        await diskLogic.writeUserFile({
+            name: user.name,
+            password: user.password,
+            seed: encryptedSeed,
+            appRepo: constants.UMBREL_APP_REPO_URL
+        });
     } catch (error) {
         throw new NodeError('Unable to register user');
     }

@@ -66,6 +66,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `REPOS_DIR` | Path to the 'repos' directory | `/repos` |
 | `SESSIONS_DIR` | Path to the file-based sessions directory | `/db/sessions` |
 | `UMBREL_AUTH_SECRET` | A shared secret to sign (using hmac) the auth cookie | `undefined` |
+| `UMBREL_APP_REPO_URL` | Umbrel's remote app repo git url | `https://github.com/getumbrel/umbrel-apps.git` |
 
 ### Step 3. Run manager
 ```sh
