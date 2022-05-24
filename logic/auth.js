@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const { CipherSeed } = require('aezeed');
 const iocane = require("iocane");
 const diskLogic = require('logic/disk.js');
+const diskService = require('services/disk.js');
 const lndApiService = require('services/lndApi.js');
 const bashService = require('services/bash.js');
 const NodeError = require('models/errors.js').NodeError;
@@ -131,6 +132,48 @@ async function removeLndPasswordIfLocked(currentPassword, jwt) {
   }
 }
 
+// Migrates the internal LND seed over to the new Lightning app
+async function migrateExistingLndSeedToApp(user) {
+    try {
+        // Check if seed should be migrated
+        console.log('[LND Seed Migration] Checking if seed should be migrated...');
+        const stateFilePath = path.join(constants.APP_DATA_DIR, 'lightning/data/lightning/state.json');
+        let state;
+        try {
+            state = await diskService.readJsonFile(stateFilePath);
+        } catch {
+            console.log('[LND Seed Migration] Lightning app not installed, skipping migration.');
+            return;
+        }
+        if(state.seedMigrated !== false) {
+            console.log('[LND Seed Migration] Seed doesn\'t need to be migrated.');
+            return;
+        }
+        if(state.seed.length !== 0) {
+            console.log('[LND Seed Migration] Error: Refusing to migrate, seed already exists!');
+            return;
+        }
+
+        console.log('[LND Seed Migration] Attempting to migrate LND seed...');
+
+        // Decrypt local seed
+        console.log('[LND Seed Migration] Decrypting seed...');
+        const decryptedSeed = await seed(user);
+
+        // Update state
+        console.log('[LND Seed Migration] Updating state...');
+        const updatedState = {
+            ...state,
+            seed: decryptedSeed.seed,
+            seedMigrated: true,
+        };
+        await diskService.writeJsonFile(stateFilePath, updatedState);
+        console.log('[LND Seed Migration] Sucessfully migrated!');
+    } catch (error) {
+        console.log(`[LND Seed Migration] Error: "${error.message}"`);
+    }
+}
+
 
 // Log the user into the device. Caches the password if login is successful. Then returns jwt.
 async function login(user) {
@@ -151,6 +194,10 @@ async function login(user) {
         // password for old users and change it to a hardcoded one so we can
         // auto unlock it in the future.
         removeLndPasswordIfLocked(user.password, jwt);
+
+        // This is only needed temporarily to migrate the LND seed encrypted in
+        // old users user.json file to a plain text version in the Lightning app
+        migrateExistingLndSeedToApp(user);
 
         return { jwt: jwt };
 
