@@ -71,12 +71,6 @@ router.get('/registered', safeHandler((req, res) =>
 // or the property password from the body.
 router.post('/register', auth.convertReqBodyToBasicAuth, auth.register, safeHandler(async (req, res, next) => {
 
-    const seed = req.body.seed;
-
-    if (seed.length !== 24) { // eslint-disable-line no-magic-numbers
-        throw new Error('Invalid seed length');
-    }
-
     try {
         validator.isString(req.body.name);
         validator.isString(req.user.plainTextPassword);
@@ -90,7 +84,7 @@ router.post('/register', auth.convertReqBodyToBasicAuth, auth.register, safeHand
     //add name to user obj
     user.name = req.body.name;
 
-    const jwt = await authLogic.register(user, seed);
+    const jwt = await authLogic.register(user);
     const token = await sessionLogic.create();
 
     return res.umbrelSessionCookie(token).json(jwt);
@@ -179,4 +173,26 @@ router.post('/otp/disable', auth.jwt, safeHandler(async (req, res) => {
 
     return res.status(constants.STATUS_CODES.OK).json();
 }));
+
+// Set wallpaper
+router.post('/wallpaper', auth.jwt, safeHandler(async (req, res) => {
+    const {wallpaper} = req.body;
+
+    // Save wallpaper in user file
+    diskLogic.updateUserFile(userData => ({...userData, wallpaper}));
+
+    return res.status(constants.STATUS_CODES.OK).json();
+}));
+
+// Get wallpaper (public)
+router.get('/wallpaper', safeHandler(async (req, res) => {
+    let wallpaper = null;
+    try {
+        ({wallpaper} = await diskLogic.readUserFile());
+    } catch {}
+
+    return res.json(wallpaper);
+}));
+
+
 module.exports = router;

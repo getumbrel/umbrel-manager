@@ -238,10 +238,14 @@ async function seed(user) {
 }
 
 // Registers the the user to the device. Returns an error if a user already exists.
-async function register(user, seed) {
+async function register(user) {
     if ((await isRegistered()).registered) {
         throw new NodeError('User already exists', 400); // eslint-disable-line no-magic-numbers
     }
+
+    // Just create a fake seed for now so we don't require one from the user
+    // and all existing logic that expects a seed will continue to work.
+    const seed = CipherSeed.random().toMnemonic().split(' ');
 
     //Encrypt mnemonic seed for storage
     let encryptedSeed;
@@ -256,6 +260,9 @@ async function register(user, seed) {
         await diskLogic.writeUserFile({
             name: user.name,
             password: user.password,
+            // To aid in debugging since we know if this prop is set
+            // the seed is not important
+            unusedSeed: true,
             seed: encryptedSeed,
             appRepo: constants.UMBREL_APP_REPO_URL
         });
@@ -284,14 +291,6 @@ async function register(user, seed) {
     } catch (error) {
         await diskLogic.deleteUserFile();
         throw new NodeError('Unable to generate JWT');
-    }
-
-    //initialize lnd wallet
-    try {
-        await lndApiService.initializeWallet(constants.LND_WALLET_PASSWORD, seed, jwt);
-    } catch (error) {
-        await diskLogic.deleteUserFile();
-        throw new NodeError(error.response.data);
     }
 
     //return token
