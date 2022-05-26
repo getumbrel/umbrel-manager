@@ -15,17 +15,26 @@ function getId(user) {
   return user.appRepo.replace(/[\W_]+/g, "-");
 }
 
+function isValidAppManifest(app) {
+  return typeof(app) === "object" && typeof(app.id) === "string";
+}
+
 // Using the active repo id and app id
 // Return the app's manifest file (as an object)
 async function getAppManifest(repoId, appId, manifestFilename) {
-  const appDataFolder = constants.APP_DATA_DIR;
-  const appRepoFolder = constants.REPOS_DIR;
-
   try {
-    const appYamlPath = path.join(appRepoFolder, repoId, appId, manifestFilename);
+    const appYamlPath = path.join(constants.REPOS_DIR, repoId, appId, manifestFilename);
     const appYaml = await diskService.readFile(appYamlPath, "utf-8");
 
-    return YAML.parse(appYaml);
+    const app = YAML.parse(appYaml);
+
+    // Check that app object looks like an app...
+    if(! isValidAppManifest(app))
+    {
+      throw new NodeError(`Invalid ${appId} manifest file`);
+    }
+
+    return app;
   } catch(e) {
     throw new NodeError(`Failed to parse ${appId} manifest file`);
   }

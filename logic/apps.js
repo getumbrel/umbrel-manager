@@ -49,24 +49,13 @@ async function get(query) {
   const activeRepoId = reposLogic.getId(user);
   const foldersInRepo = await diskService.listDirsInDir(path.join(appRepoFolder, activeRepoId));
 
-  let apps = await Promise.all(foldersInRepo.map(async app => {
-    // Ignore dot/hidden folders
-    if(app[0] === ".")
-    {
-      return null;
-    }
+  // Ignore dot/hidden folders
+  const appsInRepo = foldersInRepo.filter(folder => folder[0] !== '.');
 
-    try {
-      return reposLogic.getAppManifest(activeRepoId, app, APP_MANIFEST_FILENAME);
-    } catch(e) {
-      console.error(`Error parsing app (${app}) in repo`, e);
+  let apps = await Promise.allSettled(appsInRepo.map(app => reposLogic.getAppManifest(activeRepoId, app, APP_MANIFEST_FILENAME)));
 
-      return null
-    }
-  }));
-
-  // Filter out non-app objects
-  apps = apps.filter(app => app !== null && typeof(app) === "object" && typeof(app.id) === "string");
+  // Filter to only 'fulfilled' promises and return value (app metadata)
+  apps = apps.filter(settled => settled.status === 'fulfilled').map(settled => settled.value);
 
   if(query.installed)
   {
