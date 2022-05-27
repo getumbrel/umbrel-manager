@@ -5,6 +5,10 @@ const NodeError = require('../models/errors.js').NodeError;
 
 const constants = require('utils/const.js');
 
+
+// Create sessions dir if it doesn't exist on startup
+fs.stat(constants.SESSIONS_DIR).catch(() => fs.mkdir(constants.SESSIONS_DIR));
+
 function getFullPath(token) {
 	const sessionFilename = `${token}.session`;
 
