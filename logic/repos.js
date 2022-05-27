@@ -12,7 +12,7 @@ function getId(user) {
   }
 
   // Replace all non alpha-numeric characters with hyphen
-  return user.appRepo.replace(/[\W_]+/g, "-");
+  return user.appRepo.replace(/[^a-zA-Z0-9]/g, "-");
 }
 
 function isValidAppManifest(app) {
