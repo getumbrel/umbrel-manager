@@ -11,6 +11,32 @@ const path = require('path');
 const APP_MANIFEST_FILENAME = "umbrel-app.yml";
 const APP_MANIFEST_SUPPORTED_VERSION = 1;
 
+function isValidAppManifest(app) {
+  return typeof(app) === "object" && typeof(app.id) === "string";
+}
+
+// Using the active repo id and app id
+// Return the app's manifest file (as an object)
+async function getAppManifest(folder, appId, manifestFilename) {
+  let app;
+  try {
+    const appYamlPath = path.join(folder, appId, manifestFilename);
+    const appYaml = await diskService.readFile(appYamlPath, "utf-8");
+
+    app = YAML.parse(appYaml);
+  } catch(e) {
+    throw new NodeError(`Failed to parse ${appId} manifest file`);
+  }
+
+  // Check that app object looks like an app...
+  if(! isValidAppManifest(app))
+  {
+    throw new NodeError(`Invalid ${appId} manifest file`);
+  }
+
+  return app;
+}
+
 async function addAppMetadata(apps) {
   // Do all hidden service lookups concurrently
   await Promise.all(apps.map(async app => {
@@ -43,52 +69,44 @@ async function addAppMetadata(apps) {
 async function get(query) {
   const user = await diskLogic.readUserFile();
 
+  const filterInstalled = query.installed;
+
   // Read all app yaml files within the active app repo
-  const appDataFolder = constants.APP_DATA_DIR;
-  const appRepoFolder = constants.REPOS_DIR;
-  const activeRepoId = reposLogic.getId(user);
-  const foldersInRepo = await diskService.listDirsInDir(path.join(appRepoFolder, activeRepoId));
+  const activeAppRepoFolder = path.join(constants.REPOS_DIR, reposLogic.getId(user));
+  const appsFolderToRead = filterInstalled ? constants.APP_DATA_DIR : activeAppRepoFolder;
+  const foldersInRepo = await diskService.listDirsInDir(appsFolderToRead);
 
   // Ignore dot/hidden folders
-  const appsInRepo = foldersInRepo.filter(folder => folder[0] !== '.');
+  const appsInFolder = foldersInRepo.filter(folder => folder[0] !== '.');
 
-  let apps = await Promise.allSettled(appsInRepo.map(app => reposLogic.getAppManifest(activeRepoId, app, APP_MANIFEST_FILENAME)));
+  let apps = await Promise.allSettled(appsInFolder.map(appId => getAppManifest(appsFolderToRead, appId, APP_MANIFEST_FILENAME)));
 
   // Filter to only 'fulfilled' promises and return value (app metadata)
   apps = apps.filter(settled => settled.status === 'fulfilled').map(settled => settled.value);
 
-  if(query.installed)
-  {
-    apps = apps.filter(app => user.installedApps.includes(app.id));
-  }
-
+  // Map some metadata onto each app object
   apps = await addAppMetadata(apps);
 
-  let appsMap = {};
-  apps.forEach(app => {
-    appsMap[app.id] = app;
-  });
+  // For the list of installed apps
+  // Let's now check whether any have an app update
+  if(filterInstalled) {
+    await Promise.all(apps.map(async app => {
+      try {
+        const appYamlPath = path.join(activeAppRepoFolder, app.id, APP_MANIFEST_FILENAME);
+        const appYaml = await diskService.readFile(appYamlPath, "utf-8");
 
-  // Now check if any of the installed apps have an update available
-  await Promise.all(user.installedApps.map(async app => {
-    try {
-      const appYamlPath = path.join(appDataFolder, app, APP_MANIFEST_FILENAME);
-      const appYaml = await diskService.readFile(appYamlPath, "utf-8");
+        const appInRepo = YAML.parse(appYaml);
 
-      let installedApp = YAML.parse(appYaml)
-
-      // We have to check if app exists in apps map
-      // Because they could have an installed app that is no longer available in the repo
-      if(appsMap[app])
-      {
-        appsMap[app].updateAvailable = installedApp.version != appsMap[app].version;
+        app.updateAvailable = appInRepo.version != app.version;
+        // This a hack so that the new version is displayed in the dashboard...
+        app.version = appInRepo.version;
+      } catch(e) {
+        console.error("Error parsing app in app-data", e);
       }
-    } catch(e) {
-      console.error("Error parsing app in app-data", e);
-    }
-  }));
+    }));
+  }
 
-  return Object.values(appsMap);
+  return apps;
 }
 
 async function isValidAppId(id) {
@@ -99,8 +117,8 @@ async function isValidAppId(id) {
 async function canInstallOrUpdateApp(id) {
   const user = await diskLogic.readUserFile();
 
-  const activeRepoId = reposLogic.getId(user);
-  const app = await reposLogic.getAppManifest(activeRepoId, id, APP_MANIFEST_FILENAME);
+  const activeAppRepoFolder = path.join(constants.REPOS_DIR, reposLogic.getId(user));
+  const app = await getAppManifest(activeAppRepoFolder, id, APP_MANIFEST_FILENAME);
 
   // Now check the app's manifest version
   return semver.lte(semver.coerce(app.manifestVersion), semver.coerce(APP_MANIFEST_SUPPORTED_VERSION));
