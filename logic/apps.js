@@ -66,49 +66,61 @@ async function addAppMetadata(apps) {
   return apps;
 }
 
+// Filter to only 'fulfilled' promises and return value
+function filterMapFulfilled(list) {
+  return list.filter(settled => settled.status === 'fulfilled').map(settled => settled.value);
+}
+
+async function getInstalled(user) {
+  let apps = await Promise.allSettled(user.installedApps.map(appId => getAppManifest(constants.APP_DATA_DIR, appId, APP_MANIFEST_FILENAME)));
+
+  apps = filterMapFulfilled(apps);
+
+  // Map some metadata onto each app object
+  return addAppMetadata(apps);
+} 
+
 async function get(query) {
   const user = await diskLogic.readUserFile();
 
-  const filterInstalled = query.installed;
+  if(query.installed) {
+    return getInstalled(user);
+  }
 
   // Read all app yaml files within the active app repo
   const activeAppRepoFolder = path.join(constants.REPOS_DIR, reposLogic.getId(user));
-  const appsFolderToRead = filterInstalled ? constants.APP_DATA_DIR : activeAppRepoFolder;
 
   // Ignore dot/hidden folders
   let appIds = [];
   try {
-    appIds = filterInstalled ? user.installedApps : (await diskService.listDirsInDir(activeAppRepoFolder)).filter(folder => folder[0] !== '.');
+    appIds = (await diskService.listDirsInDir(activeAppRepoFolder)).filter(folder => folder[0] !== '.');
   } catch(e) {
     console.error(e);
   }
 
-  let apps = await Promise.allSettled(appIds.map(appId => getAppManifest(appsFolderToRead, appId, APP_MANIFEST_FILENAME)));
+  let apps = await Promise.allSettled(appIds.map(appId => getAppManifest(activeAppRepoFolder, appId, APP_MANIFEST_FILENAME)));
 
-  // Filter to only 'fulfilled' promises and return value (app metadata)
-  apps = apps.filter(settled => settled.status === 'fulfilled').map(settled => settled.value);
+  apps = filterMapFulfilled(apps);
 
   // Map some metadata onto each app object
   apps = await addAppMetadata(apps);
 
-  // For the list of installed apps
   // Let's now check whether any have an app update
-  if(filterInstalled) {
     await Promise.all(apps.map(async app => {
+      // Ignore apps that are not installed
+      if(! user.installedApps.includes(app.id)) return app;
+
       try {
-        const appYamlPath = path.join(activeAppRepoFolder, app.id, APP_MANIFEST_FILENAME);
+        const appYamlPath = path.join(constants.APP_DATA_DIR, app.id, APP_MANIFEST_FILENAME);
         const appYaml = await diskService.readFile(appYamlPath, "utf-8");
 
-        const appInRepo = YAML.parse(appYaml);
+        const installedApp = YAML.parse(appYaml);
 
-        app.updateAvailable = appInRepo.version != app.version;
-        // This a hack so that the new version is displayed in the dashboard...
-        app.version = appInRepo.version;
+        app.updateAvailable = installedApp.version != app.version;
       } catch(e) {
         console.error("Error parsing app in app-data", e);
       }
     }));
-  }
 
   return apps;
 }
