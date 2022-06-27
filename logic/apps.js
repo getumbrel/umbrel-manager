@@ -74,12 +74,16 @@ async function get(query) {
   // Read all app yaml files within the active app repo
   const activeAppRepoFolder = path.join(constants.REPOS_DIR, reposLogic.getId(user));
   const appsFolderToRead = filterInstalled ? constants.APP_DATA_DIR : activeAppRepoFolder;
-  const foldersInRepo = await diskService.listDirsInDir(appsFolderToRead);
 
   // Ignore dot/hidden folders
-  const appsInFolder = foldersInRepo.filter(folder => folder[0] !== '.');
+  let appIds = [];
+  try {
+    appIds = filterInstalled ? user.installedApps : (await diskService.listDirsInDir(activeAppRepoFolder)).filter(folder => folder[0] !== '.');
+  } catch(e) {
+    console.error(e);
+  }
 
-  let apps = await Promise.allSettled(appsInFolder.map(appId => getAppManifest(appsFolderToRead, appId, APP_MANIFEST_FILENAME)));
+  let apps = await Promise.allSettled(appIds.map(appId => getAppManifest(appsFolderToRead, appId, APP_MANIFEST_FILENAME)));
 
   // Filter to only 'fulfilled' promises and return value (app metadata)
   apps = apps.filter(settled => settled.status === 'fulfilled').map(settled => settled.value);
