@@ -105,22 +105,27 @@ async function get(query) {
   // Map some metadata onto each app object
   apps = await addAppMetadata(apps);
 
+  let installedAppsMap = {};
+  user.installedApps.forEach(function(appId){
+    installedAppsMap[appId] = 1;
+  })
+
   // Let's now check whether any have an app update
-    await Promise.all(apps.map(async app => {
-      // Ignore apps that are not installed
-      if(! user.installedApps.includes(app.id)) return app;
+  await Promise.all(apps.map(async app => {
+    // Ignore apps that are not installed
+    if(installedAppsMap[app.id] !== 1) return app;
 
-      try {
-        const appYamlPath = path.join(constants.APP_DATA_DIR, app.id, APP_MANIFEST_FILENAME);
-        const appYaml = await diskService.readFile(appYamlPath, "utf-8");
+    try {
+      const appYamlPath = path.join(constants.APP_DATA_DIR, app.id, APP_MANIFEST_FILENAME);
+      const appYaml = await diskService.readFile(appYamlPath, "utf-8");
 
-        const installedApp = YAML.parse(appYaml);
+      const installedApp = YAML.parse(appYaml);
 
-        app.updateAvailable = installedApp.version != app.version;
-      } catch(e) {
-        console.error("Error parsing app in app-data", e);
-      }
-    }));
+      app.updateAvailable = installedApp.version != app.version;
+    } catch(e) {
+      console.error("Error parsing app in app-data", e);
+    }
+  }));
 
   return apps;
 }
