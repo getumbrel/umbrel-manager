@@ -80,13 +80,44 @@ async function getBitcoinRPCConnectionDetails() {
     }
 };
 
+async function getLatestRelease() {
+    const {name} = await diskLogic.readUmbrelVersionFile();
+    const response = await axios.get('https://api.umbrel.com/latest-release', {
+        headers: {'User-Agent': name}
+    });
+
+    return response.data;
+}
+
+// Poll for update
+(async () => {
+    const ONE_SECOND = 1000;
+    const ONE_MINUTE = ONE_SECOND * 60;
+    const ONE_HOUR = ONE_MINUTE * 60;
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    const currentVersion = (await diskLogic.readUmbrelVersionFile()).version;
+
+    while (true) {
+        try {
+            const latestVersion = (await getLatestRelease()).version;
+            const isNewVersionAvailable = semverGt(latestVersion, currentVersion);
+            if(isNewVersionAvailable) {
+                // TODO: Send realtime notification to ui
+            }
+        } catch (error) {
+            console.log('Error fetching latest release');
+        }
+        await delay(ONE_HOUR);
+    }
+})();
+
 async function getAvailableUpdate() {
     try {
         const current = await diskLogic.readUmbrelVersionFile();
         const currentVersion = current.version;
 
-        // 'tag' should be master to begin with
-        let tag = 'master';
+        let tag = (await getLatestRelease()).version;
         let data;
         let isNewVersionAvailable = true;
         let isCompatibleWithCurrentVersion = false;
