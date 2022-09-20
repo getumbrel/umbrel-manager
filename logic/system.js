@@ -106,7 +106,7 @@ async function getLatestRelease() {
                 // TODO: Send realtime notification to ui
             }
         } catch (error) {
-            console.log('Error fetching latest release');
+            console.log(`Error fetching latest release: ${error.message}`);
         }
         await delay(ONE_HOUR);
     }
@@ -162,6 +162,7 @@ async function getAvailableUpdate() {
         return "Your Umbrel is up-to-date";
     }
     catch (error) {
+        console.log(`Error getting available update: ${error.message}`);
         throw new NodeError('Unable to check for update');
     }
 };
