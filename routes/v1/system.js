@@ -135,6 +135,12 @@ router.get('/is-umbrel-os', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(constants.IS_UMBREL_OS);
 }));
 
+router.get('/is-sd-card-failing', auth.jwt, safeHandler(async (req, res) => {
+    const update = await diskLogic.readSystemStatusFile('sd-card-health');
 
+    const failing = (update !== null) ? update : false;
+
+    return res.status(constants.STATUS_CODES.OK).json(failing);
+}));
 
 module.exports = router;
