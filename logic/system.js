@@ -223,6 +223,17 @@ async function getBackupStatus() {
     }
 }
 
+async function getRemoteTorAccessStatus() {
+    try {
+        const status = await diskLogic.readRemoteTorAccessStatusFile()
+        return status;
+    } catch (error) {
+        console.error(error);
+        
+        throw new NodeError('Unable to get remote tor access status');
+    }
+}
+
 async function getLndConnectUrls() {
 
     let cert;
@@ -323,6 +334,33 @@ async function requestReboot() {
     }
 };
 
+async function setRemoteTorAccess(enabled) {
+    const user = await diskLogic.readUserFile();
+
+    if(user.remoteTorAccess === enabled) {
+        throw new NodeError(`Already turned ${enabled ? 'on' : 'off'}`);
+    }
+
+    let status = {};
+    try {
+        status = await diskLogic.readRemoteTorAccessStatusFile();
+    } catch(error) {
+        // The status file might not exist throwing an exception for the first time
+        console.error(error);
+    }
+
+    if(status.state === 'running') {
+        throw new NodeError('Already in progress');
+    }
+
+    try {
+        await diskLogic.setRemoteTorAccess(enabled);
+        return "Toggle Remote Tor Access";
+    } catch (error) {
+        throw new NodeError('Unable to request Remote Tor Access');
+    }
+};
+
 async function status() {
     try {
       const highMemoryUsage = await diskLogic.memoryWarningStatusFileExists();
@@ -353,11 +391,13 @@ module.exports = {
     getUpdateStatus,
     startUpdate,
     getBackupStatus,
+    getRemoteTorAccessStatus,
     getLndConnectUrls,
     requestDebug,
     getDebugResult,
     requestShutdown,
     requestReboot,
+    setRemoteTorAccess,
     status,
     clearMemoryWarning,
 };

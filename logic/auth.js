@@ -264,7 +264,9 @@ async function register(user) {
             // the seed is not important
             unusedSeed: true,
             seed: encryptedSeed,
-            appRepo: constants.UMBREL_APP_REPO_URL
+            appRepo: constants.UMBREL_APP_REPO_URL,
+            // By default, remote access via Tor is disabled
+            remoteTorAccess: false
         });
     } catch (error) {
         throw new NodeError('Unable to register user');

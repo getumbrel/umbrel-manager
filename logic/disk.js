@@ -58,6 +58,8 @@ async function readUserFile() {
     installedApps: [],
     appRepo: constants.UMBREL_APP_REPO_URL,
     wallpaper: null,
+    // By default, remote access via Tor is disabled
+    remoteTorAccess: false
   };
   const userFile = await diskService.readJsonFile(constants.USER_FILE);
   return {...defaultProperties, ...userFile};
@@ -169,6 +171,10 @@ function readBackupStatusFile() {
   return diskService.readJsonFile(constants.BACKUP_STATUS_FILE);
 }
 
+function readRemoteTorAccessStatusFile() {
+  return diskService.readJsonFile(constants.REMOTE_TOR_ACCESS_STATUS_FILE);
+}
+
 function readJWTPrivateKeyFile() {
   return diskService.readFile(constants.JWT_PRIVATE_KEY_FILE);
 }
@@ -191,6 +197,10 @@ async function shutdown() {
 
 async function reboot() {
   await diskService.writeFile(constants.REBOOT_SIGNAL_FILE, 'true');
+}
+
+async function setRemoteTorAccess(enabled) {
+  await diskService.writeFile(constants.REMOTE_TOR_ACCESS_SIGNAL_FILE, enabled.toString());
 }
 
 // Read the contends of a file.
@@ -324,12 +334,14 @@ module.exports = {
   updateSignalFileExists,
   updateLockFileExists,
   readBackupStatusFile,
+  readRemoteTorAccessStatusFile,
   readJWTPrivateKeyFile,
   readJWTPublicKeyFile,
   writeJWTPrivateKeyFile,
   writeJWTPublicKeyFile,
   shutdown,
   reboot,
+  setRemoteTorAccess,
   readUtf8File,
   readJsonFile,
   writeMigrationStatusFile,
