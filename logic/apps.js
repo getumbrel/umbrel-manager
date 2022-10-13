@@ -9,7 +9,7 @@ const semver = require('semver');
 const path = require('path');
 
 const APP_MANIFEST_FILENAME = "umbrel-app.yml";
-const APP_MANIFEST_SUPPORTED_VERSION = 1;
+const APP_MANIFEST_SUPPORTED_VERSION = '1.1';
 
 function isValidAppManifest(app) {
   return typeof(app) === "object" && typeof(app.id) === "string";
