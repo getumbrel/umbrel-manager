@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const { CipherSeed } = require('aezeed');
 const iocane = require("iocane");
 const diskLogic = require('logic/disk.js');
+const appsLogic = require('logic/apps.js');
+const reposLogic = require('logic/repos.js');
 const diskService = require('services/disk.js');
 const lndApiService = require('services/lndApi.js');
 const bashService = require('services/bash.js');
@@ -210,14 +212,27 @@ async function getInfo() {
     try {
         const user = await diskLogic.readUserFile();
 
-        //remove sensitive info
+        // Append array of repo objects
+        user.communityAppRepos = (await reposLogic.all(user)).filter(repo => {
+            return repo.id !== 'umbrel';
+        });
+
+        // Remove sensitive info
         delete user.password;
         delete user.seed;
         user.otpEnabled = Boolean(user.otpUri);
         delete user.otpUri;
 
+        // Remove other internal properties
+        delete user.repos;
+        delete user.appOrigin;
+        delete user.appRepo;
+        delete user.installedApps;
+
         return user;
     } catch (error) {
+        console.error(error);
+
         throw new NodeError('Unable to get account info');
     }
 };

@@ -82,5 +82,5 @@ module.exports = {
   isPositiveInteger,
   isPositiveIntegerOrZero,
   isString,
-  isValidMemoLength,
+  isValidMemoLength
 };

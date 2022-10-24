@@ -12,6 +12,8 @@ function readFromEnvOrTerminate(key) {
 	return value;
 }
 
+const DEFAULT_UMBREL_APP_REPO_URL = 'https://github.com/getumbrel/umbrel-apps.git';
+
 module.exports = {
   REQUEST_CORRELATION_NAMESPACE_KEY: 'umbrel-manager-request',
   REQUEST_CORRELATION_ID_KEY: 'reqId',
@@ -51,12 +53,19 @@ module.exports = {
   BACKUP_STATUS_FILE: process.env.BACKUP_STATUS_FILE || '/statuses/backup-status.json',
   REMOTE_TOR_ACCESS_STATUS_FILE: process.env.REMOTE_TOR_ACCESS_STATUS_FILE || '/statuses/remote-tor-access-status.json',
   DEBUG_STATUS_FILE: process.env.DEBUG_STATUS_FILE || "/statuses/debug-status.json",
+  REPO_UPDATE_STATUS_FILE: process.env.REPO_UPDATE_STATUS_FILE || "/statuses/repo-update-status.json",
   TOR_PROXY_IP: process.env.TOR_PROXY_IP || '192.168.0.1',
   TOR_PROXY_PORT: process.env.TOR_PROXY_PORT || 9050,
   IS_UMBREL_OS: process.env.IS_UMBREL_OS === 'true',
   UMBREL_COOKIE_NAME: "UMBREL_SESSION",
   UMBREL_AUTH_SECRET: readFromEnvOrTerminate("UMBREL_AUTH_SECRET"),
-  UMBREL_APP_REPO_URL: process.env.UMBREL_APP_REPO_URL || 'https://github.com/getumbrel/umbrel-apps.git',
+  UMBREL_APP_REPO_URL: process.env.UMBREL_APP_REPO_URL || DEFAULT_UMBREL_APP_REPO_URL,
+  UMBREL_APP_STORE_REPO: {
+    id: "umbrel",
+    name: "Umbrel",
+    url: process.env.UMBREL_APP_REPO_URL || DEFAULT_UMBREL_APP_REPO_URL
+  },
+  UMBREL_GALLERY_ASSETS_BASE_URL: process.env.UMBREL_GALLERY_ASSETS_BASE_URL || 'https://getumbrel.github.io/umbrel-apps-gallery',
   STATUS_CODES: {
     ACCEPTED: 202,
     BAD_GATEWAY: 502,

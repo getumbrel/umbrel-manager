@@ -4,7 +4,6 @@ const reposLogic = require('logic/repos.js');
 const NodeError = require('models/errors.js').NodeError;
 const deriveEntropy = require('modules/derive-entropy');
 const constants = require('utils/const.js');
-const YAML = require('yaml');
 const semver = require('semver');
 const path = require('path');
 
@@ -21,9 +20,7 @@ async function getAppManifest(folder, appId, manifestFilename) {
   let app;
   try {
     const appYamlPath = path.join(folder, appId, manifestFilename);
-    const appYaml = await diskService.readFile(appYamlPath, "utf-8");
-
-    app = YAML.parse(appYaml);
+    app = await diskService.readYamlFile(appYamlPath);
   } catch(e) {
     throw new NodeError(`Failed to parse ${appId} manifest file`);
   }
@@ -55,10 +52,24 @@ async function addAppMetadata(apps) {
       app.defaultPassword = '';
     }
   }));
-
-  // Set some app update defaults
+  
   apps = apps.map((app) => {
+    // Set app update defaults
     app.updateAvailable = false;
+
+    // Set an icon property if it doesn't exist
+    // Default to using Umbrel gallery assets
+    if(app.icon === undefined) {
+      app.icon = `${constants.UMBREL_GALLERY_ASSETS_BASE_URL}/${app.id}/icon.svg`;
+    }
+
+    app.gallery = app.gallery.map(image => {
+      if(image.startsWith('http://') || image.startsWith('https://')) {
+        return image;
+      }
+
+      return `${constants.UMBREL_GALLERY_ASSETS_BASE_URL}/${app.id}/${image}`;
+    });
 
     return app;
   });
@@ -87,39 +98,56 @@ async function get(query) {
     return getInstalled(user);
   }
 
-  // Read all app yaml files within the active app repo
-  const activeAppRepoFolder = path.join(constants.REPOS_DIR, reposLogic.getId(user));
+  const repos = await reposLogic.all(user);
+  const repo = repos.find(repo => {
+    return repo.id === query.repo;
+  });
 
-  // Ignore dot/hidden folders
+  if(repo === undefined) {
+    throw new NodeError(`Unable to locate repo: ${query.repo}`);
+  }
+  
+  let apps = [];
+
+  // Read all app yaml files from a given app repo
+  const activeAppRepoFolder = path.join(constants.REPOS_DIR, reposLogic.slug(repo.url));
+
   let appIds = [];
   try {
+    // Ignore dot/hidden folders
     appIds = (await diskService.listDirsInDir(activeAppRepoFolder)).filter(folder => folder[0] !== '.');
   } catch(e) {
-    console.error(e);
+    console.error(`Error reading directory: ${activeAppRepoFolder}`, e);
+  }
+  
+  try {
+    let appsInRepo = await Promise.allSettled(appIds.map(appId => getAppManifest(activeAppRepoFolder, appId, APP_MANIFEST_FILENAME)));
+
+    appsInRepo = filterMapFulfilled(appsInRepo);
+
+    // Map some metadata onto each app object
+    apps = await addAppMetadata(appsInRepo);
+  } catch(e) {
+    console.error(`Error reading app manifest`, e);
   }
 
-  let apps = await Promise.allSettled(appIds.map(appId => getAppManifest(activeAppRepoFolder, appId, APP_MANIFEST_FILENAME)));
-
-  apps = filterMapFulfilled(apps);
-
-  // Map some metadata onto each app object
-  apps = await addAppMetadata(apps);
-
-  let installedAppsMap = {};
-  user.installedApps.forEach(function(appId){
-    installedAppsMap[appId] = 1;
-  })
+  // If the repo is a community app store
+  // We need to check if the app id is prefixed (or namespaced) with the repo id
+  // (defined inside of the umbrel-app-store.yml)
+  if(repo.id !== constants.UMBREL_APP_STORE_REPO.id) {
+    apps = apps.filter(app => {
+      return app.id.startsWith(`${repo.id}-`);
+    });
+  }
 
   // Let's now check whether any have an app update
   await Promise.all(apps.map(async app => {
     // Ignore apps that are not installed
-    if(installedAppsMap[app.id] !== 1) return app;
+    if(! user.installedApps.includes(app.id)) return app;
 
     try {
       const appYamlPath = path.join(constants.APP_DATA_DIR, app.id, APP_MANIFEST_FILENAME);
-      const appYaml = await diskService.readFile(appYamlPath, "utf-8");
-
-      const installedApp = YAML.parse(appYaml);
+      const installedApp = await diskService.readYamlFile(appYamlPath);
 
       app.updateAvailable = installedApp.version != app.version;
     } catch(e) {
@@ -130,16 +158,27 @@ async function get(query) {
   return apps;
 }
 
+async function find(id){
+  const user = await diskLogic.readUserFile();
+
+  // Loop through the repos to find the app
+  for (const repoUrl of user.repos) {
+    const appYamlPath = path.join(constants.REPOS_DIR, reposLogic.slug(repoUrl), id, APP_MANIFEST_FILENAME);
+    if(await diskLogic.fileExists(appYamlPath)) {
+      const activeAppRepoFolder = path.join(constants.REPOS_DIR, reposLogic.slug(repoUrl));
+      return await getAppManifest(activeAppRepoFolder, id, APP_MANIFEST_FILENAME);
+    }
+  }
+
+  return null;
+}
+
 async function isValidAppId(id) {
-  // TODO: validate id
-  return true;
+  return (await find(id)) !== null;
 }
 
 async function canInstallOrUpdateApp(id) {
-  const user = await diskLogic.readUserFile();
-
-  const activeAppRepoFolder = path.join(constants.REPOS_DIR, reposLogic.getId(user));
-  const app = await getAppManifest(activeAppRepoFolder, id, APP_MANIFEST_FILENAME);
+  const app = await find(id);
 
   // Now check the app's manifest version
   return semver.lte(semver.coerce(app.manifestVersion), semver.coerce(APP_MANIFEST_SUPPORTED_VERSION));
@@ -178,10 +217,6 @@ async function update(id) {
 };
 
 async function uninstall(id) {
-  if(! await isValidAppId(id)) {
-    throw new NodeError('Invalid app id');
-  }
-
   try {
     await diskLogic.writeSignalFile(`app-uninstall-${id}`);
   } catch (error) {

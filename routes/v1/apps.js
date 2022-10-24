@@ -11,6 +11,7 @@ const safeHandler = require('utils/safeHandler');
 router.get('/', auth.jwt, safeHandler(async (req, res) => {
     const query = {
       installed: req.query.installed === '1',
+      repo: req.query.repo === undefined ? 'umbrel' : req.query.repo
     };
     const apps = await appsLogic.get(query);
 

@@ -16,7 +16,7 @@ async function deleteFoldersInDir(directory) {
 }
 
 async function fileExists(path) {
-  return diskService.readJsonFile(path)
+  return diskService.readUtf8File(path)
     .then(() => Promise.resolve(true))
     .catch(() => Promise.resolve(false));
 }
@@ -239,14 +239,25 @@ function readDebugStatusFile() {
   return diskService.readJsonFile(constants.DEBUG_STATUS_FILE);
 }
 
+function readRepoUpdateStatusFile() {
+  return diskService.readJsonFile(constants.REPO_UPDATE_STATUS_FILE);
+}
+
+async function deleteRepoUpdateStatusFile() {
+  const statusFile = constants.REPO_UPDATE_STATUS_FILE;
+  if(await fileExists(statusFile)) {
+    return diskService.deleteFile(constants.REPO_UPDATE_STATUS_FILE);
+  }
+}
+
 // TODO: Transition all logic to use this signal function
-function writeSignalFile(signalFile) {
+function writeSignalFile(signalFile, contents = 'true') {
   if(!/^[0-9a-zA-Z-_]+$/.test(signalFile)) {
     throw new Error('Invalid signal file characters');
   }
 
   const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
-  return diskService.writeFile(signalFilePath, 'true');
+  return diskService.writeFile(signalFilePath, contents);
 }
 
 // TODO: Transition all logic to use this status function
@@ -350,6 +361,8 @@ module.exports = {
   enableSsh,
   readSshSignalFile,
   readDebugStatusFile,
+  readRepoUpdateStatusFile,
+  deleteRepoUpdateStatusFile,
   writeSignalFile,
   writeStatusFile,
   readHiddenService,
