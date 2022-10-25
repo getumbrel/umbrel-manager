@@ -56,7 +56,7 @@ async function readUserFile() {
     password: "",
     seed: "",
     installedApps: [],
-    appRepo: constants.UMBREL_APP_REPO_URL,
+    repos: [ constants.UMBREL_APP_REPO_URL ],
     wallpaper: null,
     // By default, remote access via Tor is disabled
     remoteTorAccess: false
