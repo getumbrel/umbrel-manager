@@ -83,6 +83,12 @@ router.get('/backup-status', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(backup);
 }));
 
+router.get('/remote-tor-access-status', auth.jwt, safeHandler(async (req, res) => {
+    const backup = await systemLogic.getRemoteTorAccessStatus();
+
+    return res.status(constants.STATUS_CODES.OK).json(backup);
+}));
+
 router.get('/debug-result', auth.jwt, safeHandler(async (req, res) => {
     const result = await systemLogic.getDebugResult();
 
@@ -103,6 +109,14 @@ router.post('/shutdown', auth.jwt, safeHandler(async (req, res) => {
 
 router.post('/reboot', auth.jwt, safeHandler(async (req, res) => {
     const result = await systemLogic.requestReboot();
+
+    return res.status(constants.STATUS_CODES.OK).json(result);
+}));
+
+router.post('/remote-tor-access', auth.jwt, safeHandler(async (req, res) => {
+    const enabled = req.body.enabled === true;
+
+    const result = await systemLogic.setRemoteTorAccess(enabled);
 
     return res.status(constants.STATUS_CODES.OK).json(result);
 }));
@@ -135,6 +149,12 @@ router.get('/is-umbrel-os', auth.jwt, safeHandler(async (req, res) => {
     return res.status(constants.STATUS_CODES.OK).json(constants.IS_UMBREL_OS);
 }));
 
+router.get('/is-sd-card-failing', auth.jwt, safeHandler(async (req, res) => {
+    const update = await diskLogic.readSystemStatusFile('sd-card-health');
 
+    const failing = (update !== null) ? update : false;
+
+    return res.status(constants.STATUS_CODES.OK).json(failing);
+}));
 
 module.exports = router;

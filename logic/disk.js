@@ -16,7 +16,7 @@ async function deleteFoldersInDir(directory) {
 }
 
 async function fileExists(path) {
-  return diskService.readJsonFile(path)
+  return diskService.readUtf8File(path)
     .then(() => Promise.resolve(true))
     .catch(() => Promise.resolve(false));
 }
@@ -58,6 +58,8 @@ async function readUserFile() {
     installedApps: [],
     appRepo: constants.UMBREL_APP_REPO_URL,
     wallpaper: null,
+    // By default, remote access via Tor is disabled
+    remoteTorAccess: false
   };
   const userFile = await diskService.readJsonFile(constants.USER_FILE);
   return {...defaultProperties, ...userFile};
@@ -169,6 +171,10 @@ function readBackupStatusFile() {
   return diskService.readJsonFile(constants.BACKUP_STATUS_FILE);
 }
 
+function readRemoteTorAccessStatusFile() {
+  return diskService.readJsonFile(constants.REMOTE_TOR_ACCESS_STATUS_FILE);
+}
+
 function readJWTPrivateKeyFile() {
   return diskService.readFile(constants.JWT_PRIVATE_KEY_FILE);
 }
@@ -191,6 +197,10 @@ async function shutdown() {
 
 async function reboot() {
   await diskService.writeFile(constants.REBOOT_SIGNAL_FILE, 'true');
+}
+
+async function setRemoteTorAccess(enabled) {
+  await diskService.writeFile(constants.REMOTE_TOR_ACCESS_SIGNAL_FILE, enabled.toString());
 }
 
 // Read the contends of a file.
@@ -229,14 +239,25 @@ function readDebugStatusFile() {
   return diskService.readJsonFile(constants.DEBUG_STATUS_FILE);
 }
 
+function readRepoUpdateStatusFile() {
+  return diskService.readJsonFile(constants.REPO_UPDATE_STATUS_FILE);
+}
+
+async function deleteRepoUpdateStatusFile() {
+  const statusFile = constants.REPO_UPDATE_STATUS_FILE;
+  if(await fileExists(statusFile)) {
+    return diskService.deleteFile(constants.REPO_UPDATE_STATUS_FILE);
+  }
+}
+
 // TODO: Transition all logic to use this signal function
-function writeSignalFile(signalFile) {
+function writeSignalFile(signalFile, contents = 'true') {
   if(!/^[0-9a-zA-Z-_]+$/.test(signalFile)) {
     throw new Error('Invalid signal file characters');
   }
 
   const signalFilePath = path.join(constants.SIGNAL_DIR, signalFile);
-  return diskService.writeFile(signalFilePath, 'true');
+  return diskService.writeFile(signalFilePath, contents);
 }
 
 // TODO: Transition all logic to use this status function
@@ -324,12 +345,14 @@ module.exports = {
   updateSignalFileExists,
   updateLockFileExists,
   readBackupStatusFile,
+  readRemoteTorAccessStatusFile,
   readJWTPrivateKeyFile,
   readJWTPublicKeyFile,
   writeJWTPrivateKeyFile,
   writeJWTPublicKeyFile,
   shutdown,
   reboot,
+  setRemoteTorAccess,
   readUtf8File,
   readJsonFile,
   writeMigrationStatusFile,
@@ -338,6 +361,8 @@ module.exports = {
   enableSsh,
   readSshSignalFile,
   readDebugStatusFile,
+  readRepoUpdateStatusFile,
+  deleteRepoUpdateStatusFile,
   writeSignalFile,
   writeStatusFile,
   readHiddenService,

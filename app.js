@@ -22,6 +22,7 @@ const account = require('routes/v1/account.js');
 const system = require('routes/v1/system.js');
 const external = require('routes/v1/external.js');
 const apps = require('routes/v1/apps.js');
+const communityAppStores = require('routes/v1/community-app-stores.js');
 const constants = require('utils/const.js');
 
 const app = express();
@@ -52,6 +53,7 @@ app.use('/v1/account', account);
 app.use('/v1/system', system);
 app.use('/v1/external', external);
 app.use('/v1/apps', apps);
+app.use('/v1/community-app-stores', communityAppStores);
 
 app.use(errorHandleMiddleware);
 app.use((req, res) => {

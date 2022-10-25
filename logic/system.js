@@ -80,13 +80,44 @@ async function getBitcoinRPCConnectionDetails() {
     }
 };
 
+async function getLatestRelease() {
+    const {name} = await diskLogic.readUmbrelVersionFile();
+    const response = await axios.get('https://api.umbrel.com/latest-release', {
+        headers: {'User-Agent': name}
+    });
+
+    return response.data;
+}
+
+// Poll for update
+(async () => {
+    const ONE_SECOND = 1000;
+    const ONE_MINUTE = ONE_SECOND * 60;
+    const ONE_HOUR = ONE_MINUTE * 60;
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    const currentVersion = (await diskLogic.readUmbrelVersionFile()).version;
+
+    while (true) {
+        try {
+            const latestVersion = (await getLatestRelease()).version;
+            const isNewVersionAvailable = semverGt(latestVersion, currentVersion);
+            if(isNewVersionAvailable) {
+                // TODO: Send realtime notification to ui
+            }
+        } catch (error) {
+            console.log(`Error fetching latest release: ${error.message}`);
+        }
+        await delay(ONE_HOUR);
+    }
+})();
+
 async function getAvailableUpdate() {
     try {
         const current = await diskLogic.readUmbrelVersionFile();
         const currentVersion = current.version;
 
-        // 'tag' should be master to begin with
-        let tag = 'master';
+        let tag = (await getLatestRelease()).version;
         let data;
         let isNewVersionAvailable = true;
         let isCompatibleWithCurrentVersion = false;
@@ -131,6 +162,7 @@ async function getAvailableUpdate() {
         return "Your Umbrel is up-to-date";
     }
     catch (error) {
+        console.log(`Error getting available update: ${error.message}`);
         throw new NodeError('Unable to check for update');
     }
 };
@@ -188,6 +220,17 @@ async function getBackupStatus() {
         return status;
     } catch (error) {
         throw new NodeError('Unable to get backup status');
+    }
+}
+
+async function getRemoteTorAccessStatus() {
+    try {
+        const status = await diskLogic.readRemoteTorAccessStatusFile()
+        return status;
+    } catch (error) {
+        console.error(error);
+        
+        throw new NodeError('Unable to get remote tor access status');
     }
 }
 
@@ -291,6 +334,33 @@ async function requestReboot() {
     }
 };
 
+async function setRemoteTorAccess(enabled) {
+    const user = await diskLogic.readUserFile();
+
+    if(user.remoteTorAccess === enabled) {
+        throw new NodeError(`Already turned ${enabled ? 'on' : 'off'}`);
+    }
+
+    let status = {};
+    try {
+        status = await diskLogic.readRemoteTorAccessStatusFile();
+    } catch(error) {
+        // The status file might not exist throwing an exception for the first time
+        console.error(error);
+    }
+
+    if(status.state === 'running') {
+        throw new NodeError('Already in progress');
+    }
+
+    try {
+        await diskLogic.setRemoteTorAccess(enabled);
+        return "Toggle Remote Tor Access";
+    } catch (error) {
+        throw new NodeError('Unable to request Remote Tor Access');
+    }
+};
+
 async function status() {
     try {
       const highMemoryUsage = await diskLogic.memoryWarningStatusFileExists();
@@ -321,11 +391,13 @@ module.exports = {
     getUpdateStatus,
     startUpdate,
     getBackupStatus,
+    getRemoteTorAccessStatus,
     getLndConnectUrls,
     requestDebug,
     getDebugResult,
     requestShutdown,
     requestReboot,
+    setRemoteTorAccess,
     status,
     clearMemoryWarning,
 };
