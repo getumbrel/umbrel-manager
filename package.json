@@ -1,6 +1,6 @@
 {
   "name": "umbrel-manager",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Manager for Umbrel Node",
   "author": "Umbrel",
   "scripts": {
