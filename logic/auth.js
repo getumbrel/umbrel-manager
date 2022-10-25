@@ -214,7 +214,7 @@ async function getInfo() {
 
         // Append array of repo objects
         user.communityAppRepos = (await reposLogic.all(user)).filter(repo => {
-            return repo.id !== 'umbrel';
+            return repo.id !== constants.UMBREL_APP_STORE_REPO.id;
         });
 
         // Remove sensitive info
@@ -226,7 +226,6 @@ async function getInfo() {
         // Remove other internal properties
         delete user.repos;
         delete user.appOrigin;
-        delete user.appRepo;
         delete user.installedApps;
 
         return user;
@@ -279,7 +278,7 @@ async function register(user) {
             // the seed is not important
             unusedSeed: true,
             seed: encryptedSeed,
-            appRepo: constants.UMBREL_APP_REPO_URL,
+            repos: [ constants.UMBREL_APP_REPO_URL ],
             // By default, remote access via Tor is disabled
             remoteTorAccess: false
         });
