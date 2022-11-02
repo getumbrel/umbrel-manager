@@ -122,13 +122,13 @@ router.post('/remote-tor-access', auth.jwt, safeHandler(async (req, res) => {
 }));
 
 router.get('/storage', auth.jwt, safeHandler(async (req, res) => {
-    const update = await diskLogic.readSystemStatusFile('storage');
+    const update = await systemLogic.getComputeResourceUsage('storage');
 
     return res.status(constants.STATUS_CODES.OK).json(update);
 }));
 
 router.get('/memory', auth.jwt, safeHandler(async (req, res) => {
-    const update = await diskLogic.readSystemStatusFile('memory');
+    const update = await systemLogic.getComputeResourceUsage('memory');
 
     return res.status(constants.STATUS_CODES.OK).json(update);
 }));

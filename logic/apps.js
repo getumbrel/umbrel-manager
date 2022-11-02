@@ -228,5 +228,6 @@ module.exports = {
   get,
   install,
   uninstall,
-  update
+  update,
+  getInstalled
 };
