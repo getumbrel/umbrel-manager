@@ -5,6 +5,7 @@ const semverMinVersion = require('semver/ranges/min-version');
 const encode = require('lndconnect').encode;
 
 const diskLogic = require('logic/disk.js');
+const appsLogic = require('logic/apps.js');
 const constants = require('utils/const.js');
 const NodeError = require('models/errors.js').NodeError;
 
@@ -381,6 +382,31 @@ async function clearMemoryWarning() {
     }
 };
 
+async function getComputeResourceUsage(resource) {
+    const user = await diskLogic.readUserFile();
+
+    const installedApps = await appsLogic.getInstalled(user);
+
+    const update = await diskLogic.readSystemStatusFile(resource);
+
+    if(Array.isArray(update.breakdown)) {
+        update.breakdown = update.breakdown.map(function(row){
+            if(row.id === 'umbrel') return row;
+
+            const appMetadata = installedApps.find(app => app.id === row.id)
+
+            if(appMetadata) {
+                row.name = appMetadata.name;
+                row.icon = appMetadata.icon;
+            }            
+
+            return row;
+        });
+    }
+
+    return update;
+}
+
 module.exports = {
     getInfo,
     getHiddenServiceUrl,
@@ -400,4 +426,5 @@ module.exports = {
     setRemoteTorAccess,
     status,
     clearMemoryWarning,
+    getComputeResourceUsage
 };
